@@ -1,22 +1,46 @@
+import { useState } from "react";
 
 export function Login() {
-    return (
-    <>
-    <body>
-        <h1>This is the login page</h1>
-        <form>
-            <label id="Usernames">Username: </label>
-            <input id='Usernames' type='text' placeholder="Text here!" required/>
-            <br/>
-            <br/>
-            <label id='Pass'>Password: </label>
-            <input id="Pass" type='password' minLength='5' placeholder="Password here!" required/>
-            <br/>
-            <br/>
-            <button  type='submit' className="">Sign up</button>
-        </form>
-    </body>
-    </>
-    )
-}
+  const [isLogin, setIsLogin] = useState(true);
 
+  function handleSubmit(e) {
+    e.preventDefault();
+    alert(isLogin ? "Logging in..." : "Signing up...");
+  }
+
+  return (
+    <div>
+      <h1>{isLogin ? "Login" : "Sign Up"}</h1>
+
+      <form onSubmit={handleSubmit}>
+        {!isLogin && (
+          <>
+            <label htmlFor="name">Name:</label>
+            <input id="name" type="text" required />
+            <br /><br />
+          </>
+        )}
+
+        <label htmlFor="email">Email:</label>
+        <input id="email" type="email" required />
+        <br /><br />
+
+        <label htmlFor="password">Password:</label>
+        <input id="password" type="password" minLength={5} required />
+        <br /><br />
+
+        <button type="submit">
+          {isLogin ? "Login" : "Sign Up"}
+        </button>
+      </form>
+
+      <br />
+
+      <button onClick={() => setIsLogin(!isLogin)}>
+        {isLogin
+          ? "Don't have an account? Sign Up"
+          : "Already have an account? Login"}
+      </button>
+    </div>
+  );
+}
