@@ -1,6 +1,6 @@
 import { useState } from "react";
 
-export function Login() {
+export function Auth() {
   const [isLogin, setIsLogin] = useState(true);
 
   function handleSubmit(e) {
