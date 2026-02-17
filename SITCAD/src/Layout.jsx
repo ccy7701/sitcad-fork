@@ -7,7 +7,7 @@ export function Layout() {
             <Navbar/>
             <main>
                 <Outlet/>
-            </main>
-        </>
-    )
+           </main>
+       </>
+   )
 }
