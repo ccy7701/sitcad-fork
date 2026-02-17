@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { signInWithEmailAndPassword } from 'firebase/auth';
 import { useState } from "react";
 import { auth } from '../firebase/firebase'; 
+import SignInWithGoogle from "../components/signinwithGoogle";
 
 
 function Login() {
@@ -55,7 +56,7 @@ function Login() {
                         <button type="button">Register</button>
                     </Link>
                 </p>
-
+                <SignInWithGoogle/>
             </form>
         </>
     );
