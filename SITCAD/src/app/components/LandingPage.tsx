@@ -126,10 +126,10 @@ export function LandingPage() {
           <img src="/mascot/waving_hand_1.png" alt="Mascot waving" className="absolute bottom-8 right-[6%] w-48 lg:w-64 drop-shadow-xl animate-float-slow pointer-events-none select-none" />
 
           <div className="text-center max-w-3xl mx-auto space-y-7 animate-fade-in-up">
-            <Badge className="bg-[#EFCA08]/20 text-[#B89A00] border-[#EFCA08]/40 text-sm px-4 py-1.5 rounded-full">
+            {/* <Badge className="bg-[#EFCA08]/20 text-[#B89A00] border-[#EFCA08]/40 text-sm px-4 py-1.5 rounded-full">
               <Sparkles className="mr-1.5 h-3.5 w-3.5" />
               AI-Powered Learning Management
-            </Badge>
+            </Badge> */}
             <h1 className="text-5xl lg:text-7xl font-bold leading-[1.1] font-serif tracking-tight">
               Where{' '}
               <span className="text-[#F46197] relative">
