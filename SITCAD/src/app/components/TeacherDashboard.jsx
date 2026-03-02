@@ -1,6 +1,7 @@
+
 import { useNavigate } from 'react-router';
 import { useAuth } from '../contexts/AuthContext';
-import { getStudentsByRole, Student } from '../data/mockData';
+import { getStudentsByRole } from '../data/mockData';
 import { Button } from './ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from './ui/card';
 import { Progress } from './ui/progress';
@@ -27,7 +28,7 @@ export function TeacherDashboard() {
     navigate('/login');
   };
 
-  const getStageBadgeVariant = (stage: Student['developmentalStage']) => {
+  const getStageBadgeVariant = (stage) => {
     switch (stage) {
       case 'advanced': return 'default';
       case 'proficient': return 'secondary';
@@ -39,7 +40,9 @@ export function TeacherDashboard() {
   return (
     <div className="min-h-screen">
       {/* Header */}
-      <header className="bg-white border-b shadow-sm sticky top-0 z-10">
+      <header className="bg-white border-
+```
+b shadow-sm sticky top-0 z-10">
         <div className="max-w-7xl mx-auto px-6 py-4">
           <div className="flex items-center justify-between">
             <div>

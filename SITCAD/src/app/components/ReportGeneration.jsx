@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router';
 import { useAuth } from '../contexts/AuthContext';
-import { mockStudents, Student } from '../data/mockData';
+import { mockStudents } from '../data/mockData';
 import { Button } from './ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from './ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select';
@@ -12,29 +12,14 @@ import { Progress } from './ui/progress';
 import { ArrowLeft, FileText, Download, Sparkles, Loader2, TrendingUp, Award, Target } from 'lucide-react';
 import { toast } from 'sonner';
 
-interface GeneratedReport {
-  studentId: string;
-  studentName: string;
-  reportPeriod: string;
-  summary: string;
-  strengths: string[];
-  areasForGrowth: string[];
-  recommendations: string[];
-  progressData: {
-    area: string;
-    progress: number;
-    comment: string;
-  }[];
-}
-
 export function ReportGeneration() {
   const { user } = useAuth();
   const navigate = useNavigate();
   const [reportType, setReportType] = useState('comprehensive');
   const [reportPeriod, setReportPeriod] = useState('term1');
-  const [selectedStudents, setSelectedStudents] = useState<string[]>([]);
+  const [selectedStudents, setSelectedStudents] = useState([]);
   const [generating, setGenerating] = useState(false);
-  const [reports, setReports] = useState<GeneratedReport[]>([]);
+  const [reports, setReports] = useState([]);
 
   if (!user || user.role !== 'teacher') {
     navigate('/');
@@ -43,7 +28,7 @@ export function ReportGeneration() {
 
   const students = mockStudents;
 
-  const handleStudentToggle = (studentId: string) => {
+  const handleStudentToggle = (studentId) => {
     setSelectedStudents(prev =>
       prev.includes(studentId)
         ? prev.filter(id => id !== studentId)
@@ -69,8 +54,8 @@ export function ReportGeneration() {
     await new Promise(resolve => setTimeout(resolve, 2500));
 
     // Mock AI-generated reports
-    const newReports: GeneratedReport[] = selectedStudents.map(studentId => {
-      const student = students.find(s => s.id === studentId)!;
+    const newReports = selectedStudents.map(studentId => {
+      const student = students.find(s => s.id === studentId);
       return {
         studentId,
         studentName: student.name,
@@ -107,7 +92,7 @@ export function ReportGeneration() {
     toast.success(`Generated ${newReports.length} report(s) successfully!`);
   };
 
-  const downloadReport = (report: GeneratedReport) => {
+  const downloadReport = (report) => {
     toast.success(`Report for ${report.studentName} downloaded!`);
   };
 

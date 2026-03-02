@@ -8,7 +8,7 @@ import { Badge } from './ui/badge';
 import { ArrowLeft, TrendingUp, TrendingDown, Minus, Award, Target } from 'lucide-react';
 
 export function ProgressTracking() {
-  const { studentId } = useParams<{ studentId: string }>();
+  const { studentId } = useParams();
   const { user } = useAuth();
   const navigate = useNavigate();
 
@@ -29,7 +29,7 @@ export function ProgressTracking() {
     navigate(`/${user.role}/student/${studentId}`);
   };
 
-  const getCategoryColor = (category: string) => {
+  const getCategoryColor = (category) => {
     const colors = {
       literacy: 'from-blue-500 to-blue-600',
       numeracy: 'from-green-500 to-green-600',
@@ -38,7 +38,7 @@ export function ProgressTracking() {
       creative: 'from-pink-500 to-pink-600',
       cognitive: 'from-cyan-500 to-cyan-600',
     };
-    return colors[category as keyof typeof colors] || 'from-gray-500 to-gray-600';
+    return colors[category] || 'from-gray-500 to-gray-600';
   };
 
   // Calculate statistics
@@ -90,7 +90,8 @@ export function ProgressTracking() {
                 <div className="text-sm text-muted-foreground">Milestones Achieved</div>
               </div>
               <div className="text-center p-6 bg-blue-50 rounded-lg border-2 border-blue-200">
-                <div className="text-4xl font-bold text-blue-600 mb-2">{totalMilestones - achievedMilestones}</div>
+                <div className="text-4xl font-bold text-```
+blue-600 mb-2">{totalMilestones - achievedMilestones}</div>
                 <div className="text-sm text-muted-foreground">In Progress</div>
               </div>
               <div className="text-center p-6 bg-purple-50 rounded-lg border-2 border-purple-200">
@@ -205,7 +206,7 @@ export function ProgressTracking() {
           })}
         </div>
 
-        {/* AI Insights (Mock) */}
+        {/* AI Insights */}
         <Card className="border-2 border-blue-200 bg-blue-50/50">
           <CardHeader>
             <div className="flex items-center gap-2">

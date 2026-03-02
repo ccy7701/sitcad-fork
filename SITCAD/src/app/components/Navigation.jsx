@@ -9,13 +9,13 @@ import {
   LayoutDashboard, 
   Users, 
   Calendar, 
-  Brain, // location for icon brain
+  Brain, 
   FileText, 
   MessageSquare, 
   AlertCircle,
   Sparkles,
   Monitor,
-  GraduationCap, // Location for icon Graduation
+  GraduationCap,
   LogOut,
   Home,
   User,
@@ -40,7 +40,7 @@ const parentNavItems = [
   { path: '/parent/communication', icon: MessageSquare, label: 'Messages' },
 ];
 
-function NavigationContent({ onNavigate }: { onNavigate?: () => void }) {
+function NavigationContent({ onNavigate }) {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
@@ -49,22 +49,19 @@ function NavigationContent({ onNavigate }: { onNavigate?: () => void }) {
 
   const navItems = user.role === 'teacher' ? teacherNavItems : parentNavItems;
 
-  const isActive = (path: string, exact?: boolean) => {
+  const isActive = (path, exact) => {
     if (exact) {
       return location.pathname === path;
     }
     return location.pathname.startsWith(path);
   };
 
-  const handleNavigation = (path: string) => {
+  const handleNavigation = (path) => {
     navigate(path);
     onNavigate?.();
   };
 
   const handleLogout = async () => {
-    // logout();
-    // navigate('/login');
-    // onNavigate?.();
     try {
       await signOut(auth);
       console.log("User logged out successfully.");
@@ -82,7 +79,11 @@ function NavigationContent({ onNavigate }: { onNavigate?: () => void }) {
             <GraduationCap className="w-6 h-6 text-white" />
           </div>
           <div className="flex-1">
+<<<<<<< Updated upstream:SITCAD/src/app/components/Navigation.tsx
             <h2 className="font-semibold text-sm">Sabah Sprout</h2>
+=======
+            <h2 className="font-semibold text-sm">KinderLearn AI</h2>
+>>>>>>> Stashed changes:SITCAD/src/app/components/Navigation.jsx
             <Badge variant="secondary" className="text-xs capitalize">
               {user.role}
             </Badge>
@@ -172,7 +173,11 @@ export function Navigation() {
           <div className="w-8 h-8 bg-gradient-to-br from-[#55D6BE] to-[#ACFCD9] rounded-lg flex items-center justify-center">
             <GraduationCap className="w-5 h-5 text-white" />
           </div>
+<<<<<<< Updated upstream:SITCAD/src/app/components/Navigation.tsx
           <span className="font-semibold">Sabah Sprout</span>
+=======
+          <span className="font-semibold">KinderLearn AI</span>
+>>>>>>> Stashed changes:SITCAD/src/app/components/Navigation.jsx
         </div>
         
         <Sheet open={open} onOpenChange={setOpen}>

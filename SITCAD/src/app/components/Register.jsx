@@ -8,7 +8,7 @@ import { Alert, AlertDescription } from './ui/alert';
 import { GraduationCap, Loader2, Mail } from 'lucide-react';
 import { RadioGroup, RadioGroupItem } from './ui/radio-group';
 
-// ATTEMPT: Firebase Auth
+// Firebase Auth
 import { auth, db } from '../../firebase/firebase'
 import { signInWithEmailAndPassword, GoogleAuthProvider, signInWithPopup } from 'firebase/auth';
 import { setDoc, doc } from "firebase/firestore";
@@ -18,7 +18,7 @@ export function Register() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
-  const [role, setRole] = useState<'teacher' | 'parent'>('parent');
+  const [role, setRole] = useState('parent');
   const [childCode, setChildCode] = useState('');
   const [error, setError] = useState('');
   const [success, setSuccess] = useState(false);
@@ -26,12 +26,10 @@ export function Register() {
   const navigate = useNavigate();
 
   const handleGoogleSignup = async () => {
-    // try {
-    //   const 
-    // }
+    // Implementation here
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
     // Validation
@@ -52,7 +50,7 @@ export function Register() {
 
     setLoading(true);
 
-    // Mock registration - in production, this would create a user in Supabase
+    // Mock registration
     await new Promise(resolve => setTimeout(resolve, 1000));
     
     setSuccess(true);
@@ -98,7 +96,7 @@ export function Register() {
             {/* Role Selection */}
             <div className="space-y-3">
               <Label>I am a:</Label>
-              <RadioGroup value={role} onValueChange={(value) => setRole(value as 'teacher' | 'parent')}>
+              <RadioGroup value={role} onValueChange={(value) => setRole(value)}>
                 <div className="flex items-center space-x-2 border rounded-lg p-3">
                   <RadioGroupItem value="parent" id="parent" />
                   <Label htmlFor="parent" className="cursor-pointer flex-1">
@@ -214,7 +212,8 @@ export function Register() {
             >
               <svg className="mr-2 h-4 w-4" viewBox="0 0 24 24">
                 <path
-                  d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
+                  d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.
+                  92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
                   fill="#4285F4"
                 />
                 <path

@@ -22,7 +22,11 @@ export function AIAnalysisDashboard() {
   // Mock AI analysis data
   const classAnalytics = {
     overallPerformance: 76,
+<<<<<<< Updated upstream:SITCAD/src/app/components/AIAnalysisDashboard.tsx
     trend: 'improving' as const,
+=======
+    trend: 'improving',
+>>>>>>> Stashed changes:SITCAD/src/app/components/AIAnalysisDashboard.jsx
     atRiskStudents: students.filter(s => s.needsIntervention).length,
     excellingStudents: students.filter(s => s.developmentalStage === 'advanced' || s.developmentalStage === 'proficient').length,
     engagementScore: 82,
@@ -128,7 +132,7 @@ export function AIAnalysisDashboard() {
     },
   ];
 
-  const getStatusColor = (status: string) => {
+  const getStatusColor = (status) => {
     switch (status) {
       case 'excellent': return 'text-green-600 bg-green-50 border-green-200';
       case 'strong': return 'text-blue-600 bg-blue-50 border-blue-200';
@@ -137,7 +141,7 @@ export function AIAnalysisDashboard() {
     }
   };
 
-  const getPriorityColor = (priority: string) => {
+  const getPriorityColor = (priority) => {
     switch (priority) {
       case 'high': return 'bg-red-100 text-red-700 border-red-200';
       case 'medium': return 'bg-orange-100 text-orange-700 border-orange-200';
@@ -253,9 +257,8 @@ export function AIAnalysisDashboard() {
                 <CardDescription>
                   Patterns identified through analysis of student interaction and performance data
                 </CardDescription>
-              </CardHeader>
+                </CardHeader>
             </Card>
-
             {learningPatterns.map((pattern, index) => (
               <Card key={index}>
                 <CardHeader>

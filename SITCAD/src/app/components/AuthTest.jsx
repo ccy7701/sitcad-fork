@@ -6,16 +6,14 @@ export function AuthTest() {
   const [currentUser, setCurrentUser] = useState(null);
 
   useEffect(() => {
-    // Listen for authentication state changes
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       if (user) {
-        setCurrentUser(user); // Set the logged-in user
+        setCurrentUser(user);
       } else {
-        setCurrentUser(null); // No user is logged in
+        setCurrentUser(null);
       }
     });
 
-    // Cleanup the listener on component unmount
     return () => unsubscribe();
   }, []);
 
@@ -24,12 +22,11 @@ export function AuthTest() {
       const provider = new GoogleAuthProvider();
       const result = await signInWithPopup(auth, provider);
 
-      // Extract user information
       const user = result.user;
       console.log("Google Login Result:", result);
 
       if (user) {
-        setCurrentUser(user); // Update the state with the logged-in user
+        setCurrentUser(user);
         console.log("User logged in successfully:", user);
       }
     } catch (error) {

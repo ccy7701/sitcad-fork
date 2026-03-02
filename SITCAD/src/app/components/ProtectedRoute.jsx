@@ -1,13 +1,9 @@
 import { Navigate, Outlet } from 'react-router';
-import { useAuth, UserRole } from '../contexts/AuthContext';
+import { useAuth } from '../contexts/AuthContext';
 import { DashboardLayout } from './DashboardLayout';
-import { Loader2 } from 'lucide-react'; // Import a spinner icon
+import { Loader2 } from 'lucide-react';
 
-interface ProtectedRouteProps {
-  allowedRoles: UserRole[];
-}
-
-export function ProtectedRoute({ allowedRoles }: ProtectedRouteProps) {
+export function ProtectedRoute({ allowedRoles }) {
   const { user, loading } = useAuth();
 
   if (loading) {

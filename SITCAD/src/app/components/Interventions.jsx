@@ -1,6 +1,6 @@
 import { useNavigate } from 'react-router';
 import { useAuth } from '../contexts/AuthContext';
-import { getAllInterventions, Intervention } from '../data/mockData';
+import { getAllInterventions } from '../data/mockData';
 import { Button } from './ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from './ui/card';
 import { Badge } from './ui/badge';
@@ -25,23 +25,25 @@ export function Interventions() {
     navigate('/teacher');
   };
 
-  const getPriorityColor = (priority: Intervention['priority']) => {
+  const getPriorityColor = (priority) => {
     switch (priority) {
       case 'high': return 'bg-red-100 text-red-700 border-red-200';
       case 'medium': return 'bg-orange-100 text-orange-700 border-orange-200';
       case 'low': return 'bg-yellow-100 text-yellow-700 border-yellow-200';
+      default: return ''; // Fallback
     }
   };
 
-  const getStatusIcon = (status: Intervention['status']) => {
+  const getStatusIcon = (status) => {
     switch (status) {
       case 'pending': return <Clock className="h-5 w-5 text-orange-600" />;
       case 'in-progress': return <Target className="h-5 w-5 text-blue-600" />;
       case 'resolved': return <CheckCircle className="h-5 w-5 text-green-600" />;
+      default: return null; // Fallback
     }
   };
 
-  const renderInterventionCard = (intervention: Intervention) => (
+  const renderInterventionCard = (intervention) => (
     <Card key={intervention.id} className="border-2">
       <CardHeader>
         <div className="flex items-start justify-between gap-4">

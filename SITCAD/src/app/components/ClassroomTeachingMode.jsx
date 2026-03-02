@@ -1,3 +1,4 @@
+
 import { useState } from 'react';
 import { useNavigate } from 'react-router';
 import { useAuth } from '../contexts/AuthContext';
@@ -47,9 +48,9 @@ const classroomActivities = [
 export function ClassroomTeachingMode() {
   const { user } = useAuth();
   const navigate = useNavigate();
-  const [activeActivity, setActiveActivity] = useState<string | null>(null);
-  const [completedActivities, setCompletedActivities] = useState<string[]>([]);
-  const [timer, setTimer] = useState<number>(0);
+  const [activeActivity, setActiveActivity] = useState(null);
+  const [completedActivities, setCompletedActivities] = useState([]);
+  const [timer, setTimer] = useState(0);
   const [isTimerRunning, setIsTimerRunning] = useState(false);
 
   if (!user || user.role !== 'teacher') {
@@ -60,7 +61,7 @@ export function ClassroomTeachingMode() {
   const students = mockStudents;
   const presentStudents = students.slice(0, 4); // Mock attendance
 
-  const startActivity = (activityId: string) => {
+  const startActivity = (activityId) => {
     setActiveActivity(activityId);
     setIsTimerRunning(true);
     setTimer(0);
@@ -82,7 +83,7 @@ export function ClassroomTeachingMode() {
     }
   };
 
-  const formatTime = (seconds: number) => {
+  const formatTime = (seconds) => {
     const mins = Math.floor(seconds / 60);
     const secs = seconds % 60;
     return `${mins}:${secs.toString().padStart(2, '0')}`;
