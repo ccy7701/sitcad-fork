@@ -79,11 +79,8 @@ function NavigationContent({ onNavigate }) {
             <GraduationCap className="w-6 h-6 text-white" />
           </div>
           <div className="flex-1">
-<<<<<<< Updated upstream:SITCAD/src/app/components/Navigation.tsx
             <h2 className="font-semibold text-sm">Sabah Sprout</h2>
-=======
             <h2 className="font-semibold text-sm">KinderLearn AI</h2>
->>>>>>> Stashed changes:SITCAD/src/app/components/Navigation.jsx
             <Badge variant="secondary" className="text-xs capitalize">
               {user.role}
             </Badge>
@@ -173,11 +170,8 @@ export function Navigation() {
           <div className="w-8 h-8 bg-gradient-to-br from-[#55D6BE] to-[#ACFCD9] rounded-lg flex items-center justify-center">
             <GraduationCap className="w-5 h-5 text-white" />
           </div>
-<<<<<<< Updated upstream:SITCAD/src/app/components/Navigation.tsx
           <span className="font-semibold">Sabah Sprout</span>
-=======
           <span className="font-semibold">KinderLearn AI</span>
->>>>>>> Stashed changes:SITCAD/src/app/components/Navigation.jsx
         </div>
         
         <Sheet open={open} onOpenChange={setOpen}>

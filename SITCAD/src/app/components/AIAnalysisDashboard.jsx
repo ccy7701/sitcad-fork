@@ -22,11 +22,7 @@ export function AIAnalysisDashboard() {
   // Mock AI analysis data
   const classAnalytics = {
     overallPerformance: 76,
-<<<<<<< Updated upstream:SITCAD/src/app/components/AIAnalysisDashboard.tsx
-    trend: 'improving' as const,
-=======
     trend: 'improving',
->>>>>>> Stashed changes:SITCAD/src/app/components/AIAnalysisDashboard.jsx
     atRiskStudents: students.filter(s => s.needsIntervention).length,
     excellingStudents: students.filter(s => s.developmentalStage === 'advanced' || s.developmentalStage === 'proficient').length,
     engagementScore: 82,

@@ -247,7 +247,6 @@ export function AILessonPlanning() {
                     <CardTitle className="text-2xl">{lessonPlan.title}</CardTitle>
                     <div className="flex flex-wrap gap-2 mt-3">
                       <Badge variant="secondary">
-<<<<<<< Updated upstream:SITCAD/src/app/components/AILessonPlanning.tsx
                         <Users className="h-3 w-3 mr-1" />
                         Ages {lessonPlan.ageGroup}
                       </Badge>
@@ -366,6 +365,4 @@ export function AILessonPlanning() {
     </div>
   );
 }
-=======
-                        <Users className
->>>>>>> Stashed changes:SITCAD/src/app/components/AILessonPlanning.jsx
+                       
