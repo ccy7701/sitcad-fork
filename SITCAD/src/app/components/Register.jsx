@@ -9,28 +9,21 @@ import { Alert, AlertDescription } from './ui/alert';
 import { GraduationCap, Loader2, Mail } from 'lucide-react';
 import { RadioGroup, RadioGroupItem } from './ui/radio-group';
 
-<<<<<<< Updated upstream
 // Firebase Auth
 import { auth, db } from '../../firebase/firebase'
 import { signInWithEmailAndPassword, GoogleAuthProvider, signInWithPopup } from 'firebase/auth';
 import { setDoc, doc } from "firebase/firestore";
-=======
 // ATTEMPT: Firebase Auth
 // import { auth, db } from '../../firebase/firebase' // Commented out as per original TSX
 // import { signInWithEmailAndPassword, GoogleAuthProvider, signInWithPopup } from 'firebase/auth'; // Commented out as per original TSX
 // import { setDoc, doc } from "firebase/firestore"; // Commented out as per original TSX
->>>>>>> Stashed changes
 
 export function Register() {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
-<<<<<<< Updated upstream
-  const [role, setRole] = useState('parent');
-=======
   const [role, setRole] = useState('parent'); // Removed type annotation
->>>>>>> Stashed changes
   const [childCode, setChildCode] = useState('');
   const [error, setError] = useState('');
   const [success, setSuccess] = useState(false);
@@ -41,11 +34,7 @@ export function Register() {
     // Implementation here
   };
 
-<<<<<<< Updated upstream
   const handleSubmit = async (e) => {
-=======
-  const handleSubmit = async (e) => { // Removed type annotation
->>>>>>> Stashed changes
     e.preventDefault();
 
     // Validation
@@ -112,11 +101,7 @@ export function Register() {
             {/* Role Selection */}
             <div className="space-y-3">
               <Label>I am a:</Label>
-<<<<<<< Updated upstream
               <RadioGroup value={role} onValueChange={(value) => setRole(value)}>
-=======
-              <RadioGroup value={role} onValueChange={(value) => setRole(value)}> {/* Removed type annotation */}
->>>>>>> Stashed changes
                 <div className="flex items-center space-x-2 border rounded-lg p-3">
                   <RadioGroupItem value="parent" id="parent" />
                   <Label htmlFor="parent" className="cursor-pointer flex-1">

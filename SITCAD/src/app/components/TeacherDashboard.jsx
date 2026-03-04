@@ -1,7 +1,6 @@
-
 import { useNavigate } from 'react-router';
 import { useAuth } from '../contexts/AuthContext';
-import { getStudentsByRole } from '../data/mockData';
+import { getStudentsByRole } from '../data/mockData'; // Removed Student import as it's a type
 import { Button } from './ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from './ui/card';
 import { Progress } from './ui/progress';
@@ -18,7 +17,7 @@ export function TeacherDashboard() {
   const needsAttention = students.filter(s => s.needsIntervention);
   const classroomStats = {
     totalStudents: students.length,
-    averageProgress: Math.round(students.reduce((acc, s) => acc + s.overallProgress, 0) / students.length),
+    averageProgress: students.length > 0 ? Math.round(students.reduce((acc, s) => acc + s.overallProgress, 0) / students.length) : 0, // Added check for students.length
     needingSupport: needsAttention.length,
     onTrack: students.filter(s => s.developmentalStage === 'proficient' || s.developmentalStage === 'advanced').length,
   };
@@ -28,21 +27,20 @@ export function TeacherDashboard() {
     navigate('/login');
   };
 
-  const getStageBadgeVariant = (stage) => {
+  const getStageBadgeVariant = (stage) => { // Removed type annotation
     switch (stage) {
       case 'advanced': return 'default';
       case 'proficient': return 'secondary';
       case 'developing': return 'outline';
       case 'emerging': return 'destructive';
+      default: return 'secondary'; // Added default case for safety
     }
   };
 
   return (
     <div className="min-h-screen">
       {/* Header */}
-      <header className="bg-white border-
-```
-b shadow-sm sticky top-0 z-10">
+      <header className="bg-white border-b shadow-sm sticky top-0 z-10">
         <div className="max-w-7xl mx-auto px-6 py-4">
           <div className="flex items-center justify-between">
             <div>
@@ -79,7 +77,7 @@ b shadow-sm sticky top-0 z-10">
           <Card className="cursor-pointer hover:shadow-lg transition-shadow" onClick={() => navigate('/teacher/communication')}>
             <CardContent className="pt-6 text-center">
               <MessageSquare className="h-8 w-8 mx-auto mb-2 text-cyan-600" />
-              <p className="text-sm font-medium">Messages</p>
+              <p  className="text-sm font-medium">Messages</p>
             </CardContent>
           </Card>
           <Card className="cursor-pointer hover:shadow-lg transition-shadow" onClick={() => navigate('/teacher/classroom-mode')}>

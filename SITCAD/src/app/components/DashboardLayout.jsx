@@ -1,7 +1,4 @@
-<<<<<<< Updated upstream
-=======
 
->>>>>>> Stashed changes
 import { Navigation } from './Navigation';
 
 export function DashboardLayout({ children }) {

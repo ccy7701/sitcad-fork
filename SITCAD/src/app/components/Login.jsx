@@ -8,7 +8,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from './ui/
 import { Alert, AlertDescription } from './ui/alert';
 import { GraduationCap, Loader2 } from 'lucide-react';
 
-// ATTEMPT: Firebase Auth
+// Firebase Auth
 import { auth, db } from '../../firebase/firebase'
 import { signInWithEmailAndPassword, GoogleAuthProvider, signInWithPopup } from 'firebase/auth';
 import { setDoc, doc } from "firebase/firestore";
@@ -21,7 +21,7 @@ export function Login() {
   const { login, user } = useAuth();
   const navigate = useNavigate();
 
-  // Redirect if already logged in (declarative, no navigate() during render)
+  // Redirect if already logged in
   if (user) {
     return <Navigate to={user.role === 'teacher' ? '/teacher' : '/parent'} replace />;
   }
@@ -30,8 +30,6 @@ export function Login() {
     try {
       const provider = new GoogleAuthProvider();
       await signInWithPopup(auth, provider);
-      // onAuthStateChanged in AuthContext will update `user`,
-      // which triggers the declarative <Navigate> above
     } catch (error) {
       console.error("Error during Google login:", error.message);
       setError("Failed to sign in with Google. Please try again.");
