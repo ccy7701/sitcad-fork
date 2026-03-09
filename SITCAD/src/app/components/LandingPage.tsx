@@ -127,7 +127,7 @@ export function LandingPage() {
 
     const interval = setInterval(() => {
       setCurrent((prev) => (prev === TOTAL_SLIDES - 1 ? 0 : prev + 1));
-    }, 4000);
+    }, 10000);
 
     return () => clearInterval(interval);
   }, [isPlaying]);
@@ -279,10 +279,10 @@ export function LandingPage() {
             <img
               src="/logo/logo.png"
               alt="Sabah Sprout Logo"
-              className="w-14 h-14 object-contain"
+              className="w-16 h-16 object-contain"
             />
             <span
-              className="font-bold text-xl font-serif tracking-wide
+              className="font-bold text-3xl font-serif tracking-wide
                  bg-gradient-to-r 
                  from-[#2FBFA5] 
                  to-[#1E3A8A] 
