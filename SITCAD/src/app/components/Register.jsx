@@ -172,7 +172,7 @@ export function Register() {
                 <Checkbox
                   id="terms"
                   checked={acceptTerms}
-                  onCheckedChange={(checked) => setAcceptTerms(checked as boolean)}
+                  onCheckedChange={(checked) => setAcceptTerms(checked)}
                   className="mt-1 data-[state=checked]:bg-[#3090A0] data-[state=checked]:border-[#3090A0]"
                 />
                 <Label
