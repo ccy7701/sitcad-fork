@@ -1,3 +1,4 @@
+
 import { useNavigate } from 'react-router';
 import { useAuth } from '../contexts/AuthContext';
 import { getStudentsByRole } from '../data/mockData';
@@ -44,6 +45,7 @@ export function ParentDashboard() {
             <CardDescription className="text-white/90">
               Track progress, view activities, and celebrate achievements together
             </CardDescription>
+            <div className="pb-3"></div>
           </CardHeader>
         </Card>
 

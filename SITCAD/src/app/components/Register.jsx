@@ -4,39 +4,44 @@ import { useAuth } from '../contexts/AuthContext';
 import { Button } from './ui/button';
 import { Input } from './ui/input';
 import { Label } from './ui/label';
+import { Checkbox } from './ui/checkbox';
 import { Alert, AlertDescription } from './ui/alert';
 import { Loader2, ArrowLeft } from 'lucide-react';
 import { motion } from 'motion/react';
 import { ImageWithFallback } from './figma/ImageWithFallback';
 
-export function Login() {
+export function Register() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [fullName, setFullName] = useState('');
+  const [role, setRole] = useState('teacher'); // Removed type annotation
+  const [acceptTerms, setAcceptTerms] = useState(false);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
-  const { login, user } = useAuth();
+  const { register } = useAuth();
   const navigate = useNavigate();
 
-  // Redirect if already logged in
-  if (user) {
-    navigate(user.role === 'teacher' ? '/teacher' : '/parent');
-    return null;
-  }
-
-  const handleGoogleLogin = () => {
+  const handleGoogleSignUp = () => {
     // Mock Google OAuth - in production, this would use Supabase Auth
     setError('Google Sign-in would be implemented with Supabase Auth');
   };
 
-  const handleSubmit = async () => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
+    if (!acceptTerms) {
+      setError('Please accept the terms of the agreement');
+      return;
+    }
     setError('');
     setLoading(true);
 
     try {
-      const success = await login(email, password);
-      if (!success) {
-        setError('Invalid credentials. Try teacher@school.edu or parent@email.com with password: password');
+      // In a real app with Supabase, this would call supabase.auth.signUp
+      const success = await register(email, password, fullName, role);
+      if (success) {
+        navigate(role === 'teacher' ? '/teacher' : '/parent');
+      } else {
+        setError('Registration failed. Please try again.');
       }
     } catch (err) {
       setError('An error occurred. Please try again.');
@@ -62,38 +67,37 @@ export function Login() {
           <div className="relative z-10">
             <button
               onClick={() => navigate('/')}
-              className="flex items-center text-sm font-medium opacity-90 hover:opacity-100 transition-opacity mb-12 cursor-pointer"
+              className="flex items-center text-sm font-medium opacity-90 hover:opacity-100 transition-opacity mb-12"
             >
               <ArrowLeft className="w-4 h-4 mr-2" />
               Home Page
             </button>
 
             <div className="space-y-4">
-              <h1 className="text-4xl md:text-5xl font-bold tracking-tight">Sign in</h1>
+              <h1 className="text-4xl md:text-5xl font-bold tracking-tight">Create account</h1>
               <p className="text-lg opacity-90 max-w-xs">
-                Enter your credentials to access your dashboard.
+                Fill in the details below to get started.
               </p>
-              <br />
             </div>
           </div>
 
           <div className="relative z-10 flex flex-col items-center">
             <div className="w-full aspect-square max-w-[280px] mb-8">
               <ImageWithFallback
-                src="https://images.unsplash.com/photo-1564429238817-393bd4286b2d?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxraW5kZXJnYXJ0ZW4lMjBjaGlsZHJlbiUyMGxlYXJuaW5nJTIwY2xhc3Nyb29tJTIwY29sb3JmdWx8ZW58MXx8fHwxNzcyNjAzOTA5fDA&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral"
-                alt="Kindergarten Learning"
-                className="w-full h-full object-cover rounded-xl"
+                src="https://images.unsplash.com/photo-1748691661032-97e9ec7c6ff5?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxraW5kZXJnYXJ0ZW4lMjBpbGx1c3RyYXRpb24lMjBzY2hvb2wlMjBraWRzfGVufDF8fHx8MTc3MjYwMzM4Nnww&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral"
+                alt="Kindergarten Illustration"
+                className="w-full h-full object-contain rounded-xl"
               />
             </div>
 
             <div className="text-center space-y-4 w-full">
-              <p className="text-sm opacity-90">Don't have an account yet?</p>
+              <p className="text-sm opacity-90">Already have an account?</p>
               <Button
                 variant="outline"
                 className="w-full border-white text-white bg-white/10 hover:bg-white hover:text-[#3090A0] transition-all rounded-lg py-6 font-semibold cursor-pointer"
-                onClick={() => navigate('/register')}
+                onClick={() => navigate('/login')}
               >
-                Create Account
+                Log in
               </Button>
             </div>
           </div>
@@ -103,6 +107,19 @@ export function Login() {
         <div className="w-full md:w-7/12 bg-card p-8 md:p-12 lg:p-16 flex flex-col justify-center">
           <div className="max-w-md mx-auto w-full">
             <form onSubmit={handleSubmit} className="space-y-6">
+              <div className="space-y-2">
+                <Label htmlFor="fullName">Full Name</Label>
+                <Input
+                  id="fullName"
+                  type="text"
+                  placeholder="Enter your full name"
+                  value={fullName}
+                  onChange={(e) => setFullName(e.target.value)}
+                  className="h-12 px-4 bg-muted/30 border-muted focus:bg-background transition-colors"
+                  required
+                />
+              </div>
+
               <div className="space-y-2">
                 <Label htmlFor="email">Email</Label>
                 <Input
@@ -117,19 +134,11 @@ export function Login() {
               </div>
 
               <div className="space-y-2">
-                <div className="flex items-center justify-between">
-                  <Label htmlFor="password">Password</Label>
-                  <button
-                    type="button"
-                    className="text-xs text-[#3090A0] hover:underline font-medium"
-                  >
-                    Forgot password?
-                  </button>
-                </div>
+                <Label htmlFor="password">Password</Label>
                 <Input
                   id="password"
                   type="password"
-                  placeholder="••••••••"
+                  placeholder="Create a strong password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   className="h-12 px-4 bg-muted/30 border-muted focus:bg-background transition-colors"
@@ -137,9 +146,46 @@ export function Login() {
                 />
               </div>
 
+              <div className="space-y-2">
+                <Label>I am a:</Label>
+                <div className="flex gap-4">
+                  <Button
+                    type="button"
+                    variant={role === 'teacher' ? 'default' : 'outline'}
+                    className={`flex-1 h-12 rounded-lg transition-all cursor-pointer ${role === 'teacher' ? 'bg-[#3090A0] hover:bg-[#2FBFA5] text-white shadow-md scale-[1.02]' : 'hover:bg-[#2FBFA5]/10'}`}
+                    onClick={() => setRole('teacher')}
+                  >
+                    Teacher
+                  </Button>
+                  <Button
+                    type="button"
+                    variant={role === 'parent' ? 'default' : 'outline'}
+                    className={`flex-1 h-12 rounded-lg transition-all cursor-pointer ${role === 'parent' ? 'bg-[#3090A0] hover:bg-[#2FBFA5] text-white shadow-md scale-[1.02]' : 'hover:bg-[#3090A0]/10'}`}
+                    onClick={() => setRole('parent')}
+                  >
+                    Parent
+                  </Button>
+                </div>
+              </div>
+
+              <div className="flex items-start space-x-3 pt-2">
+                <Checkbox
+                  id="terms"
+                  checked={acceptTerms}
+                  onCheckedChange={(checked) => setAcceptTerms(checked)}
+                  className="mt-1 data-[state=checked]:bg-[#3090A0] data-[state=checked]:border-[#3090A0]"
+                />
+                <Label
+                  htmlFor="terms"
+                  className="text-sm text-muted-foreground font-normal cursor-pointer leading-tight"
+                >
+                  I accept the <span className="text-[#3090A0] hover:underline font-medium">terms of the agreement</span> and the <span className="text-[#3090A0] hover:underline font-medium">Privacy Policy</span>.
+                </Label>
+              </div>
+
               {error && (
                 <Alert variant="destructive" className="bg-destructive/10 border-destructive/20 text-destructive">
-                  <AlertDescription className="text-sm">{error}</AlertDescription>
+                  <AlertDescription>{error}</AlertDescription>
                 </Alert>
               )}
 
@@ -151,10 +197,10 @@ export function Login() {
                 {loading ? (
                   <>
                     <Loader2 className="mr-2 h-5 w-5 animate-spin" />
-                    Signing in...
+                    Creating account...
                   </>
                 ) : (
-                  'Sign In'
+                  'Sign up'
                 )}
               </Button>
 
@@ -168,7 +214,7 @@ export function Login() {
                 type="button"
                 variant="outline"
                 className="w-full h-12 border-muted hover:bg-muted/50 transition-colors cursor-pointer"
-                onClick={handleGoogleLogin}
+                onClick={handleGoogleSignUp}
               >
                 <svg className="mr-2 h-4 w-4" viewBox="0 0 24 24">
                   <path
@@ -190,16 +236,6 @@ export function Login() {
                 </svg>
                 Continue with Google
               </Button>
-
-              {/* Demo credentials hint */}
-              <div className="pt-4 border-t border-muted/50 space-y-2 text-xs text-muted-foreground/80 text-center">
-                <p className="font-semibold uppercase tracking-wider text-[10px] mb-1">Demo Access</p>
-                <div className="flex justify-center gap-4 flex-wrap">
-                  <span>Teacher: <span className="font-mono text-foreground/70">teacher@school.edu</span></span>
-                  <span>Parent: <span className="font-mono text-foreground/70">parent@email.com</span></span>
-                </div>
-                <p>Password: <span className="font-mono text-foreground/70">password</span></p>
-              </div>
             </form>
           </div>
         </div>

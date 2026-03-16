@@ -8,7 +8,7 @@ import { Badge } from './ui/badge';
 import { ArrowLeft, TrendingUp, TrendingDown, Minus, Award, Target } from 'lucide-react';
 
 export function ProgressTracking() {
-  const { studentId } = useParams<{ studentId: string }>();
+  const { studentId } = useParams(); // Removed type annotation
   const { user } = useAuth();
   const navigate = useNavigate();
 
@@ -29,7 +29,7 @@ export function ProgressTracking() {
     navigate(`/${user.role}/student/${studentId}`);
   };
 
-  const getCategoryColor = (category: string) => {
+  const getCategoryColor = (category) => { // Removed type annotation
     const colors = {
       literacy: 'from-blue-500 to-blue-600',
       numeracy: 'from-green-500 to-green-600',
@@ -38,7 +38,7 @@ export function ProgressTracking() {
       creative: 'from-pink-500 to-pink-600',
       cognitive: 'from-cyan-500 to-cyan-600',
     };
-    return colors[category as keyof typeof colors] || 'from-gray-500 to-gray-600';
+    return colors[category] || 'from-gray-500 to-gray-600'; // Removed type assertion
   };
 
   // Calculate statistics

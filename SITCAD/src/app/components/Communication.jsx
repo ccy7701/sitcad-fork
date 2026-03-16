@@ -11,18 +11,6 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from './ui/tabs';
 import { ArrowLeft, MessageSquare, Send, Inbox, Mail, Bell } from 'lucide-react';
 import { toast } from 'sonner';
 
-interface Message {
-  id: string;
-  from: string;
-  fromRole: 'teacher' | 'parent';
-  to: string;
-  subject: string;
-  message: string;
-  date: string;
-  read: boolean;
-  studentName?: string;
-}
-
 export function Communication() {
   const { user } = useAuth();
   const navigate = useNavigate();
@@ -38,37 +26,26 @@ export function Communication() {
   const isTeacher = user.role === 'teacher';
 
   // Mock messages
-  const mockMessages: Message[] = [
+  const mockMessages = [
     {
       id: 'msg1',
-      from: isTeacher ? 'John Smith' : 'Ms. Sarah Johnson',
+      from: isTeacher ? 'Mr Parent & Mrs Parent' : 'Teacher SITCAD',
       fromRole: isTeacher ? 'parent' : 'teacher',
       to: user.name,
       subject: 'Question about homework',
-      message: 'Hi, I wanted to ask about the reading assignment for this week. Could you provide more details?',
+      message: 'Hi, I wanted to ask about my child progress this week . Could you provide more details?',
       date: '2026-02-19',
       read: false,
-      studentName: 'Emma Wilson',
-    },
-    {
-      id: 'msg2',
-      from: isTeacher ? 'Mary Chen' : 'Ms. Sarah Johnson',
-      fromRole: isTeacher ? 'parent' : 'teacher',
-      to: user.name,
-      subject: 'Thank you for the progress report',
-      message: 'Thank you for the detailed progress report. We appreciate all your hard work with our child.',
-      date: '2026-02-18',
-      read: true,
-      studentName: 'Liam Chen',
+      studentName: 'Little Sprout1',
     },
   ];
 
-  const sentMessages: Message[] = [
+  const sentMessages = [
     {
       id: 'sent1',
       from: user.name,
       fromRole: user.role,
-      to: isTeacher ? 'John Smith' : 'Ms. Sarah Johnson',
+      to: isTeacher ? 'Mr Parent & Mrs Parent' : 'Teacher SITCAD',
       subject: 'Weekly newsletter',
       message: 'Please see attached the weekly newsletter with upcoming events and activities.',
       date: '2026-02-17',
@@ -82,7 +59,6 @@ export function Communication() {
       return;
     }
 
-    // Mock send - in production, this would save to Supabase
     toast.success('Message sent successfully!');
     setNewSubject('');
     setNewMessage('');
@@ -93,7 +69,7 @@ export function Communication() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50">
-      <header className="bg-white border-b shadow-sm sticky top-0 z-10">
+      <header className="bg-white border-b shadow-sm sticky top-1 z-1">
         <div className="max-w-7xl mx-auto px-4 py-4">
           <Button variant="ghost" onClick={() => navigate(isTeacher ? '/teacher' : '/parent')} className="mb-4">
             <ArrowLeft className="mr-2 h-4 w-4" />
@@ -321,3 +297,4 @@ export function Communication() {
     </div>
   );
 }
+

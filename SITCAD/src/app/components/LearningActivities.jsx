@@ -1,6 +1,7 @@
+
 import { useParams, useNavigate } from 'react-router';
 import { useAuth } from '../contexts/AuthContext';
-import { getStudentById, getActivitiesByStudent, Activity } from '../data/mockData';
+import { getStudentById, getActivitiesByStudent } from '../data/mockData';
 import { Button } from './ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from './ui/card';
 import { Badge } from './ui/badge';
@@ -28,10 +29,10 @@ const activityColors = {
 };
 
 export function LearningActivities() {
-  const { studentId } = useParams<{ studentId: string }>();
+  const { studentId } = useParams();
   const { user } = useAuth();
   const navigate = useNavigate();
-  const [selectedActivity, setSelectedActivity] = useState<Activity | null>(null);
+  const [selectedActivity, setSelectedActivity] = useState(null);
 
   if (!user || !studentId) return null;
 
@@ -50,8 +51,8 @@ export function LearningActivities() {
     navigate(`/${user.role}/student/${studentId}`);
   };
 
-  const getScoreColor = (score?: number) => {
-    if (!score) return 'text-gray-500';
+  const getScoreColor = (score) => {
+    if (score === undefined || score === null) return 'text-gray-500';
     if (score >= 90) return 'text-green-600';
     if (score >= 75) return 'text-blue-600';
     if (score >= 60) return 'text-orange-600';
@@ -92,7 +93,7 @@ export function LearningActivities() {
                 return (
                   <div
                     key={type}
-                    className={`p-4 rounded-lg border-2 ${activityColors[type as keyof typeof activityColors]}`}
+                    className={`p-4 rounded-lg border-2 ${activityColors[type]}`}
                   >
                     <Icon className="h-6 w-6 mb-2" />
                     <p className="text-2xl font-semibold">{count}</p>
