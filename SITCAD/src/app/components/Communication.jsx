@@ -11,18 +11,6 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from './ui/tabs';
 import { ArrowLeft, MessageSquare, Send, Inbox, Mail, Bell } from 'lucide-react';
 import { toast } from 'sonner';
 
-interface Message {
-  id: string;
-  from: string;
-  fromRole: 'teacher' | 'parent';
-  to: string;
-  subject: string;
-  message: string;
-  date: string;
-  read: boolean;
-  studentName?: string;
-}
-
 export function Communication() {
   const { user } = useAuth();
   const navigate = useNavigate();
@@ -38,7 +26,7 @@ export function Communication() {
   const isTeacher = user.role === 'teacher';
 
   // Mock messages
-  const mockMessages: Message[] = [
+  const mockMessages = [
     {
       id: 'msg1',
       from: isTeacher ? 'Mr Parent & Mrs Parent' : 'Teacher SITCAD',
@@ -52,7 +40,7 @@ export function Communication() {
     },
   ];
 
-  const sentMessages: Message[] = [
+  const sentMessages = [
     {
       id: 'sent1',
       from: user.name,
@@ -71,7 +59,6 @@ export function Communication() {
       return;
     }
 
-    // Mock send - in production, this would save to Supabase
     toast.success('Message sent successfully!');
     setNewSubject('');
     setNewMessage('');
@@ -310,3 +297,4 @@ export function Communication() {
     </div>
   );
 }
+

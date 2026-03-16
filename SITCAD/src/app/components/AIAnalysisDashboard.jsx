@@ -21,8 +21,8 @@ export function AIAnalysisDashboard() {
 
   // Mock AI analysis data
   const classAnalytics = {
-    overallPerformance: 80,
-    trend: 'improving' as const,
+    overallPerformance: 76,
+    trend: 'improving',
     atRiskStudents: students.filter(s => s.needsIntervention).length,
     excellingStudents: students.filter(s => s.developmentalStage === 'advanced' || s.developmentalStage === 'proficient').length,
     engagementScore: 80,
@@ -128,7 +128,7 @@ export function AIAnalysisDashboard() {
     },
   ];
 
-  const getStatusColor = (status: string) => {
+  const getStatusColor = (status) => {
     switch (status) {
       case 'excellent': return 'text-green-600 bg-green-50 border-green-200';
       case 'strong': return 'text-blue-600 bg-blue-50 border-blue-200';
@@ -137,7 +137,7 @@ export function AIAnalysisDashboard() {
     }
   };
 
-  const getPriorityColor = (priority: string) => {
+  const getPriorityColor = (priority) => {
     switch (priority) {
       case 'high': return 'bg-red-100 text-red-700 border-red-200';
       case 'medium': return 'bg-orange-100 text-orange-700 border-orange-200';
@@ -256,7 +256,6 @@ export function AIAnalysisDashboard() {
                 <div className="pb-3"></div>
               </CardHeader>
             </Card>
-
             {learningPatterns.map((pattern, index) => (
               <Card key={index}>
                 <CardHeader>

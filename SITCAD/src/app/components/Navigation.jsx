@@ -40,7 +40,7 @@ const parentNavItems = [
   { path: '/parent/communication', icon: MessageSquare, label: 'Messages' },
 ];
 
-function NavigationContent({ onNavigate }: { onNavigate?: () => void }) {
+function NavigationContent({ onNavigate }) {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
@@ -49,22 +49,22 @@ function NavigationContent({ onNavigate }: { onNavigate?: () => void }) {
 
   const navItems = user.role === 'teacher' ? teacherNavItems : parentNavItems;
 
-  const isActive = (path: string, exact?: boolean) => {
+  const isActive = (path, exact) => {
     if (exact) {
       return location.pathname === path;
     }
     return location.pathname.startsWith(path);
   };
 
-  const handleNavigation = (path: string) => {
+  const handleNavigation = (path) => {
     navigate(path);
     onNavigate?.();
   };
 
   const handleLogout = async () => {
-    // logout();
-    // navigate('/login');
-    // onNavigate?.();
+    // logout(); // This was commented out in the original TSX, keeping it commented
+    // navigate('/login'); // This was commented out in the original TSX, keeping it commented
+    // onNavigate?.(); // This was commented out in the original TSX, keeping it commented
     try {
       await signOut(auth);
       console.log("User logged out successfully.");

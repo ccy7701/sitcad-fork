@@ -10,29 +10,11 @@ import { Badge } from './ui/badge';
 import { ArrowLeft, Sparkles, Lightbulb, Target, Clock, Users, Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
 
-interface LessonPlan {
-  id: string;
-  title: string;
-  ageGroup: string;
-  learningArea: string;
-  duration: string;
-  objectives: string[];
-  materials: string[];
-  activities: {
-    step: number;
-    title: string;
-    description: string;
-    duration: string;
-  }[];
-  assessment: string;
-  adaptations: string[];
-}
-
 export function AILessonPlanning() {
   const { user } = useAuth();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
-  const [lessonPlan, setLessonPlan] = useState<LessonPlan | null>(null);
+  const [lessonPlan, setLessonPlan] = useState(null);
   
   const [ageGroup, setAgeGroup] = useState('4-5');
   const [learningArea, setLearningArea] = useState('literacy');
@@ -57,7 +39,7 @@ export function AILessonPlanning() {
     await new Promise(resolve => setTimeout(resolve, 2000));
 
     // Mock AI-generated lesson plan
-    const mockLessonPlan: LessonPlan = {
+    const mockLessonPlan = {
       id: `lesson_${Date.now()}`,
       title: `${topic} Exploration`,
       ageGroup,
@@ -124,7 +106,6 @@ export function AILessonPlanning() {
   };
 
   const saveLessonPlan = () => {
-    // Mock save - in production, this would save to Supabase
     toast.success('Lesson plan saved to your library!');
   };
 
@@ -366,3 +347,4 @@ export function AILessonPlanning() {
     </div>
   );
 }
+                       

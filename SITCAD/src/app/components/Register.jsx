@@ -14,7 +14,7 @@ export function Register() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [fullName, setFullName] = useState('');
-  const [role, setRole] = useState<'teacher' | 'parent'>('teacher');
+  const [role, setRole] = useState('teacher'); // Removed type annotation
   const [acceptTerms, setAcceptTerms] = useState(false);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
@@ -26,7 +26,7 @@ export function Register() {
     setError('Google Sign-in would be implemented with Supabase Auth');
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     if (!acceptTerms) {
       setError('Please accept the terms of the agreement');

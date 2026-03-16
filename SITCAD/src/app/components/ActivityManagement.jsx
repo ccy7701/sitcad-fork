@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router';
 import { useAuth } from '../contexts/AuthContext';
-import { mockStudents, Activity } from '../data/mockData';
+import { mockStudents } from '../data/mockData';
 import { Button } from './ui/button';
 import { Input } from './ui/input';
 import { Label } from './ui/label';
@@ -9,7 +9,7 @@ import { Textarea } from './ui/textarea';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from './ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select';
 import { Badge } from './ui/badge';
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from './ui/dialog';
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from './ui/dialog';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from './ui/tabs';
 import { Checkbox } from './ui/checkbox';
 import { ArrowLeft, Plus, Calendar, Clock, Book, Calculator, Users, Activity as ActivityIcon, Palette, Brain, CheckCircle2 } from 'lucide-react';
@@ -28,15 +28,15 @@ export function ActivityManagement() {
   const { user } = useAuth();
   const navigate = useNavigate();
   const [open, setOpen] = useState(false);
-  const [selectedActivity, setSelectedActivity] = useState<(Activity & { assignedTo: string }) | null>(null);
+  const [selectedActivity, setSelectedActivity] = useState(null);
   
   // Form state
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
-  const [type, setType] = useState<Activity['type']>('literacy');
+  const [type, setType] = useState('literacy');
   const [duration, setDuration] = useState('20');
-  const [assignTo, setAssignTo] = useState<'all' | 'individual'>('all');
-  const [selectedStudents, setSelectedStudents] = useState<string[]>([]);
+  const [assignTo, setAssignTo] = useState('all');
+  const [selectedStudents, setSelectedStudents] = useState([]);
 
   if (!user || user.role !== 'teacher') {
     navigate('/');
@@ -51,7 +51,7 @@ export function ActivityManagement() {
       return;
     }
 
-    // Mock activity creation - in production, this would save to Supabase
+    // Mock activity creation
     const newActivity = {
       id: `act_${Date.now()}`,
       type,
@@ -75,7 +75,7 @@ export function ActivityManagement() {
     setOpen(false);
   };
 
-  const handleStudentToggle = (studentId: string) => {
+  const handleStudentToggle = (studentId) => {
     setSelectedStudents(prev =>
       prev.includes(studentId)
         ? prev.filter(id => id !== studentId)
@@ -83,7 +83,7 @@ export function ActivityManagement() {
     );
   };
 
-  const mockActivities: (Activity & { assignedTo: string })[] = [
+  const mockActivities = [
     {
       id: 'act1',
       studentId: 'all',
@@ -164,7 +164,7 @@ export function ActivityManagement() {
                   <div className="grid grid-cols-2 gap-4">
                     <div className="space-y-2">
                       <Label htmlFor="type">Activity Type</Label>
-                      <Select value={type} onValueChange={(value) => setType(value as Activity['type'])}>
+                      <Select value={type} onValueChange={(value) => setType(value)}>
                         <SelectTrigger>
                           <SelectValue />
                         </SelectTrigger>
@@ -196,7 +196,7 @@ export function ActivityManagement() {
 
                   <div className="space-y-3">
                     <Label>Assign To</Label>
-                    <Tabs value={assignTo} onValueChange={(value) => setAssignTo(value as 'all' | 'individual')}>
+                    <Tabs value={assignTo} onValueChange={(value) => setAssignTo(value)}>
                       <TabsList className="grid w-full grid-cols-2">
                         <TabsTrigger value="all">Whole Class</TabsTrigger>
                         <TabsTrigger value="individual">Individual Students</TabsTrigger>
@@ -355,7 +355,7 @@ export function ActivityManagement() {
               <>
                 <DialogHeader>
                   <div className="flex items-center gap-4 mb-2">
-                    <div className={`w-16 h-16 rounded-lg ${activityType?.color} flex items-center justify-center shrink-0`}>
+                    <div className={`w-16 h-16 rounded-lg${activityType?.color} flex items-center justify-center shrink-0`}>
                       <Icon className="h-8 w-8" />
                     </div>
                     <div className="flex-1">
