@@ -956,7 +956,7 @@ export function LandingPage() {
           className="hover:scale-110 transition-transform"
         >
           {isPlaying ? (
-            <Pause className="h-4 w-4 text-[#F46197]" />
+            <Pause className="h-4 w-4 text-[#55D6BE]" />
           ) : (
             <Play className="h-4 w-4 text-[#55D6BE]" />
           )}

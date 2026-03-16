@@ -59,7 +59,7 @@ export function Register() {
         className="w-full max-w-5xl bg-card rounded-2xl shadow-xl overflow-hidden flex flex-col md:flex-row min-h-[600px] border border-border"
       >
         {/* Left Section - Illustration & Branding */}
-        <div className="w-full md:w-5/12 bg-primary p-8 md:p-12 flex flex-col justify-between text-primary-foreground relative overflow-hidden">
+        <div className="w-full md:w-5/12 bg-[#3090A0] p-8 md:p-12 flex flex-col justify-between text-white relative overflow-hidden">
           {/* Abstract background shapes */}
           <div className="absolute top-[-10%] left-[-10%] w-64 h-64 bg-white/10 rounded-full blur-3xl" />
           <div className="absolute bottom-[-10%] right-[-10%] w-64 h-64 bg-white/10 rounded-full blur-3xl" />
@@ -94,7 +94,7 @@ export function Register() {
               <p className="text-sm opacity-90">Already have an account?</p>
               <Button
                 variant="outline"
-                className="w-full border-white text-white hover:bg-white hover:text-primary transition-all rounded-full py-6 font-semibold"
+                className="w-full border-white text-white bg-white/10 hover:bg-white hover:text-[#3090A0] transition-all rounded-lg py-6 font-semibold cursor-pointer"
                 onClick={() => navigate('/login')}
               >
                 Log in
@@ -152,7 +152,7 @@ export function Register() {
                   <Button
                     type="button"
                     variant={role === 'teacher' ? 'default' : 'outline'}
-                    className={`flex-1 h-12 rounded-lg transition-all ${role === 'teacher' ? 'bg-primary text-white shadow-md scale-[1.02]' : 'hover:bg-primary/10'}`}
+                    className={`flex-1 h-12 rounded-lg transition-all cursor-pointer ${role === 'teacher' ? 'bg-[#3090A0] hover:bg-[#2FBFA5] text-white shadow-md scale-[1.02]' : 'hover:bg-[#2FBFA5]/10'}`}
                     onClick={() => setRole('teacher')}
                   >
                     Teacher
@@ -160,7 +160,7 @@ export function Register() {
                   <Button
                     type="button"
                     variant={role === 'parent' ? 'default' : 'outline'}
-                    className={`flex-1 h-12 rounded-lg transition-all ${role === 'parent' ? 'bg-primary text-white shadow-md scale-[1.02]' : 'hover:bg-primary/10'}`}
+                    className={`flex-1 h-12 rounded-lg transition-all cursor-pointer ${role === 'parent' ? 'bg-[#3090A0] hover:bg-[#2FBFA5] text-white shadow-md scale-[1.02]' : 'hover:bg-[#3090A0]/10'}`}
                     onClick={() => setRole('parent')}
                   >
                     Parent
@@ -173,13 +173,13 @@ export function Register() {
                   id="terms"
                   checked={acceptTerms}
                   onCheckedChange={(checked) => setAcceptTerms(checked as boolean)}
-                  className="mt-1"
+                  className="mt-1 data-[state=checked]:bg-[#3090A0] data-[state=checked]:border-[#3090A0]"
                 />
                 <Label
                   htmlFor="terms"
                   className="text-sm text-muted-foreground font-normal cursor-pointer leading-tight"
                 >
-                  I accept the <span className="text-primary hover:underline font-medium">terms of the agreement</span> and the <span className="text-primary hover:underline font-medium">Privacy Policy</span>.
+                  I accept the <span className="text-[#3090A0] hover:underline font-medium">terms of the agreement</span> and the <span className="text-[#3090A0] hover:underline font-medium">Privacy Policy</span>.
                 </Label>
               </div>
 
@@ -191,7 +191,7 @@ export function Register() {
 
               <Button
                 type="submit"
-                className="w-full h-12 text-lg font-bold bg-primary hover:bg-primary/90 text-white rounded-lg shadow-lg hover:shadow-xl transition-all active:scale-[0.98]"
+                className="w-full h-12 text-lg font-bold bg-[#3090A0] hover:bg-[#2FBFA5] text-white rounded-lg shadow-lg hover:shadow-xl transition-all active:scale-[0.98] cursor-pointer"
                 disabled={loading}
               >
                 {loading ? (
@@ -213,7 +213,7 @@ export function Register() {
               <Button
                 type="button"
                 variant="outline"
-                className="w-full h-12 border-muted hover:bg-muted/50 transition-colors"
+                className="w-full h-12 border-muted hover:bg-muted/50 transition-colors cursor-pointer"
                 onClick={handleGoogleSignUp}
               >
                 <svg className="mr-2 h-4 w-4" viewBox="0 0 24 24">
