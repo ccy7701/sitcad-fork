@@ -910,10 +910,10 @@ export function LandingPage() {
       {current < TOTAL_SLIDES - 1 && (
         <button
           onClick={next}
-          className="fixed right-4 top-1/2 -translate-y-1/2 z-50 w-12 h-12 rounded-full bg-white/90 border-2 border-[#E3E3E3] shadow-lg flex items-center justify-center hover:bg-[#F46197]/10 hover:border-[#F46197] transition-all duration-200 hover:scale-110 group"
+          className="fixed right-4 top-1/2 -translate-y-1/2 z-50 w-12 h-12 rounded-full bg-white/90 border-2 border-[#E3E3E3] shadow-lg flex items-center justify-center hover:bg-[#ACFCD9]/10 hover:border-[#55D6BE] transition-all duration-200 hover:scale-110 group"
           aria-label="Next slide"
         >
-          <ChevronRight className="h-6 w-6 text-muted-foreground group-hover:text-[#F46197] transition-colors" />
+          <ChevronRight className="h-6 w-6 text-muted-foreground group-hover:text-[#55D6BE] transition-colors" />
         </button>
       )}
 
