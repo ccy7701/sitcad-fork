@@ -3,7 +3,9 @@ import {
   onAuthStateChanged, 
   signOut, 
   GoogleAuthProvider, 
-  signInWithPopup 
+  signInWithPopup,
+  createUserWithEmailAndPassword,
+  signInWithEmailAndPassword
 } from 'firebase/auth';
 import { auth } from '../../lib/firebase';
 
@@ -17,17 +19,40 @@ export function AuthProvider({ children }) {
   const googleProvider = new GoogleAuthProvider();
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (firebaseUser) => {
+    const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
       if (firebaseUser) {
-        // Initially, we create a basic user object from Firebase
-        // Later, we will fetch the 'role' from PostgreSQL
-        setUser({
-          id: firebaseUser.uid,
-          name: firebaseUser.displayName || 'User',
-          email: firebaseUser.email || '',
-          photo: firebaseUser.photoURL,
-          role: 'teacher', // Temporary default until PgSQL sync is built
-        });
+        try {
+          // Fetch real user data from our FastAPI backend
+          const idToken = await firebaseUser.getIdToken();
+          const response = await fetch('http://localhost:8000/auth/sync', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ id_token: idToken })
+          });
+
+          if (response.ok) {
+            const dbUser = await response.json();
+            setUser({
+              id: dbUser.id,
+              name: dbUser.full_name,
+              email: dbUser.email,
+              photo: firebaseUser.photoURL,
+              role: dbUser.role,
+            });
+          } else {
+            // Fallback for safety if sync fails during re-auth
+            setUser({
+              id: firebaseUser.uid,
+              name: firebaseUser.displayName || 'User',
+              email: firebaseUser.email || '',
+              photo: firebaseUser.photoURL,
+              role: null,
+            });
+          }
+        } catch (error) {
+          console.error("Auth sync error:", error);
+          setUser(null);
+        }
       } else {
         setUser(null);
       }
@@ -59,8 +84,74 @@ export function AuthProvider({ children }) {
     }
   };
 
+  const login = async (email, password) => {
+    setLoading(true);
+    try {
+      const result = await signInWithEmailAndPassword(auth, email, password);
+      const firebaseUser = result.user;
+      const idToken = await firebaseUser.getIdToken();
+
+      const response = await fetch('http://localhost:8000/auth/sync', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id_token: idToken })
+      });
+
+      if (!response.ok) throw new Error('Backend sync failed');
+
+      const dbUser = await response.json();
+      setUser({
+        id: dbUser.id,
+        name: dbUser.full_name,
+        email: dbUser.email,
+        photo: firebaseUser.photoURL,
+        role: dbUser.role,
+      });
+
+      return dbUser.role;
+    } catch (error) {
+      console.error('Login error:', error);
+      throw error;
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const register = async (email, password, fullName, role) => {
+    setLoading(true);
+    try {
+      const result = await createUserWithEmailAndPassword(auth, email, password);
+      const firebaseUser = result.user;
+      const idToken = await firebaseUser.getIdToken();
+
+      const response = await fetch('http://localhost:8000/auth/sync', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id_token: idToken, role, full_name: fullName })
+      });
+
+      if (!response.ok) throw new Error('Backend sync failed');
+
+      const dbUser = await response.json();
+      setUser({
+        id: dbUser.id,
+        name: dbUser.full_name,
+        email: dbUser.email,
+        photo: firebaseUser.photoURL,
+        role: dbUser.role,
+      });
+
+      return dbUser.role;
+    } catch (error) {
+      console.error('Registration error:', error);
+      throw error;
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
-    <AuthContext.Provider value={{ user, loading, googleLogin, logout }}>
+    <AuthContext.Provider value={{ user, loading, login, googleLogin, logout, register }}>
       {children}
     </AuthContext.Provider>
   );

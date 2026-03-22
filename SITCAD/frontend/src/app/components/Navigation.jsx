@@ -62,11 +62,11 @@ function NavigationContent({ onNavigate }) {
   };
 
   const handleLogout = async () => {
-    // logout(); // This was commented out in the original TSX, keeping it commented
-    // navigate('/login'); // This was commented out in the original TSX, keeping it commented
-    // onNavigate?.(); // This was commented out in the original TSX, keeping it commented
     try {
       await signOut(auth);
+      logout();
+      navigate('/login');
+      onNavigate?.();
       console.log("User logged out successfully.");
     } catch (error) {
       console.error("Error logging out:", error);

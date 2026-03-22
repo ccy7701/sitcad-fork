@@ -40,6 +40,7 @@ export const router = createBrowserRouter([
     element: <ProtectedRoute allowedRoles={["teacher"]} />,
     children: [
       { index: true, Component: TeacherDashboard },
+      { path: "dashboard", Component: TeacherDashboard },
       { path: "student/:studentId", Component: StudentProfile },
       { path: "student/:studentId/activities", Component: LearningActivities },
       { path: "student/:studentId/progress", Component: ProgressTracking },
@@ -57,6 +58,7 @@ export const router = createBrowserRouter([
     element: <ProtectedRoute allowedRoles={["parent"]} />,
     children: [
       { index: true, Component: ParentDashboard },
+      { path: "dashboard", Component: ParentDashboard },
       { path: "student/:studentId", Component: StudentProfile },
       { path: "student/:studentId/activities", Component: LearningActivities },
       { path: "student/:studentId/progress", Component: ProgressTracking },

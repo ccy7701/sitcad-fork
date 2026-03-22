@@ -26,33 +26,40 @@ export function Login() {
   }
 
   const handleGoogleLogin = async () => {
-    setLoading(true); // Start loading state
+    setLoading(true);
+    setError('');
     try {
-      setError(''); // Clear previous errors
-      await googleLogin();
-      // Navigation is often handled by a useEffect watching 'user'
-      // in the AuthContext, but manual navigation here works too.
-      navigate('/dashboard')
+      const firebaseUser = await googleLogin();
+      const idToken = await firebaseUser.getIdToken();
+
+      const response = await fetch('http://localhost:8000/auth/sync', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id_token: idToken })
+      });
+
+      if (!response.ok) throw new Error('Backend sync failed');
+
+      const dbUser = await response.json();
+      navigate(dbUser.role === 'teacher' ? '/teacher/dashboard' : '/parent/dashboard');
     } catch (err) {
-      console.err(err);
+      console.error(err);
       setError('Failed to sign in with Google. Please try again.');
     } finally {
-      setLoading(false); // End loading state
+      setLoading(false);
     }
   };
 
-  const handleSubmit = async () => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
     setLoading(true);
 
     try {
-      const success = await login(email, password);
-      if (!success) {
-        setError('Invalid credentials. Try teacher@school.edu or parent@email.com with password: password');
-      }
+      const role = await login(email, password);
+      navigate(role === 'teacher' ? '/teacher/dashboard' : '/parent/dashboard');
     } catch (err) {
-      setError('An error occurred. Please try again.');
+      setError(err.message || 'An error occurred. Please try again.');
     } finally {
       setLoading(false);
     }
