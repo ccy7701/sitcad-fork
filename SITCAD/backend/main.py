@@ -164,4 +164,12 @@ async def update_role(request: RoleUpdateRequest, db: Session = Depends(get_db))
         db.rollback()
         print(f"Role update error: {e}")
         raise HTTPException(status_code=500, detail=f"Failed to update role: {str(e)}")
+
+
+@app.get("/admin/stats")
+async def get_admin_stats(db: Session = Depends(get_db)):
+    counts = {}
+    for role in ("teacher", "parent", "admin"):
+        counts[role] = db.query(models.User).filter(models.User.role == role).count()
+    return counts
     

@@ -1,3 +1,4 @@
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router';
 import { useAuth } from '../contexts/AuthContext';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from './ui/card';
@@ -7,6 +8,14 @@ import { Users, GraduationCap, ShieldCheck, UserPlus } from 'lucide-react';
 export function AdminDashboard() {
   const { user } = useAuth();
   const navigate = useNavigate();
+  const [stats, setStats] = useState({ teacher: null, parent: null, admin: null });
+
+  useEffect(() => {
+    fetch('http://localhost:8000/admin/stats')
+      .then((res) => res.json())
+      .then((data) => setStats(data))
+      .catch((err) => console.error('Failed to fetch admin stats:', err));
+  }, []);
 
   if (!user) return null;
 
@@ -56,11 +65,11 @@ export function AdminDashboard() {
         </div>
 
         {/* Statistics Overview */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <Card>
             <CardHeader className="pb-3">
-              <CardDescription>Total Teachers</CardDescription>
-              <CardTitle className="text-3xl">—</CardTitle>
+              <CardDescription>Total Teachers Registered</CardDescription>
+              <CardTitle className="text-3xl">{stats.teacher ?? '—'}</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="flex items-center text-sm text-muted-foreground">
@@ -72,26 +81,13 @@ export function AdminDashboard() {
 
           <Card>
             <CardHeader className="pb-3">
-              <CardDescription>Total Parents</CardDescription>
-              <CardTitle className="text-3xl">—</CardTitle>
+              <CardDescription>Total Parents Registered</CardDescription>
+              <CardTitle className="text-3xl">{stats.parent ?? '—'}</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="flex items-center text-sm text-muted-foreground">
                 <Users className="mr-2 h-4 w-4" />
                 Registered parent accounts
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader className="pb-3">
-              <CardDescription>Admins</CardDescription>
-              <CardTitle className="text-3xl">—</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="flex items-center text-sm text-muted-foreground">
-                <ShieldCheck className="mr-2 h-4 w-4" />
-                Active admin accounts
               </div>
             </CardContent>
           </Card>
