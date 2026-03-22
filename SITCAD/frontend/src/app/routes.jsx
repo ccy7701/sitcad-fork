@@ -17,7 +17,9 @@ import { ClassroomTeachingMode } from "./components/ClassroomTeachingMode";
 import { AIAnalysisDashboard } from "./components/AIAnalysisDashboard";
 import { ProtectedRoute } from "./components/ProtectedRoute";
 import { NotFound } from "./components/NotFound";
-import { AuthTest } from "./components/AuthTest"; 
+import { AuthTest } from "./components/AuthTest";
+import { AdminDashboard } from "./components/AdminDashboard";
+import { AdminRegister } from "./components/AdminRegister"; 
 
 export const router = createBrowserRouter([
   {
@@ -39,6 +41,18 @@ export const router = createBrowserRouter([
   {
     path: "/auth-test",
     Component: AuthTest,
+  },
+  {
+    path: "/admin/register",
+    Component: AdminRegister,
+  },
+  {
+    path: "/admin",
+    element: <ProtectedRoute allowedRoles={["admin"]} />,
+    children: [
+      { index: true, Component: AdminDashboard },
+      { path: "dashboard", Component: AdminDashboard },
+    ],
   },
   {
     path: "/teacher",

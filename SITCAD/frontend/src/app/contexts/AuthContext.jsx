@@ -158,20 +158,26 @@ export function AuthProvider({ children }) {
     }
   };
 
-  const register = async (email, password, fullName, role) => {
+  const register = async (email, password, fullName, role, adminSecret = null) => {
     setLoading(true);
     try {
       const result = await createUserWithEmailAndPassword(auth, email, password);
       const firebaseUser = result.user;
       const idToken = await firebaseUser.getIdToken();
 
+      const body = { id_token: idToken, role, full_name: fullName };
+      if (adminSecret) body.admin_secret = adminSecret;
+
       const response = await fetch('http://localhost:8000/auth/sync', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ id_token: idToken, role, full_name: fullName })
+        body: JSON.stringify(body)
       });
 
-      if (!response.ok) throw new Error('Backend sync failed');
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => null);
+        throw new Error(errorData?.detail || 'Backend sync failed');
+      }
 
       const dbUser = await response.json();
       setUser({

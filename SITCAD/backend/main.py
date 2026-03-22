@@ -1,3 +1,4 @@
+import os
 import models
 import database
 import firebase_admin
@@ -6,6 +7,11 @@ from fastapi import FastAPI, Depends, HTTPException, status
 from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.orm import Session
 from pydantic import BaseModel
+from dotenv import load_dotenv
+
+load_dotenv()
+
+ADMIN_SECRET = os.getenv("ADMIN_SECRET")
 
 # Initialize Firebase Admin SDK
 # Ensure your serviceAccountKey.json is in the /backend folder
@@ -31,8 +37,9 @@ app.add_middleware(
 # Pydantic schema for the request body
 class AuthRequest(BaseModel):
     id_token: str
-    role: str = None  # Optional: 'teacher' or 'parent'
+    role: str = None  # Optional: 'teacher', 'parent', or 'admin'
     full_name: str = None
+    admin_secret: str = None  # Required when registering as admin
 
 # Dependency to provide a database session to routes
 def get_db():
@@ -54,6 +61,11 @@ async def sync_user(request: AuthRequest, db: Session = Depends(get_db)):
     try:
         uid = decoded_token['uid']
         email = decoded_token.get('email')
+
+        # Validate admin secret if registering as admin
+        if request.role == 'admin':
+            if not request.admin_secret or request.admin_secret != ADMIN_SECRET:
+                raise HTTPException(status_code=403, detail="Invalid admin secret key")
 
         # 1. Try to find user by UID
         user = db.query(models.User).filter(models.User.id == uid).first()
@@ -126,8 +138,8 @@ async def update_role(request: RoleUpdateRequest, db: Session = Depends(get_db))
         print(f"Token verification error: {e}")
         raise HTTPException(status_code=401, detail="Invalid authentication credentials")
 
-    if request.role not in ("teacher", "parent"):
-        raise HTTPException(status_code=400, detail="Role must be 'teacher' or 'parent'")
+    if request.role not in ("teacher", "parent", "admin"):
+        raise HTTPException(status_code=400, detail="Role must be 'teacher', 'parent', or 'admin'")
 
     try:
         uid = decoded_token['uid']

@@ -21,7 +21,8 @@ export function Login() {
 
   // Redirect if already logged in
   if (user) {
-    navigate(user.role === 'teacher' ? '/teacher' : '/parent');
+    const redirects = { teacher: '/teacher/dashboard', parent: '/parent/dashboard', admin: '/admin/dashboard' };
+    navigate(redirects[user.role] || '/onboarding');
     return null;
   }
 
@@ -219,16 +220,6 @@ export function Login() {
                 </svg>
                 Continue with Google
               </Button>
-
-              {/* Demo credentials hint */}
-              <div className="pt-4 border-t border-muted/50 space-y-2 text-xs text-muted-foreground/80 text-center">
-                <p className="font-semibold uppercase tracking-wider text-[10px] mb-1">Demo Access</p>
-                <div className="flex justify-center gap-4 flex-wrap">
-                  <span>Teacher: <span className="font-mono text-foreground/70">teacher@school.edu</span></span>
-                  <span>Parent: <span className="font-mono text-foreground/70">parent@email.com</span></span>
-                </div>
-                <p>Password: <span className="font-mono text-foreground/70">password</span></p>
-              </div>
             </form>
           </div>
         </div>

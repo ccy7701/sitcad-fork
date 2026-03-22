@@ -19,7 +19,8 @@ import {
   LogOut,
   Home,
   User,
-  Menu
+  Menu,
+  ShieldCheck
 } from 'lucide-react';
 import { cn } from '../lib/utils';
 import { useState } from 'react';
@@ -40,6 +41,10 @@ const parentNavItems = [
   { path: '/parent/communication', icon: MessageSquare, label: 'Messages' },
 ];
 
+const adminNavItems = [
+  { path: '/admin', icon: LayoutDashboard, label: 'Dashboard', exact: true },
+];
+
 function NavigationContent({ onNavigate }) {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
@@ -47,7 +52,7 @@ function NavigationContent({ onNavigate }) {
 
   if (!user) return null;
 
-  const navItems = user.role === 'teacher' ? teacherNavItems : parentNavItems;
+  const navItems = user.role === 'teacher' ? teacherNavItems : user.role === 'admin' ? adminNavItems : parentNavItems;
 
   const isActive = (path, exact) => {
     if (exact) {
