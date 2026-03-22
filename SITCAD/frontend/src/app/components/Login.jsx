@@ -59,7 +59,16 @@ export function Login() {
       const role = await login(email, password);
       navigate(role === 'teacher' ? '/teacher/dashboard' : '/parent/dashboard');
     } catch (err) {
-      setError(err.message || 'An error occurred. Please try again.');
+      const code = err.code;
+      if (code === 'auth/invalid-credential' || code === 'auth/wrong-password' || code === 'auth/user-not-found') {
+        setError('Incorrect email or password. If you previously signed in with Google, please use "Continue with Google" instead.');
+      } else if (code === 'auth/too-many-requests') {
+        setError('Too many failed attempts. Please try again later or reset your password.');
+      } else if (code === 'auth/user-disabled') {
+        setError('This account has been disabled. Please contact support.');
+      } else {
+        setError('An error occurred. Please try again.');
+      }
     } finally {
       setLoading(false);
     }
