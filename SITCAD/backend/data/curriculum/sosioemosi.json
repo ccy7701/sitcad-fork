@@ -1,0 +1,439 @@
+{
+  "overview": {
+    "domain": "Sosioemosi",
+    "domain_identifier": "SE",
+    "description": {
+      "kandungan_pembelajaran": "Bidang pembelajaran ini memberi penekanan kepada proses mengembangkan keupayaan murid untuk mengenal dan mengurus emosi sendiri serta keupayaan membina hubungan diri dengan orang lain dan persekitaran. Perkembangan sosioemosi adalah penting kerana dapat membantu murid untuk memahami diri sendiri dan membina kemahiran sosial yang diperlukan untuk kehidupan harian. Perkembangan ini adalah asas kepada pembinaan konsep kendiri yang positif dan seterusnya, membolehkan murid bersedia menangani cabaran dalam kehidupan.",
+      "skills": [
+        {
+          "kn_code": "KN 1",
+          "kn_title": "Memahami dan membezakan"
+        },
+        {
+          "kn_code": "KN 2",
+          "kn_title": "Ekspresi"
+        },
+        {
+          "kn_code": "KN 3",
+          "kn_title": "Mengurus"
+        },
+        {
+          "kn_code": "KN 4",
+          "kn_title": "Menghargai dan menghormati"
+        }
+      ],
+      "dimensions": [
+        "diri sendiri",
+        "diri sendiri dengan orang lain",
+        "diri sendiri dengan persekitaran atau komuniti"
+      ],
+      "focus": [
+        "Mengenali diri sendiri.",
+        "Mengurus emosi dan mengawal tingkah laku sendiri untuk mencapai kesejahteraan diri.",
+        "Menghormati kepelbagaian emosi dan pandangan orang lain.",
+        "Membina kemahiran sosial dalam kehidupan bermasyarakat.",
+        "Membina konsep kendiri yang positif dan berkeyakinan dalam menghadapi cabaran."
+      ]
+    }
+  },
+  "domain_content": [
+    {
+      "kn_code": "KN 1",
+      "kn_title": "MEMAHAMI DAN MEMBEZAKAN",
+      "kn_component_sks": [
+        {
+          "sk_code": "SE 1.1",
+          "sk_title": "Mengenali diri sendiri.",
+          "sk_component_spes": [
+            {
+              "spe_code": "SE 1.1.1",
+              "spe_title": "Mengetahui pelbagai jenis emosi.",
+              "spe_note": "Jenis-jenis emosi adalah gembira, sedih, takut, marah dan malu."
+            },
+            {
+              "spe_code": "SE 1.1.2",
+              "spe_title": "Mengenal pasti emosi sendiri.",
+              "spe_note": "Sekiranya murid hanya dapat mempamerkan emosi mereka melalui perlakuan sahaja, guru perlu membimbing mereka untuk menceritakan perkara dan emosi yang berkaitan supaya murid dapat mengenal emosi mereka sendiri. Contoh: Semasa bermain di taman permainan, Murid A menangis teresak-esak apabila kawan lain tidak membenarkannya bermain gelongsor walaupun telah lama beratur menunggu giliran. Guru : Murid A, mengapakah kamu menangis? Murid A : Mereka tak bagi saya main gelongsor. Guru : Maksudnya kamu berasa sedih kerana tidak dapat main gelongsor. Murid A : Ya, cikgu. Saya sedih. Saya sudah lama beratur."
+            },
+            {
+              "spe_code": "SE 1.1.3",
+              "spe_title": "Membezakan emosi dalam situasi yang pelbagai.",
+              "spe_note": null
+            },
+            {
+              "spe_code": "SE 1.1.4",
+              "spe_title": "Meneroka minat dan kekuatan diri sendiri.",
+              "spe_note": null
+            }
+          ]
+        },
+        {
+          "sk_code": "SE 1.2",
+          "sk_title": "Memahami sebab terjadinya emosi yang berbeza.",
+          "sk_component_spes": [
+            {
+              "spe_code": "SE 1.2.1",
+              "spe_title": "Menyatakan sebab terjadinya emosi tertentu.",
+              "spe_note": null
+            },
+            {
+              "spe_code": "SE 1.2.2",
+              "spe_title": "Mengetahui pelbagai emosi berlaku dalam situasi yang sama.",
+              "spe_note": "Murid dibimbing untuk memahami bahawa berlakunya dua emosi yang berbeza pada masa yang sama adalah sesuatu perkara yang normal. Contoh: Pada minggu pertama sesi persekolahan, Murid A menunjukkan kegembiraan bermain dengan rakan. Namun, ada waktunya Murid A kelihatan termenung. Apabila guru bertanya kepada Murid A, dia menyatakan bahawa dia gembira datang ke sekolah tetapi sedih tinggalkan ibunya di rumah. Murid mengalami dua jenis emosi yang berbeza dalam situasi yang sama iaitu gembira dan sedih."
+            }
+          ]
+        },
+        {
+          "sk_code": "SE 1.3",
+          "sk_title": "Memahami perbezaan perasaan dan pandangan orang lain.",
+          "sk_component_spes": [
+            {
+              "spe_code": "SE 1.3.1",
+              "spe_title": "Mengenal pasti emosi orang lain.",
+              "spe_note": null
+            },
+            {
+              "spe_code": "SE 1.3.2",
+              "spe_title": "Mengenal pasti sebab terjadinya emosi orang lain.",
+              "spe_note": null
+            },
+            {
+              "spe_code": "SE 1.3.3",
+              "spe_title": "Mengetahui terdapat perbezaan pandangan, perasaan dan keperluan diri dengan orang lain.",
+              "spe_note": null
+            }
+          ]
+        },
+        {
+          "sk_code": "SE 1.4",
+          "sk_title": "Memahami norma kehidupan dan peraturan aktiviti.",
+          "sk_component_spes": [
+            {
+              "spe_code": "SE 1.4.1",
+              "spe_title": "Mengenal pasti perkara yang boleh dan tidak boleh dilakukan dalam kehidupan seharian.",
+              "spe_note": null
+            },
+            {
+              "spe_code": "SE 1.4.2",
+              "spe_title": "Memahami peraturan dalam kehidupan harian.",
+              "spe_note": null
+            }
+          ]
+        },
+        {
+          "sk_code": "SE 1.5",
+          "sk_title": "Memahami kepelbagaian.",
+          "sk_component_spes": [
+            {
+              "spe_code": "SE 1.5.1",
+              "spe_title": "Mengenal komuniti setempat.",
+              "spe_note": "Komuniti setempat merujuk kepada penduduk, aktiviti setempat, persekitaran dan pekerjaan."
+            },
+            {
+              "spe_code": "SE 1.5.2",
+              "spe_title": "Menyertai aktiviti perayaan dan menghayati makna perayaan tersebut.",
+              "spe_note": "Contoh perayaan di Malaysia: Hari Raya Aidilfitri, Tahun Baru Cina, Deepavali, Krismas, Hari Gawai, Hari Kaamatan. Contoh menghayati makna: Guru boleh bercerita tentang perayaan sebagai peluang untuk bermaaf-maafan, berkumpul bersama keluarga dan berkongsi kegembiraan dengan orang lain. Perayaan mengajar murid tentang pentingnya hubungan kekeluargaan, sifat memaafkan dan menghargai kepelbagaian."
+            },
+            {
+              "spe_code": "SE 1.5.3",
+              "spe_title": "Memahami warisan budaya masyarakat Malaysia dan global.",
+              "spe_note": "Contoh: Permainan, seni dan kraf, makanan serta pakaian tradisional."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "kn_code": "KN 2",
+      "kn_title": "EKSPRESI",
+      "kn_component_sks": [
+        {
+          "sk_code": "SE 2.1",
+          "sk_title": "Meluahkan perasaan sendiri dengan sewajarnya.",
+          "sk_component_spes": [
+            {
+              "spe_code": "SE 2.1.1",
+              "spe_title": "Menyatakan sesuatu yang disukai atau tidak disukai.",
+              "spe_note": null
+            },
+            {
+              "spe_code": "SE 2.1.2",
+              "spe_title": "Menceritakan perasaan sendiri mengenai sesuatu perkara atau peristiwa melalui pelbagai cara.",
+              "spe_note": null
+            }
+          ]
+        },
+        {
+          "sk_code": "SE 2.2",
+          "sk_title": "Menyampaikan perasaan orang lain mengikut situasi dengan bersesuaian.",
+          "sk_component_spes": [
+            {
+              "spe_code": "SE 2.2.1",
+              "spe_title": "Menceritakan emosi orang lain melalui pelbagai cara.",
+              "spe_note": null
+            }
+          ]
+        },
+        {
+          "sk_code": "SE 2.3",
+          "sk_title": "Meluahkan perasaan terhadap persekitaran.",
+          "sk_component_spes": [
+            {
+              "spe_code": "SE 2.3.1",
+              "spe_title": "Menunjukkan rasa prihatin terhadap objek, haiwan dan tumbuhan di persekitaran.",
+              "spe_note": "Contoh: Alat mainan dan barangan peribadi."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "kn_code": "KN 3",
+      "kn_title": "MENGURUS",
+      "kn_component_sks": [
+        {
+          "sk_code": "SE 3.1",
+          "sk_title": "Menunjukkan kebolehan untuk mengawal diri.",
+          "sk_component_spes": [
+            {
+              "spe_code": "SE 3.1.1",
+              "spe_title": "Mengurus emosi sendiri dengan memilih tindakan yang sesuai.",
+              "spe_note": null
+            },
+            {
+              "spe_code": "SE 3.1.2",
+              "spe_title": "Menunjukkan sikap sabar semasa berdepan dengan situasi yang tidak menyenangkan.",
+              "spe_note": null
+            },
+            {
+              "spe_code": "SE 3.1.3",
+              "spe_title": "Menunjukkan daya tahan dalam situasi yang mencabar.",
+              "spe_note": "Contoh: Murid B ingin membina Menara Kuala Lumpur menggunakan blok. Selepas beberapa kali percubaan, binaan menara tersebut runtuh. Namun, Murid B masih tidak berputus asa dan terus mencuba sehingga berjaya menghasilkan menara yang tinggi dan kukuh."
+            }
+          ]
+        },
+        {
+          "sk_code": "SE 3.2",
+          "sk_title": "Berempati dan bekerjasama dengan orang lain.",
+          "sk_component_spes": [
+            {
+              "spe_code": "SE 3.2.1",
+              "spe_title": "Mempamerkan kebolehan menyertai sesuatu permainan yang sedang berlangsung (play entry).",
+              "spe_note": null
+            },
+            {
+              "spe_code": "SE 3.2.2",
+              "spe_title": "Memahami perasaan dan keperluan orang lain dan bertindak sewajarnya.",
+              "spe_note": null
+            },
+            {
+              "spe_code": "SE 3.2.3",
+              "spe_title": "Menyampaikan idea dan bersedia untuk mendengar pandangan orang lain.",
+              "spe_note": null
+            },
+            {
+              "spe_code": "SE 3.2.4",
+              "spe_title": "Memahami minat atau kebolehan diri sendiri dan orang lain supaya dapat bekerjasama.",
+              "spe_note": "Galakan diberi kepada murid untuk meneroka minat dan mengembangkan keupayaan murid. Murid digalakkan berbincang dan memilih tugasan mengikut minat serta kebolehan masing-masing agar aktiviti dapat dilaksanakan dengan lancar."
+            }
+          ]
+        },
+        {
+          "sk_code": "SE 3.3",
+          "sk_title": "Menyesuaikan tindakan sendiri dan mematuhi peraturan dalam kehidupan harian.",
+          "sk_component_spes": [
+            {
+              "spe_code": "SE 3.3.1",
+              "spe_title": "Mengambil tindakan sewajarnya untuk menyelesaikan konflik.",
+              "spe_note": "Contoh: Meminta maaf jika melakukan kesilapan. Mematuhi peraturan semasa bermain di taman permainan seperti menunggu giliran ketika bermain."
+            },
+            {
+              "spe_code": "SE 3.3.2",
+              "spe_title": "Mengamalkan etika sosial dalam perhubungan.",
+              "spe_note": "Contoh: Memberi salam atau ucapan selamat kepada guru dan rakan-rakan. Mengucapkan terima kasih apabila menerima bantuan, hadiah atau pujian. Bersikap empati. Tidak mengambil barang rakan tanpa izin."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "kn_code": "KN 4",
+      "kn_title": "MENGHARGAI DAN MENGHORMATI",
+      "kn_component_sks": [
+        {
+          "sk_code": "SE 4.1",
+          "sk_title": "Menyayangi diri sendiri.",
+          "sk_component_spes": [
+            {
+              "spe_code": "SE 4.1.1",
+              "spe_title": "Menghargai kekuatan dan kelemahan diri sendiri.",
+              "spe_note": null
+            },
+            {
+              "spe_code": "SE 4.1.2",
+              "spe_title": "Berupaya bertindak sendiri dan mengamalkan sikap bertanggungjawab.",
+              "spe_note": null
+            }
+          ]
+        },
+        {
+          "sk_code": "SE 4.2",
+          "sk_title": "Menyayangi dan menghormati orang lain di persekitaran.",
+          "sk_component_spes": [
+            {
+              "spe_code": "SE 4.2.1",
+              "spe_title": "Menyayangi dan menghargai ahli keluarga.",
+              "spe_note": null
+            },
+            {
+              "spe_code": "SE 4.2.2",
+              "spe_title": "Bersedia untuk berkongsi dengan orang lain.",
+              "spe_note": null
+            },
+            {
+              "spe_code": "SE 4.2.3",
+              "spe_title": "Menghormati hak milik orang lain.",
+              "spe_note": null
+            },
+            {
+              "spe_code": "SE 4.2.4",
+              "spe_title": "Menunjukkan sikap menghormati orang lain.",
+              "spe_note": null
+            }
+          ]
+        },
+        {
+          "sk_code": "SE 4.3",
+          "sk_title": "Menghormati kepelbagaian.",
+          "sk_component_spes": [
+            {
+              "spe_code": "SE 4.3.1",
+              "spe_title": "Menghargai bahasa, adat resam dan perayaan di Malaysia dan/atau global.",
+              "spe_note": null
+            }
+          ]
+        },
+        {
+          "sk_code": "SE 4.4",
+          "sk_title": "Menghargai alam sekitar dan alam hidupan.",
+          "sk_component_spes": [
+            {
+              "spe_code": "SE 4.4.1",
+              "spe_title": "Menyayangi dan menghargai haiwan dan tumbuhan.",
+              "spe_note": null
+            },
+            {
+              "spe_code": "SE 4.4.2",
+              "spe_title": "Menjaga kebersihan persekitaran.",
+              "spe_note": null
+            },
+            {
+              "spe_code": "SE 4.4.3",
+              "spe_title": "Mengamalkan penjimatan sumber.",
+              "spe_note": "Sumber merujuk kepada air, tenaga, makanan dan bahan. Contoh: Tutup suis lampu dan kipas selepas digunakan. Gunakan air secara berhemah dan elakkan pembaziran. Asingkan sisa makanan untuk menghasilkan baja. Pengurangan (reduce), guna semula (reuse) dan kitar semula (recycle)."
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "performance_metrics": [
+    {
+      "spr_code": "SE 1",
+      "spr_title": "Menunjukkan konsep kendiri yang positif dan keyakinan terhadap kebolehan sendiri.",
+      "spr_component_sks": [
+        "SE 1.1",
+        "SE 2.1",
+        "SE 3.1"
+      ],
+      "spr_rubric": [
+        {
+          "level": 1,
+          "explanation": "Murid boleh mengenal kebolehan sendiri."
+        },
+        {
+          "level": 2,
+          "explanation": "Murid boleh menunjuk kebolehan sendiri dan mendengar pandangan orang lain."
+        },
+        {
+          "level": 3,
+          "explanation": "Murid boleh menunjuk kebolehan sendiri dengan yakin dan menerima pandangan orang lain secara positif."
+        }
+      ]
+    },
+    {
+      "spr_code": "SE 2",
+      "spr_title": "Mengurus emosi dan tingkah laku untuk menyesuaikan diri dalam kehidupan harian.",
+      "spr_component_sks": [
+        "SE 1.1",
+        "SE 1.2",
+        "SE 2.1",
+        "SE 3.1"
+      ],
+      "spr_rubric": [
+        {
+          "level": 1,
+          "explanation": "Murid boleh menyesuaikan emosi dan tingkah laku sendiri dengan bimbingan."
+        },
+        {
+          "level": 2,
+          "explanation": "Murid boleh menyesuaikan emosi dan tingkah laku sendiri dengan rangsangan dalam situasi tertentu."
+        },
+        {
+          "level": 3,
+          "explanation": "Murid boleh menyesuaikan emosi dan tingkah laku sendiri apabila terdapat keperluan dalam pelbagai situasi."
+        }
+      ]
+    },
+    {
+      "spr_code": "SE 3",
+      "spr_title": "Memahami keperluan orang lain dan dapat bekerjasama.",
+      "spr_component_sks": [
+        "SE 1.3",
+        "SE 1.4",
+        "SE 1.5",
+        "SE 2.2",
+        "SE 3.2"
+      ],
+      "spr_rubric": [
+        {
+          "level": 1,
+          "explanation": "Murid boleh membuat aktiviti secara bersendirian sahaja semasa aktiviti kumpulan."
+        },
+        {
+          "level": 2,
+          "explanation": "Murid boleh bekerjasama semasa aktiviti kumpulan tetapi tidak dapat bertolak ansur."
+        },
+        {
+          "level": 3,
+          "explanation": "Murid boleh bekerjasama semasa melaksanakan aktiviti kumpulan serta mengambil kira keupayaan dan minat orang lain."
+        }
+      ]
+    },
+    {
+      "spr_code": "SE 4",
+      "spr_title": "Memahami dan menunjuk penghargaan kepada kepelbagaian masyarakat di Malaysia.",
+      "spr_component_sks": [
+        "SE 2.3",
+        "SE 3.3",
+        "SE 4.2",
+        "SE 4.3",
+        "SE 4.4"
+      ],
+      "spr_rubric": [
+        {
+          "level": 1,
+          "explanation": "Murid boleh bercerita tentang pelbagai adat resam atau perayaan."
+        },
+        {
+          "level": 2,
+          "explanation": "Murid boleh melibatkan diri dalam aktiviti berkaitan adat resam dan perayaan."
+        },
+        {
+          "level": 3,
+          "explanation": "Murid boleh mengambil bahagian secara aktif dan menghargai kepelbagaian adat resam dan perayaan."
+        }
+      ]
+    }
+  ]
+}
