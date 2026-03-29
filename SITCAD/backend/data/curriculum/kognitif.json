@@ -1,0 +1,400 @@
+{
+  "overview": {
+    "domain": "Kognitif",
+    "domain_identifier": "KF",
+    "description": {
+      "kandungan_pembelajaran": "Bidang pembelajaran ini merujuk kepada proses pemikiran untuk memperoleh dan memproses maklumat dalam persekitaran. Dalam proses ini, murid meneroka, mengumpul dan mengurus maklumat, seterusnya membina pengetahuan dan idea baharu. Sepanjang pembelajaran, murid berdepan dengan pelbagai cabaran. Melalui usaha mengatasi cabaran dan menyelesaikan masalah, murid belajar menyesuaikan dan menukar maklumat yang diperoleh kepada pengetahuan dan kemahiran baharu yang boleh dimanfaatkan pada masa hadapan.",
+      "skills": [
+        {
+          "kn_code": "KN 1",
+          "kn_title": "Mengumpul maklumat"
+        },
+        {
+          "kn_code": "KN 2",
+          "kn_title": "Mengurus maklumat"
+        },
+        {
+          "kn_code": "KN 3",
+          "kn_title": "Menyelesaikan masalah"
+        }
+      ],
+      "dimensions": [
+        "matematik dalam kehidupan harian",
+        "kejadian alam",
+        "hasil warisan"
+      ],
+      "focus": [
+        "Mengembangkan sikap ingin tahu dan minat murid untuk meneroka tentang dunia di sekeliling mereka.",
+        "Menunjukkan kebolehan berfikir secara sistematik.",
+        "Bersedia berinteraksi dan berkongsi maklumat dengan orang lain serta bekerjasama untuk menyelesaikan masalah."
+      ]
+    }
+  },
+  "domain_content": [
+    {
+      "kn_code": "KF 1",
+      "kn_title": "MENGUMPUL MAKLUMAT",
+      "kn_component_sks": [
+        {
+          "sk_code": "KF 1.1",
+          "sk_title": "Mengumpul maklumat matematik dalam kehidupan harian.",
+          "sk_component_spes": [
+            {
+              "spe_code": "KF 1.1.1*",
+              "spe_title": "Memadan dan membandingkan objek dalam persekitaran.",
+              "spe_note": "Padankan pasangan yang sama (kasut, stoking, sarung tangan, anting-anting) dan tidak sama (sudu dan garpu, cawan dan piring, baju dan seluar). Banding kuantiti (banyak, sedikit atau sama). Banding saiz (besar–kecil, tinggi–rendah, panjang–pendek). Banding jisim (berat–ringan)."
+            },
+            {
+              "spe_code": "KF 1.1.2*",
+              "spe_title": "Mengenal nombor.",
+              "spe_note": "Nama dan simbol nombor 0 hingga 9. Tulis nombor dalam angka dan perkataan dengan cara yang betul. Membilang nombor 1 hingga 50 (gunakan bahan maujud dan bergambar untuk perkenalkan nombor). Memadankan kumpulan objek dengan nombor. Memperkenalkan sifar '0' selepas menguasai kemahiran membilang hingga 9."
+            },
+            {
+              "spe_code": "KF 1.1.3*",
+              "spe_title": "Memahami nombor dalam persekitaran.",
+              "spe_note": "Membilang secara tertib menaik dan tertib menurun dalam lingkungan 10. Bilang siri nombor sepuluh-sepuluh secara tertib menaik dan menurun sehingga 100. Simbol nombor dalam persekitaran mempunyai maksud tertentu (nombor rumah, jam, termometer, wang kertas, butang lif)."
+            },
+            {
+              "spe_code": "KF 1.1.4*",
+              "spe_title": "Mengetahui kedudukan objek dalam ruang.",
+              "spe_note": "Kedudukan objek dalam ruang iaitu atas, bawah, depan, belakang, luar dan dalam."
+            },
+            {
+              "spe_code": "KF 1.1.5*",
+              "spe_title": "Mengecam dan menamakan bentuk objek di persekitaran.",
+              "spe_note": "Bentuk tiga dimensi ialah silinder, kubus, kuboid, sfera dan piramid. Bentuk dua dimensi ialah segi empat sama, segi empat tepat, segi tiga dan bulatan. Guru digalakkan memperkenalkan bentuk tiga dimensi terlebih dahulu."
+            },
+            {
+              "spe_code": "KF 1.1.6*",
+              "spe_title": "Menyedari konsep ketekalan dalam kehidupan seharian.",
+              "spe_note": "Konsep ketekalan merujuk kepada pemahaman terhadap sifat objek seperti kuantiti, isipadu dan jisim tetap kekal sama walaupun rupa atau bentuknya telah berubah, selagi tiada objek ditambah atau dibuang."
+            },
+            {
+              "spe_code": "KF 1.1.7*",
+              "spe_title": "Mengukur objek di persekitaran menggunakan unit bukan piawai.",
+              "spe_note": "Gunakan unit bukan piawai untuk mengukur panjang, isipadu, jisim, luas dan masa. Mengukur dan membandingkan objek menggunakan unit bukan piawai."
+            },
+            {
+              "spe_code": "KF 1.1.8",
+              "spe_title": "Memahami masa dalam konteks kehidupan harian.",
+              "spe_note": "Masa dalam sehari (pagi, tengah hari, petang dan malam). Urutan peristiwa sehari dan hubung kait dengan masa. Jam analog, Hari dalam seminggu, Bulan dalam setahun."
+            }
+          ]
+        },
+        {
+          "sk_code": "KF 1.2",
+          "sk_title": "Mengumpul maklumat tentang kejadian alam.",
+          "sk_component_spes": [
+            {
+              "spe_code": "KF 1.2.1",
+              "spe_title": "Meneroka kejadian alam.",
+              "spe_note": "Kejadian alam termasuk Alam hidupan, Alam bahan, Alam fizikal, Bumi dan angkasa. Kemahiran proses sains merangkumi Memerhati, Mengelas, dan Mengukur."
+            },
+            {
+              "spe_code": "KF 1.2.2",
+              "spe_title": "Memerhatikan perubahan kejadian alam.",
+              "spe_note": "Contoh: Murid memerhati, memahami dan bertanya soalan tentang kitaran hidup tumbuhan atau haiwan."
+            },
+            {
+              "spe_code": "KF 1.2.3",
+              "spe_title": "Merekod maklumat tentang kejadian alam dalam bentuk lukisan, simbol dan tulisan secara digital dan bukan digital.",
+              "spe_note": "Contoh: Rekod perubahan cuaca dalam carta secara digital atau bukan digital (lukisan, simbol)."
+            }
+          ]
+        },
+        {
+          "sk_code": "KF 1.3",
+          "sk_title": "Mengumpul maklumat tentang hasil warisan.",
+          "sk_component_spes": [
+            {
+              "spe_code": "KF 1.3.1",
+              "spe_title": "Memerhatikan ciri-ciri objek dalam kehidupan di persekitaran.",
+              "spe_note": "Contoh: Warna, bentuk, saiz, tekstur, berat, bunyi, rasa, bau."
+            },
+            {
+              "spe_code": "KF 1.3.2",
+              "spe_title": "Merekod pelbagai maklumat hasil warisan dalam kehidupan di persekitaran dalam bentuk lukisan, simbol dan tulisan secara digital atau bukan digital.",
+              "spe_note": "Murid dibimbing bertanya dan mengumpul maklumat tentang bangunan bersejarah dan reka bentuk pakaian."
+            },
+            {
+              "spe_code": "KF 1.3.3",
+              "spe_title": "Mengenal dan mengetahui fungsi peranti digital dalam pengumpulan maklumat.",
+              "spe_note": "Contoh: Perbezaan fungsi telefon dahulu (panggilan suara terhad) berbanding telefon bimbit kini (alat pelbagai fungsi)."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "kn_code": "KF 2",
+      "kn_title": "MENGURUS MAKLUMAT",
+      "kn_component_sks": [
+        {
+          "sk_code": "KF 2.1",
+          "sk_title": "Mengurus maklumat matematik dalam persekitaran.",
+          "sk_component_spes": [
+            {
+              "spe_code": "KF 2.1.1*",
+              "spe_title": "Menyedari dan menyusun objek di persekitaran mengikut urutan.",
+              "spe_note": "Urutan berdasarkan nilai dan saiz."
+            },
+            {
+              "spe_code": "KF 2.1.2*",
+              "spe_title": "Membina pola dengan menggunakan objek di persekitaran.",
+              "spe_note": "Contoh: Perhati dan terangkan pola susunan jubin, zebra-crossing, corak baju, nota muzik, susunan meja dan kerusi."
+            },
+            {
+              "spe_code": "KF 2.1.3",
+              "spe_title": "Menyatakan kombinasi nombor dalam lingkungan sepuluh.",
+              "spe_note": "Contoh: Kombinasi nombor untuk 6 ialah 0 dan 6, 1 dan 5, 2 dan 4, 3 dan 3, 4 dan 2, 5 dan 1, 6 dan 0."
+            },
+            {
+              "spe_code": "KF 2.1.4",
+              "spe_title": "Melakukan operasi tambah dan tolak dalam lingkungan 18 (fakta asas).",
+              "spe_note": "Perkenalkan konsep operasi tambah dan tolak dalam lingkungan 10 dengan menggunakan bahan maujud. Tulis ayat matematik tambah dan tolak."
+            },
+            {
+              "spe_code": "KF 2.1.5",
+              "spe_title": "Menggunakan bentuk geometri untuk menghasilkan reka bentuk secara kreatif.",
+              "spe_note": "Hasilkan corak menggunakan bentuk dua dimensi. Hasilkan binaan menggunakan bentuk tiga dimensi, termasuk penghubung dan lingkungan."
+            },
+            {
+              "spe_code": "KF 2.1.6*",
+              "spe_title": "Menggunakan gambar atau simbol untuk mewakili kuantiti atau kekerapan sesuatu perkara atau objek dalam bentuk carta secara digital atau bukan digital.",
+              "spe_note": "Contoh: Mengumpul dan menyusun maklumat kegemaran buah-buahan dalam bentuk carta."
+            }
+          ]
+        },
+        {
+          "sk_code": "KF 2.2",
+          "sk_title": "Membuat hubung kait antara maklumat berkaitan kejadian alam.",
+          "sk_component_spes": [
+            {
+              "spe_code": "KF 2.2.1",
+              "spe_title": "Mengelas tumbuhan dan haiwan mengikut ciri.",
+              "spe_note": "Haiwan (makanan utama, habitat dan saiz). Tumbuhan (tekstur, bentuk, warna, bau, saiz)."
+            },
+            {
+              "spe_code": "KF 2.2.2",
+              "spe_title": "Memahami hubungan antara kejadian alam dengan manusia.",
+              "spe_note": "Teroka kitaran hidup haiwan dan tumbuhan serta rantaian makanan. Mengenal haiwan sebagai sumber makanan bagi manusia."
+            },
+            {
+              "spe_code": "KF 2.2.3",
+              "spe_title": "Berkomunikasi untuk menyampaikan idea dan dapatan pemerhatian.",
+              "spe_note": null
+            }
+          ]
+        },
+        {
+          "sk_code": "KF 2.3",
+          "sk_title": "Membuat hubung kait antara maklumat hasil warisan.",
+          "sk_component_spes": [
+            {
+              "spe_code": "KF 2.3.1",
+              "spe_title": "Mengelas objek di persekitaran mengikut ciri dan fungsinya.",
+              "spe_note": "Contoh: Mengelaskan kenderaan mengikut ciri roda (4 roda vs 2 roda)."
+            },
+            {
+              "spe_code": "KF 2.3.2",
+              "spe_title": "Memahami hubungan antara objek di persekitaran dengan kehidupan.",
+              "spe_note": "Contoh: Perbandingan pengangkutan zaman dahulu (kereta lembu) dengan pengangkutan kini (kereta api, lori)."
+            },
+            {
+              "spe_code": "KF 2.3.3",
+              "spe_title": "Memahami wang Malaysia.",
+              "spe_note": "Ciri-ciri wang syiling dan wang kertas. Nilai mata wang. Penggunaan wang dalam simulasi jual beli, menabung dan menderma. Pengenalan e-wallet."
+            },
+            {
+              "spe_code": "KF 2.3.4",
+              "spe_title": "Menggunakan peranti digital dengan selamat.",
+              "spe_note": "Pendedahan penggunaan peranti seperti telefon, komputer, kamera. Etika penggunaan peranti (screen time, keselamatan, privasi)."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "kn_code": "KF 3",
+      "kn_title": "MENYELESAIKAN MASALAH",
+      "kn_component_sks": [
+        {
+          "sk_code": "KF 3.1",
+          "sk_title": "Bekerjasama dengan orang lain untuk menyelesaikan masalah dalam kehidupan seharian.",
+          "sk_component_spes": [
+            {
+              "spe_code": "KF 3.1.1",
+              "spe_title": "Mengambil tindakan untuk menyelesaikan sesuatu masalah.",
+              "spe_note": "Contoh: Berbincang untuk mengalihkan binaan blok kayu yang menghalang laluan menggunakan alas kotak."
+            },
+            {
+              "spe_code": "KF 3.1.2",
+              "spe_title": "Membuat refleksi tentang proses penyelesaian masalah.",
+              "spe_note": "Langkah-langkah: i. Mengenal pasti masalah. ii. Menjana idea. iii. Melaksanakan tindakan. Kerjasama digalakkan."
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "performance_metrics": [
+    {
+      "spr_code": "KF 1",
+      "spr_title": "Menyusun maklumat matematik dalam persekitaran berdasarkan ciri dan mencari perkaitan antara ciri tersebut.",
+      "spr_component_sks": [
+        "KF 1.1",
+        "KF 2.1"
+      ],
+      "spr_rubric": [
+        {
+          "level": 1,
+          "explanation": "Murid boleh mengelaskan maklumat dalam persekitaran berdasarkan ciri-ciri tertentu."
+        },
+        {
+          "level": 2,
+          "explanation": "Murid boleh membanding beza dan membuat urutan berdasarkan ciri-ciri tertentu dalam persekitaran."
+        },
+        {
+          "level": 3,
+          "explanation": "Murid boleh menyusun maklumat dalam persekitaran berdasarkan ciri-ciri tertentu dan boleh memerihalkan pengelasan tersebut."
+        }
+      ]
+    },
+    {
+      "spr_code": "KF 2",
+      "spr_title": "Memahami hubungan konsep nombor dengan kuantiti dalam kehidupan harian.",
+      "spr_component_sks": [
+        "KF 1.1",
+        "KF 2.1"
+      ],
+      "spr_rubric": [
+        {
+          "level": 1,
+          "explanation": "Murid boleh membilang objek."
+        },
+        {
+          "level": 2,
+          "explanation": "Murid boleh menyatakan bilangan dari gabungan dua himpunan objek atau baki apabila sesuatu objek dikeluarkan dari satu himpunan."
+        },
+        {
+          "level": 3,
+          "explanation": "Murid boleh menyelesaikan operasi tambah dan tolak dalam situasi harian."
+        }
+      ]
+    },
+    {
+      "spr_code": "KF 3",
+      "spr_title": "Menunjukkan sifat ingin tahu dan minat untuk meneroka.",
+      "spr_component_sks": [
+        "KF 1.1",
+        "KF 1.2",
+        "KF 1.3",
+        "KF 2.1",
+        "KF 2.2",
+        "KF 2.3",
+        "KF 3.1"
+      ],
+      "spr_rubric": [
+        {
+          "level": 1,
+          "explanation": "Murid boleh bertanya soalan tentang perkara baharu yang diminati."
+        },
+        {
+          "level": 2,
+          "explanation": "Murid boleh bertanya soalan dan berani mencuba perkara baharu."
+        },
+        {
+          "level": 3,
+          "explanation": "Murid boleh bertanya soalan serta mencuba pelbagai cara dan bahan untuk mencari jawapan bagi masalah yang ditemui."
+        }
+      ]
+    },
+    {
+      "spr_code": "KF 4",
+      "spr_title": "Menganalisis maklumat yang diperolehi untuk mengenal pasti punca kejadian alam.",
+      "spr_component_sks": [
+        "KF 1.2",
+        "KF 2.2"
+      ],
+      "spr_rubric": [
+        {
+          "level": 1,
+          "explanation": "Murid boleh memerhati dan menyatakan kejadian alam."
+        },
+        {
+          "level": 2,
+          "explanation": "Murid boleh memerhati dan menyatakan faktor penyebab kejadian alam."
+        },
+        {
+          "level": 3,
+          "explanation": "Murid boleh memahami fenomena alam dan dapat menjelaskan punca kejadian alam."
+        }
+      ]
+    },
+    {
+      "spr_code": "KF 5",
+      "spr_title": "Membuat hubung kait antara hasil warisan dengan kehidupan.",
+      "spr_component_sks": [
+        "KF 1.3",
+        "KF 2.3"
+      ],
+      "spr_rubric": [
+        {
+          "level": 1,
+          "explanation": "Murid boleh memerhati dan menyatakan ciri-ciri hasil warisan dalam persekitaran."
+        },
+        {
+          "level": 2,
+          "explanation": "Murid boleh membanding beza ciri-ciri hasil warisan dalam persekitaran."
+        },
+        {
+          "level": 3,
+          "explanation": "Murid boleh menjelaskan hubung kait antara ciri-ciri hasil warisan dengan kehidupan."
+        }
+      ]
+    },
+    {
+      "spr_code": "KF 6",
+      "spr_title": "Mempamerkan kemampuan menyelesaikan masalah harian berdasarkan maklumat yang diperolehi.",
+      "spr_component_sks": [
+        "KF 3.1"
+      ],
+      "spr_rubric": [
+        {
+          "level": 1,
+          "explanation": "Murid boleh mencetus idea untuk menyelesaikan masalah tertentu."
+        },
+        {
+          "level": 2,
+          "explanation": "Murid boleh menyelesaikan masalah dalam tugasan pembelajaran."
+        },
+        {
+          "level": 3,
+          "explanation": "Murid boleh menyelesaikan masalah harian secara bekerjasama dengan orang lain."
+        }
+      ]
+    },
+    {
+      "spr_code": "KF 7",
+      "spr_title": "Mengendalikan peranti digital dengan selamat dan bertanggungjawab.",
+      "spr_component_sks": [
+        "KF 1.3",
+        "KF 2.3"
+      ],
+      "spr_rubric": [
+        {
+          "level": 1,
+          "explanation": "Murid boleh menamakan peranti digital yang terdapat di persekitaran."
+        },
+        {
+          "level": 2,
+          "explanation": "Murid boleh menjelaskan cara menggunakan peranti digital dengan selamat."
+        },
+        {
+          "level": 3,
+          "explanation": "Murid boleh menggunakan peranti digital untuk mengumpul dan mengurus maklumat dengan selamat serta bertanggungjawab."
+        }
+      ]
+    }
+  ]
+}

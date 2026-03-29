@@ -1,0 +1,310 @@
+{
+  "overview": {
+    "domain": "Fizikal dan Kesejahteraan Diri",
+    "domain_identifier": "FK",
+    "description": {
+      "kandungan_pembelajaran": "Bidang pembelajaran ini merangkumi perkembangan fizikal dan kesihatan. Perkembangan fizikal merupakan asas kepada pelbagai pergerakan kompleks yang diperlukan dalam kehidupan harian untuk membentuk kecergasan dan ketangkasan tubuh, seterusnya menyumbang kepada kecerdasan minda. Bidang pembelajaran ini juga menekankan kesedaran mengenai kesihatan merangkumi pemakanan sihat, penjagaan kebersihan dan keselamatan yang perlu diterapkan sejak awal supaya menjadi amalan dalam kehidupan harian murid. Selain itu, Pendidikan Kesihatan Reproduktif dan Sosial (PEERS) juga turut diberi penekanan dalam bidang pembelajaran ini.",
+      "skills": [
+        {
+          "kn_code": "KN 1",
+          "kn_title": "Memerhati dan melakukan"
+        },
+        {
+          "kn_code": "KN 2",
+          "kn_title": "Koordinasi dan kawalan"
+        },
+        {
+          "kn_code": "KN 3",
+          "kn_title": "Menggabung dan mereka cipta"
+        }
+      ],
+      "dimensions": [
+        "pergerakan badan",
+        "penggunaan alatan",
+        "amalan kesihatan dan keselamatan"
+      ],
+      "focus": [
+        "Melakukan pergerakan asas dengan cekap dan selamat.",
+        "Memantapkan pergerakan asas untuk menggalakkan perkembangan fizikal yang normal.",
+        "Menunjukkan minat untuk melakukan aktiviti fizikal.",
+        "Mengamalkan gaya hidup yang sihat melalui pemakanan sihat dan selamat serta penjagaan kebersihan diri.",
+        "Melindungi diri dan memahami kepentingan menjaga keselamatan diri."
+      ]
+    }
+  },
+  "domain_content": [
+    {
+      "kn_code": "KN 1",
+      "kn_title": "Memerhati dan melakukan",
+      "kn_component_sks": [
+        {
+          "sk_code": "FK 1.1",
+          "sk_title": "Memahami kepentingan koordinasi dalam pergerakan.",
+          "sk_component_spes": [
+            {
+              "spe_code": "FK 1.1.1",
+              "spe_title": "Meniru pelbagai aktiviti pergerakan berdasarkan konsep pergerakan.",
+              "spe_note": "Konsep pergerakan melibatkan: Kesedaran tubuh badan (bentuk, imbangan, dan layangan). Kesedaran ruang (ruang diri, ruang am dan batasan ruang), arah (depan, belakang, kanan, kiri, atas dan bawah), aras (rendah, sederhana, tinggi) dan laluan (lurus, berlengkok, spiral dan zig-zag). Kualiti pergerakan (laju dan perlahan)."
+            },
+            {
+              "spe_code": "FK 1.1.2",
+              "spe_title": "Melakukan pergerakan lokomotor dan bukan lokomotor.",
+              "spe_note": "Lokomotor - berjalan, berlari, berskip, mencongklang (gallopping), melonjak, menggelongsor, melompat dan melompat sebelah kaki (hopping). Bukan lokomotor - membongkok, memusing, mengayun, meregang, menarik, menolak, meringkuk, mengilas dan mengimbang."
+            }
+          ]
+        },
+        {
+          "sk_code": "FK 1.2",
+          "sk_title": "Meniru pelbagai kemahiran manipulasi alatan.",
+          "sk_component_spes": [
+            {
+              "spe_code": "FK 1.2.1",
+              "spe_title": "Meneroka pelbagai aktiviti yang melibatkan alatan.",
+              "spe_note": "Peluang diberikan kepada murid untuk meneroka alatan dengan cara mereka sendiri bagi menggalakkan kreativiti."
+            },
+            {
+              "spe_code": "FK 1.2.2",
+              "spe_title": "Melakukan pelbagai aktiviti menggunakan anggota badan dan alatan.",
+              "spe_note": "Contoh: Bermain doh, berkebun dan menuang air (tangan dan alatan). Menendang bola, mengayuh basikal dan berjalan di atas imbangan (kaki dan alatan). Bermain gelung rotan, memanjat dan merangkak di dalam terowong (seluruh badan dan alatan)."
+            }
+          ]
+        },
+        {
+          "sk_code": "FK 1.3",
+          "sk_title": "Memerhati dan mengetahui cara hidup yang sihat dan selamat.",
+          "sk_component_spes": [
+            {
+              "spe_code": "FK 1.3.1",
+              "spe_title": "Mengenal pasti makanan dan minuman yang sihat dan selamat.",
+              "spe_note": "Makanan dan minuman yang sihat merujuk kepada pengambilan makanan yang seimbang daripada pelbagai kumpulan makanan dan diambil dalam kuantiti yang sederhana berpandukan piramid makanan Malaysia (asas sahaja) dan Pinggan Sihat Malaysia. Pemakanan sihat penting dalam menyokong tumbesaran dan perkembangan optimum murid. Pengukuran berkala berat badan dan ketinggian murid perlu dilaksanakan bagi tujuan pemantauan tumbesaran mereka sekurang-kurangnya dua kali setahun. Makanan yang selamat merujuk kepada makanan yang bersih tidak terdedah dan disimpan di tempat yang sepatutnya. Lihat, bau dan rasa terlebih dahulu (tarikh luput, berbau, basi/masam) untuk memastikan makanan selamat untuk dimakan."
+            },
+            {
+              "spe_code": "FK 1.3.2",
+              "spe_title": "Mengetahui cara makan dan minum yang betul.",
+              "spe_note": "Makan dan minum dengan cara yang betul dengan menunjukkan adab sopan serta menjaga kebersihan. Perkara yang perlu diberi perhatian: Cara cuci tangan yang betul (Sumber KKM: 7 langkah). Pegang peralatan makan dengan cara yang betul, tidak berkongsi alatan. Ambil makanan dalam jumlah yang sesuai dan kunyah sehingga halus. Duduk dengan cara yang betul semasa makan."
+            },
+            {
+              "spe_code": "FK 1.3.3",
+              "spe_title": "Mengetahui cara menjaga kebersihan diri.",
+              "spe_note": "PEERS: Kebersihan diri merangkumi anggota tubuh termasuk organ genital, pakaian dan alatan keperluan diri seperti sikat, berus gigi, tuala, pakaian dalam dan sapu tangan."
+            },
+            {
+              "spe_code": "FK 1.3.4",
+              "spe_title": "Mengetahui sentuhan selamat dan sentuhan tidak selamat.",
+              "spe_note": "PEERS: Nama bahagian tubuh termasuk organ genital. Kemahiran berkata TIDAK kepada sentuhan tidak selamat pada bahagian tubuh seperti payudara, paha, punggung, dubur, faraj dan zakar. Tubuh anda adalah kepunyaan anda. Sentuhan pada tubuh adalah untuk tujuan kebersihan, kesihatan dan keselamatan dengan kehadiran ibu, bapa atau penjaga."
+            },
+            {
+              "spe_code": "FK 1.3.5",
+              "spe_title": "Mengenali jenis penyakit dan cara mencegah penyakit.",
+              "spe_note": "Penyakit yang diberi penekanan: batuk, selesema, sakit mata, cacar air, denggi, demam campak, COVID-19, Influenza serta HFMD. Pendedahan mengenai etika batuk dan bersin serta keperluan meminta bantuan orang dewasa untuk rawatan."
+            },
+            {
+              "spe_code": "FK 1.3.6",
+              "spe_title": "Mengenal pasti cara mengelak daripada kecederaan semasa aktiviti harian.",
+              "spe_note": "Risiko kecederaan boleh berlaku pada bila-bila masa di rumah, sekolah, taman permainan mahupun di jalan raya. Contoh tindakan: memastikan tangan kering sebelum menyentuh suis (rumah), menunggu giliran menggunakan alatan (taman permainan), menggunakan peralatan tajam dengan berhati-hati (sekolah) dan mengikut peraturan jalan raya."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "kn_code": "KN 2",
+      "kn_title": "Koordinasi dan kawalan",
+      "kn_component_sks": [
+        {
+          "sk_code": "FK 2.1",
+          "sk_title": "Melakukan pergerakan badan dengan selamat untuk memenuhi keperluan aktiviti harian.",
+          "sk_component_spes": [
+            {
+              "spe_code": "FK 2.1.1",
+              "spe_title": "Melakukan pelbagai aktiviti yang melibatkan koordinasi, kawalan badan, kesedaran ruang dan ketangkasan dengan selamat.",
+              "spe_note": "Contoh: Aktiviti individu (Permainan mengelak halangan, berjalan di atas garis lurus/papan keseimbangan, menari). Aktiviti kumpulan (Gotong-royong, senamrobik, permainan tradisional)."
+            }
+          ]
+        },
+        {
+          "sk_code": "FK 2.2",
+          "sk_title": "Menggunakan alatan dengan cekap.",
+          "sk_component_spes": [
+            {
+              "spe_code": "FK 2.2.1",
+              "spe_title": "Mengaplikasi kemahiran manipulasi dalam aktiviti harian.",
+              "spe_note": "Contoh: Motor halus (Membutangkan baju, menguntai manik, menguli doh). Motor kasar (Memerah kain, mengemop, menyapu, menyiram pokok)."
+            },
+            {
+              "spe_code": "FK 2.2.2",
+              "spe_title": "Menggunakan alatan dengan betul dan selamat.",
+              "spe_note": "Penggunaan alatan dengan cara yang betul dan selamat serta penjagaan keselamatan diri dan orang lain. Cara penyimpanan yang betul perlu diamalkan selepas alatan digunakan."
+            }
+          ]
+        },
+        {
+          "sk_code": "FK 2.3",
+          "sk_title": "Mengamalkan cara hidup yang sihat dan selamat.",
+          "sk_component_spes": [
+            {
+              "spe_code": "FK 2.3.1",
+              "spe_title": "Mengamalkan pemakanan sihat dan selamat.",
+              "spe_note": null
+            },
+            {
+              "spe_code": "FK 2.3.2",
+              "spe_title": "Mengamalkan cara makan dan minum yang betul.",
+              "spe_note": null
+            },
+            {
+              "spe_code": "FK 2.3.3",
+              "spe_title": "Mengamalkan penjagaan kebersihan diri dan persekitaran.",
+              "spe_note": "Contoh: Cuci tangan dengan betul. Gosok gigi dengan betul (jangan terus berus selepas makan). Tutup mulut sekiranya batuk/bersin. Buang sampah di tempat yang betul."
+            },
+            {
+              "spe_code": "FK 2.3.4",
+              "spe_title": "Mengaplikasikan kemahiran mengatakan TIDAK kepada sentuhan yang tidak selamat.",
+              "spe_note": "PEERS: Kemahiran menjaga keselamatan diri (jerit, lari dan lapor) dan mengelak diri daripada orang yang tidak dikenali."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "kn_code": "KN 3",
+      "kn_title": "Menggabung dan mereka cipta",
+      "kn_component_sks": [
+        {
+          "sk_code": "FK 3.1",
+          "sk_title": "Melaksanakan aktiviti gabungan pergerakan badan.",
+          "sk_component_spes": [
+            {
+              "spe_code": "FK 3.1.1",
+              "spe_title": "Melakukan gabungan pergerakan lokomotor dan bukan lokomotor mengikut muzik atau tanpa muzik.",
+              "spe_note": null
+            },
+            {
+              "spe_code": "FK 3.1.2",
+              "spe_title": "Melakukan pergerakan badan mengikut imaginasi.",
+              "spe_note": "Contoh: Pergerakan seperti haiwan, tumbuhan dan kenderaan."
+            },
+            {
+              "spe_code": "FK 3.1.3",
+              "spe_title": "Bekerjasama untuk menghasilkan gabungan pergerakan secara kreatif.",
+              "spe_note": null
+            }
+          ]
+        },
+        {
+          "sk_code": "FK 3.2",
+          "sk_title": "Menggunakan pelbagai bahan dan alatan untuk melakukan aktiviti kreatif.",
+          "sk_component_spes": [
+            {
+              "spe_code": "FK 3.2.1",
+              "spe_title": "Bermain pelbagai permainan menggunakan bahan dan peralatan ubah suai yang selamat.",
+              "spe_note": "Contoh: Bermain boling menggunakan buah kelapa sebagai bola manakala tin atau botol minuman sebagai pin."
+            },
+            {
+              "spe_code": "FK 3.2.2",
+              "spe_title": "Menghasilkan dan bermain permainan inovatif menggunakan pelbagai bahan dan alatan.",
+              "spe_note": "Contoh: Improvisasi permainan 'Helang dengan Ayam' kepada 'Nelayan dengan Ikan'. Nelayan menggunakan surat khabar sebagai jaring untuk menangkap ikan."
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "performance_metrics": [
+    {
+      "spr_code": "FK 1",
+      "spr_title": "Menunjukkan kecekapan dalam kemahiran motor kasar yang diperlukan untuk melakukan pelbagai aktiviti harian.",
+      "spr_component_sks": ["FK 1.1", "FK 2.1", "FK 3.1"],
+      "spr_rubric": [
+        {
+          "level": 3,
+          "explanation": "Murid boleh melaksanakan aktiviti yang melibatkan pergerakan badan dengan tangkas dan terkawal."
+        },
+        {
+          "level": 2,
+          "explanation": "Murid boleh melaksanakan aktiviti yang melibatkan pergerakan badan, kurang tangkas tetapi terkawal."
+        },
+        {
+          "level": 1,
+          "explanation": "Murid boleh melaksanakan aktiviti yang melibatkan pergerakan badan, kurang tangkas dan tidak terkawal."
+        }
+      ]
+    },
+    {
+      "spr_code": "FK 2",
+      "spr_title": "Mengkoordinasi dan mengawal motor halus untuk melakukan aktiviti atau pergerakan dengan lebih cekap dan tepat.",
+      "spr_component_sks": ["FK 1.2", "FK 2.2", "FK 3.2"],
+      "spr_rubric": [
+        {
+          "level": 3,
+          "explanation": "Murid boleh melakukan koordinasi mata dengan tangan dan kawalan pergerakan dengan cekap dalam aktiviti harian yang kompleks."
+        },
+        {
+          "level": 2,
+          "explanation": "Murid boleh melakukan koordinasi mata dengan tangan dan kawalan motor halus dalam aktiviti harian yang mudah."
+        },
+        {
+          "level": 1,
+          "explanation": "Murid boleh melakukan koordinasi mata dengan tangan dan kawalan motor halus dengan bimbingan."
+        }
+      ]
+    },
+    {
+      "spr_code": "FK 3",
+      "spr_title": "Menunjukkan kesedaran tentang penjagaan keselamatan diri dalam aktiviti harian.",
+      "spr_component_sks": ["FK 1.3", "FK 2.3"],
+      "spr_rubric": [
+        {
+          "level": 3,
+          "explanation": "Murid boleh mengenal situasi berbahaya dan kemungkinan terjadinya situasi yang berbahaya serta mengambil tindakan untuk mengelakkan situasi berbahaya diri sendiri dan orang lain."
+        },
+        {
+          "level": 2,
+          "explanation": "Murid boleh mengenal situasi berbahaya dan mengambil tindakan untuk mengelakkan situasi berbahaya."
+        },
+        {
+          "level": 1,
+          "explanation": "Murid boleh mengelakkan diri daripada situasi berbahaya dengan bimbingan."
+        }
+      ]
+    },
+    {
+      "spr_code": "FK 4",
+      "spr_title": "Menjaga kebersihan diri dan persekitaran.",
+      "spr_component_sks": ["FK 1.3", "FK 2.3"],
+      "spr_rubric": [
+        {
+          "level": 3,
+          "explanation": "Murid boleh mengurus kebersihan diri dan menjaga kebersihan persekitaran dalam kehidupan harian."
+        },
+        {
+          "level": 2,
+          "explanation": "Murid boleh mengurus kebersihan diri dan menjaga kebersihan persekitaran tetapi masih kurang menyeluruh."
+        },
+        {
+          "level": 1,
+          "explanation": "Murid boleh mengurus kebersihan diri dan menjaga kebersihan persekitaran dengan bimbingan."
+        }
+      ]
+    },
+    {
+      "spr_code": "FK 5",
+      "spr_title": "Mengamalkan pemakanan sihat dan selamat.",
+      "spr_component_sks": ["FK 1.3", "FK 2.3"],
+      "spr_rubric": [
+        {
+          "level": 3,
+          "explanation": "Murid boleh mengamalkan pemakanan sihat dan selamat."
+        },
+        {
+          "level": 2,
+          "explanation": "Murid boleh mengamalkan pemakanan sihat dan selamat dengan bimbingan."
+        },
+        {
+          "level": 1,
+          "explanation": "Murid boleh memilih makanan dan minuman yang sihat dan selamat."
+        }
+      ]
+    }
+  ]
+}

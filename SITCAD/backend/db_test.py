@@ -32,9 +32,6 @@ try:
         print("Connection successful!")
 except Exception as e:
     print(f"Connection failed: {e}")
-    
-inspector = inspect(engine)
-print(inspector.get_table_names())
 
 # Close the engine
 engine.dispose()
