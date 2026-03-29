@@ -1,0 +1,313 @@
+{
+  "overview": {
+    "domain": "Bahasa dan Literasi - BAHASA MELAYU",
+    "domain_identifier": "BM",
+    "description": {
+      "kandungan_pembelajaran": "Subbidang pembelajaran Bahasa Melayu memberi penekanan terhadap pemahaman yang boleh dikuasai melalui kemahiran mendengar dan membaca, manakala kebolehan mengekspresi diri semasa berkomunikasi pula dilatih menerusi kemahiran bertutur dan menulis. Kesemua kemahiran ini adalah penting untuk murid memahami dan mengekspresi diri mereka semasa berinteraksi. Aspek seni bahasa pula diperkenalkan kepada murid melalui lagu, puisi dan cerita kanak-kanak. Subbidang pembelajaran ini adalah selari dengan Kerangka Standard Bahasa Melayu.",
+      "skills": [
+        {
+          "kn_code": "KN 1",
+          "kn_title": "MENDENGAR"
+        },
+        {
+          "kn_code": "KN 2",
+          "kn_title": "BERTUTUR"
+        },
+        {
+          "kn_code": "KN 3",
+          "kn_title": "MEMBACA"
+        },
+        {
+          "kn_code": "KN 4",
+          "kn_title": "MENULIS"
+        }
+      ],
+      "dimensions": [
+        "Berinteraksi dengan orang lain",
+        "Berinteraksi dengan teks atau bahan"
+      ],
+      "focus": [
+        "Memahami teks dan bahan yang didengar dan dibaca.",
+        "Menggunakan bahasa Melayu untuk mengekspresi diri secara lisan dan melalui penulisan."
+      ]
+    }
+  },
+  "domain_content": [
+    {
+      "kn_code": "KEMAHIRAN 1",
+      "kn_title": "MENDENGAR",
+      "kn_component_sks": [
+        {
+          "sk_code": "BM 1.1",
+          "sk_title": "Mendengar dan memberikan respons.",
+          "sk_component_spes": [
+            {
+              "spe_code": "BM 1.1.1",
+              "spe_title": "Mengecam bunyi dalam persekitaran.",
+              "age_group": "4+ & 5+",
+              "spe_note": "Contoh: Bunyi manusia, alam sekitar dan ciptaan manusia."
+            },
+            {
+              "spe_code": "BM 1.1.2",
+              "spe_title": "Mengecam bunyi abjad, suku kata, perkataan, frasa dan ayat mudah.",
+              "age_group": "4+ & 5+",
+              "spe_note": null
+            },
+            {
+              "spe_code": "BM 1.1.3",
+              "spe_title": "Mendengar dan memahami lagu, puisi dan cerita kanak-kanak.",
+              "age_group": "4+ & 5+",
+              "spe_note": null
+            },
+            {
+              "spe_code": "BM 1.1.4",
+              "spe_title": "Memahami dan memberi respons yang betul dalam pelbagai situasi.",
+              "age_group": "4+ & 5+",
+              "spe_note": "Contoh: Soalan, permintaan, arahan dan penolakan serta maklumat dan cerita yang didengar."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "kn_code": "KEMAHIRAN 2",
+      "kn_title": "BERTUTUR",
+      "kn_component_sks": [
+        {
+          "sk_code": "BM 2.1",
+          "sk_title": "Bertutur dan berinteraksi dengan sebutan yang jelas dan sopan.",
+          "sk_component_spes": [
+            {
+              "spe_code": "BM 2.1.1",
+              "spe_title": "Mengajuk pelbagai bunyi di persekitaran.",
+              "age_group": "4+ & 5+",
+              "spe_note": "Contoh: Bunyi semula jadi (ayam berkokok, kucing mengiau, hujan lebat, guruh); Bunyi peralatan atau kenderaan (jam loceng berdering, ketukan di pintu)."
+            },
+            {
+              "spe_code": "BM 2.1.2",
+              "spe_title": "Berinteraksi dengan sebutan yang jelas dan sopan dalam perbualan harian.",
+              "age_group": "4+ & 5+",
+              "spe_note": "Berinteraksi menggunakan: bahasa lisan, bahasa bukan lisan, intonasi yang sesuai."
+            },
+            {
+              "spe_code": "BM 2.1.3",
+              "spe_title": "Menyanyikan lagu atau melafazkan puisi mudah dengan sebutan yang jelas.",
+              "age_group": "4+ & 5+",
+              "spe_note": null
+            },
+            {
+              "spe_code": "BM 2.1.4",
+              "spe_title": "Menyampaikan idea tentang sesuatu yang didengar, dilihat atau dialami.",
+              "age_group": "4+ & 5+",
+              "spe_note": null
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "kn_code": "KEMAHIRAN 3",
+      "kn_title": "MEMBACA",
+      "kn_component_sks": [
+        {
+          "sk_code": "BM 3.1",
+          "sk_title": "Menguasai kemahiran prabaca.",
+          "sk_component_spes": [
+            {
+              "spe_code": "BM 3.1.1",
+              "spe_title": "Mengenal dan memahami label, tanda, logo dan simbol.",
+              "age_group": "4+ & 5+",
+              "spe_note": null
+            },
+            {
+              "spe_code": "BM 3.1.2",
+              "spe_title": "Mengenal ciri asas dan cara mengendalikan buku.",
+              "age_group": "4+ & 5+",
+              "spe_note": "Ciri asas: muka depan, muka belakang, judul, penulis, kandungan dan nombor muka surat. Cara mengendali buku: memegang buku dengan betul, menyelak buku, menyimpan buku di tempat yang sesuai."
+            },
+            {
+              "spe_code": "BM 3.1.3",
+              "spe_title": "Memahami ilustrasi atau gambar.",
+              "age_group": "4+ & 5+",
+              "spe_note": null
+            },
+            {
+              "spe_code": "BM 3.1.4",
+              "spe_title": "Mengamalkan cara membaca yang betul.",
+              "age_group": "4+ & 5+",
+              "spe_note": "Jarak antara mata dan teks. Baca dari depan ke belakang. Baca dari kiri ke kanan. Baca dari atas ke bawah. Baca dari baris atas ke baris bawah."
+            }
+          ]
+        },
+        {
+          "sk_code": "BM 3.2",
+          "sk_title": "Memahami teks dan maksudnya.",
+          "sk_component_spes": [
+            {
+              "spe_code": "BM 3.2.1",
+              "spe_title": "Mengenal bentuk dan nama huruf.",
+              "age_group": "4+ & 5+",
+              "spe_note": null
+            },
+            {
+              "spe_code": "BM 3.2.2",
+              "spe_title": "Mengenal dan membunyikan suku kata.",
+              "age_group": "4+ & 5+",
+              "spe_note": "Gabungan konsonan vokal (KV) dan konsonan vokal konsonan (KVK)."
+            },
+            {
+              "spe_code": "BM 3.2.3",
+              "spe_title": "Mengenal dan membaca perkataan yang mempunyai suku kata terbuka dan suku kata tertutup.",
+              "age_group": "4+ & 5+",
+              "spe_note": "KV+KV (bo+la); KV+KV+KV (ke+re+ta); KVK (bas); V+KV (i+bu); V+KVK (u+bat); KV+KVK (ko+tak)."
+            },
+            {
+              "spe_code": "BM 3.2.4",
+              "spe_title": "Membaca dan memahami maksud perkataan.",
+              "age_group": "4+ & 5+",
+              "spe_note": "Dengan bantuan visual atau bahan."
+            },
+            {
+              "spe_code": "BM 3.2.5",
+              "spe_title": "Membaca frasa dan ayat mudah serta memahaminya.",
+              "age_group": "4+ & 5+",
+              "spe_note": null
+            },
+            {
+              "spe_code": "BM 3.2.6",
+              "spe_title": "Memahami dan memberi respons kepada cerita yang dibaca dalam bentuk cetakan atau digital.",
+              "age_group": "4+ & 5+",
+              "spe_note": null
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "kn_code": "KEMAHIRAN 4",
+      "kn_title": "MENULIS",
+      "kn_component_sks": [
+        {
+          "sk_code": "BM 4.1",
+          "sk_title": "Menguasai kemahiran pratulis.",
+          "sk_component_spes": [
+            {
+              "spe_code": "BM 4.1.1",
+              "spe_title": "Mengkoordinasikan pergerakan mata dengan tangan semasa menggunakan alat tulis.",
+              "age_group": "4+ & 5+",
+              "spe_note": null
+            },
+            {
+              "spe_code": "BM 4.1.2",
+              "spe_title": "Menulis dengan cara pegangan alat tulis dan postur yang betul.",
+              "age_group": "4+ & 5+",
+              "spe_note": null
+            }
+          ]
+        },
+        {
+          "sk_code": "BM 4.2",
+          "sk_title": "Menyampaikan idea dalam bentuk lukisan, simbol dan tulisan untuk berkomunikasi.",
+          "sk_component_spes": [
+            {
+              "spe_code": "BM 4.2.1",
+              "spe_title": "Menulis huruf dengan cara yang betul.",
+              "age_group": "4+ & 5+",
+              "spe_note": "Contoh: Melakar dan menyurih boleh digunakan bagi murid yang baru belajar menulis."
+            },
+            {
+              "spe_code": "BM 4.2.2",
+              "spe_title": "Menyalin perkataan, frasa dan ayat mudah dengan betul.",
+              "age_group": "4+ & 5+",
+              "spe_note": null
+            },
+            {
+              "spe_code": "BM 4.2.3",
+              "spe_title": "Meluah idea menggunakan simbol, lukisan dan penulisan di atas kertas atau dalam persembahan digital.",
+              "age_group": "4+ & 5+",
+              "spe_note": null
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "performance_metrics": [
+    {
+      "spr_code": "BM 1",
+      "spr_title": "Mendengar dan memberi respons yang betul dalam pelbagai situasi.",
+      "spr_component_sks": ["BM 1.1"],
+      "spr_rubric": [
+        {
+          "level": 1,
+          "explanation": "Murid boleh mendengar dan memberikan respons secara terhad."
+        },
+        {
+          "level": 2,
+          "explanation": "Murid boleh mendengar dan memberikan respons yang betul dalam situasi tertentu."
+        },
+        {
+          "level": 3,
+          "explanation": "Murid boleh mendengar dan memberikan respons yang betul dalam pelbagai situasi."
+        }
+      ]
+    },
+    {
+      "spr_code": "BM 2",
+      "spr_title": "Bertutur secara jelas dan sopan dalam perbualan harian berdasarkan pelbagai situasi.",
+      "spr_component_sks": ["BM 2.1"],
+      "spr_rubric": [
+        {
+          "level": 1,
+          "explanation": "Murid boleh bertutur dengan jelas dalam situasi tertentu secara terhad."
+        },
+        {
+          "level": 2,
+          "explanation": "Murid boleh bertutur dengan jelas dalam situasi tertentu."
+        },
+        {
+          "level": 3,
+          "explanation": "Murid boleh bertutur dengan jelas dan sopan dalam pelbagai situasi."
+        }
+      ]
+    },
+    {
+      "spr_code": "BM 3",
+      "spr_title": "Membaca dan memahami teks.",
+      "spr_component_sks": ["BM 3.2"],
+      "spr_rubric": [
+        {
+          "level": 1,
+          "explanation": "Murid boleh membaca perkataan dengan bantuan simbol atau gambar."
+        },
+        {
+          "level": 2,
+          "explanation": "Murid boleh membaca dan memahami frasa."
+        },
+        {
+          "level": 3,
+          "explanation": "Murid boleh membaca dan memahami ayat mudah."
+        }
+      ]
+    },
+    {
+      "spr_code": "BM 4",
+      "spr_title": "Boleh menyampaikan idea melalui simbol, lukisan dan penulisan.",
+      "spr_component_sks": ["BM 4.2"],
+      "spr_rubric": [
+        {
+          "level": 1,
+          "explanation": "Murid boleh menyampaikan idea dengan menggunakan simbol atau lukisan."
+        },
+        {
+          "level": 2,
+          "explanation": "Murid boleh menyampaikan idea dengan menggunakan gabungan simbol, lukisan, perkataan dan frasa."
+        },
+        {
+          "level": 3,
+          "explanation": "Murid boleh menyampaikan idea dengan menggunakan gabungan simbol, lukisan, perkataan, frasa dan ayat mudah."
+        }
+      ]
+    }
+  ]
+}
