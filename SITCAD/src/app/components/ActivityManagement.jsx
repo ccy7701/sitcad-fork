@@ -9,11 +9,12 @@ import { Textarea } from './ui/textarea';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from './ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select';
 import { Badge } from './ui/badge';
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from './ui/dialog';
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from './ui/dialog';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from './ui/tabs';
 import { Checkbox } from './ui/checkbox';
 import { ArrowLeft, Plus, Calendar, Clock, Book, Calculator, Users, Activity as ActivityIcon, Palette, Brain, CheckCircle2 } from 'lucide-react';
 import { toast } from 'sonner';
+import Duckpit from './Duckpit';
 
 const activityTypes = [
   { value: 'literacy', label: 'Literacy', icon: Book, color: 'bg-[#f46197]/20 text-[#f46197] border-[#f46197]/30' },
@@ -109,9 +110,15 @@ export function ActivityManagement() {
   ];
 
   return (
-    <div className="min-h-screen">
+    <div className="relative min-h-screen overflow-hidden bg-slate-50">
+      <div className="absolute inset-0 z-0 pointer-events-none">
+        <Duckpit count={24} gravity={0.5} friction={0.9975} wallBounce={0.9} className="h-full w-full opacity-100" />
+      </div>
+      <div className="absolute inset-0 z-0 bg-gradient-to-b from-white/72 via-white/58 to-emerald-50/72" />
+
+      <div className="relative z-10">
       {/* Header */}
-      <header className="bg-white border-b shadow-sm sticky top-0 z-10">
+      <header className="bg-white/80 border-b shadow-sm sticky top-0 z-20 backdrop-blur-sm">
         <div className="max-w-7xl mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
@@ -125,6 +132,11 @@ export function ActivityManagement() {
                 </p>
               </div>
             </div>
+            <Button variant="outline" onClick={() => navigate('/teacher')}>
+              <ArrowLeft className="mr-2 h-4 w-4" />
+              Back to Dashboard
+            </Button>
+            <div className="hidden">
             <Dialog open={open} onOpenChange={setOpen}>
               <DialogTrigger asChild>
                 <Button size="lg">
@@ -255,6 +267,7 @@ export function ActivityManagement() {
                 </div>
               </DialogContent>
             </Dialog>
+            </div>
           </div>
         </div>
       </header>
@@ -280,10 +293,18 @@ export function ActivityManagement() {
         {/* Activities List */}
         <Card>
           <CardHeader>
-            <CardTitle>Created Activities</CardTitle>
-            <CardDescription>
-              Manage and track all learning activities
-            </CardDescription>
+            <div className="flex items-start justify-between gap-4">
+              <div>
+                <CardTitle>Created Activities</CardTitle>
+                <CardDescription>
+                  Manage and track all learning activities
+                </CardDescription>
+              </div>
+              <Button onClick={() => setOpen(true)}>
+                <Plus className="mr-2 h-4 w-4" />
+                Create Activity
+              </Button>
+            </div>
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
@@ -468,6 +489,7 @@ export function ActivityManagement() {
           })()}
         </DialogContent>
       </Dialog>
+      </div>
     </div>
   );
 }

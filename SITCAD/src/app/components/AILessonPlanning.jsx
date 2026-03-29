@@ -9,6 +9,7 @@ import { Textarea } from './ui/textarea';
 import { Badge } from './ui/badge';
 import { ArrowLeft, Sparkles, Lightbulb, Target, Clock, Users, Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
+import Duckpit from './Duckpit';
 
 export function AILessonPlanning() {
   const { user } = useAuth();
@@ -110,24 +111,32 @@ export function AILessonPlanning() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50">
+    <div className="relative min-h-screen overflow-hidden bg-slate-50">
+      <div className="absolute inset-0 z-0 pointer-events-none">
+        <Duckpit count={24} gravity={0.5} friction={0.9975} wallBounce={0.9} className="h-full w-full opacity-100" />
+      </div>
+      <div className="absolute inset-0 z-0 bg-gradient-to-b from-white/72 via-white/58 to-emerald-50/72" />
+
+      <div className="relative z-10">
       {/* Header */}
-      <header className="bg-white border-b shadow-sm sticky top-0 z-10">
-        <div className="max-w-6xl mx-auto px-4 py-4">
-          <Button variant="ghost" onClick={() => navigate('/teacher')} className="mb-4">
-            <ArrowLeft className="mr-2 h-4 w-4" />
-            Back to Dashboard
-          </Button>
-          <div className="flex items-center gap-3">
-            <div className="w-12 h-12 bg-gradient-to-br from-purple-500 to-pink-600 rounded-lg flex items-center justify-center">
-              <Sparkles className="w-6 h-6 text-white" />
+      <header className="bg-white/80 border-b shadow-sm sticky top-0 z-20 backdrop-blur-sm">
+        <div className="max-w-7xl mx-auto px-6 py-4">
+          <div className="flex items-center justify-between gap-4">
+            <div className="flex items-center gap-2">
+              <div className="w-8 h-8 bg-gradient-to-br from-purple-500 to-pink-600 rounded-lg flex items-center justify-center">
+                <Sparkles className="w-4 h-4 text-white" />
+              </div>
+              <div>
+                <h1 className="text-2xl font-semibold">Lesson Planning Assistant Powered by AI</h1>
+                <p className="text-sm text-muted-foreground mt-1">
+                  Generate planning lesson powered by AI
+                </p>
+              </div>
             </div>
-            <div>
-              <h1 className="text-2xl font-semibold">Lesson Planning Assistant Powered by AI</h1>
-              <p className="text-sm text-muted-foreground">
-                Generate planning lesson powered by AI
-              </p>
-            </div>
+            <Button variant="ghost" onClick={() => navigate('/teacher')}>
+              <ArrowLeft className="mr-2 h-4 w-4" />
+              Back to Dashboard
+            </Button>
           </div>
         </div>
       </header>
@@ -344,6 +353,7 @@ export function AILessonPlanning() {
           </div>
         )}
       </main>
+      </div>
     </div>
   );
 }

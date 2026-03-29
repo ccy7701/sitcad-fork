@@ -5,7 +5,8 @@ import { Button } from './ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from './ui/card';
 import { Badge } from './ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from './ui/tabs';
-import { ArrowLeft, AlertTriangle, CheckCircle, Clock, Target } from 'lucide-react';
+import { ArrowLeft, AlertTriangle, CheckCircle, Clock } from 'lucide-react';
+import Duckpit from './Duckpit';
 
 export function Interventions() {
   const { user } = useAuth();
@@ -36,10 +37,10 @@ export function Interventions() {
 
   const getStatusIcon = (status) => {
     switch (status) {
-      case 'pending': return <Clock className="h-5 w-5 text-orange-600" />;
-      case 'in-progress': return <Target className="h-5 w-5 text-blue-600" />;
-      case 'resolved': return <CheckCircle className="h-5 w-5 text-green-600" />;
-      default: return <AlertTriangle className="h-5 w-5 text-gray-600" />; // Added default for safety
+      case 'pending': return <AlertTriangle className="h-5 w-5 text-yellow-600" />;
+      case 'in-progress': return <AlertTriangle className="h-5 w-5 text-yellow-500" />;
+      case 'resolved': return <AlertTriangle className="h-5 w-5 text-green-600" />;
+      default: return <AlertTriangle className="h-5 w-5 text-black-600" />;
     }
   };
 
@@ -99,24 +100,32 @@ export function Interventions() {
   );
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-green-300 via-green-200 to-green-100">
+    <div className="relative min-h-screen overflow-hidden bg-slate-50">
+      <div className="absolute inset-0 z-0 pointer-events-none">
+        <Duckpit count={24} gravity={0.5} friction={0.9975} wallBounce={0.9} className="h-full w-full opacity-100" />
+      </div>
+      <div className="absolute inset-0 z-0 bg-gradient-to-b from-white/72 via-white/58 to-emerald-50/72" />
+
+      <div className="relative z-10">
       {/* Header */}
-      <header className="bg-white border-b shadow-sm sticky top-0 z-10">
-        <div className="max-w-6xl mx-auto px-4 py-4">
-          <Button variant="ghost" onClick={handleBack} className="mb-4">
-            <ArrowLeft className="mr-2 h-4 w-4" />
-            Back to Dashboard
-          </Button>
-          <div className="flex items-center gap-3">
-            <div className="w-12 h-12 bg-gradient-to-br from-yellow-500 to-orange-600 rounded-lg flex items-center justify-center">
-              <AlertTriangle className="w-6 h-6 text-black"/>
+      <header className="bg-white/80 border-b shadow-sm sticky top-0 z-20 backdrop-blur-sm">
+        <div className="max-w-7xl mx-auto px-6 py-4">
+          <div className="flex items-center justify-between gap-4">
+            <div className="flex items-center gap-2">
+              <div className="w-8 h-8 bg-gradient-to-br from-green-500 to-green-100 rounded-lg flex items-center justify-center">
+                <AlertTriangle className="w-4 h-4 text-white"/>
+              </div>
+              <div>
+                <h1 className="text-2xl font-semibold">Early Intervention Support</h1>
+                <p className="text-sm text-muted-foreground mt-1">
+                  Data-driven insights and recommendations for students needing additional support
+                </p>
+              </div>
             </div>
-            <div>
-              <h1 className="text-2xl font-semibold">Early Intervention Support</h1>
-              <p className="text-sm text-muted-foreground">
-                Data-driven insights and recommendations for students needing additional support
-              </p>
-            </div>
+            <Button variant="ghost" onClick={handleBack}>
+              <ArrowLeft className="mr-2 h-4 w-4" />
+              Back to Dashboard
+            </Button>
           </div>
         </div>
       </header>
@@ -125,39 +134,39 @@ export function Interventions() {
         {/* Statistics */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <Card>
-            <CardHeader className="pb-3">
+            <CardHeader className="pb-1">
               <CardDescription>Pending Review</CardDescription>
-              <CardTitle className="text-3xl">{pendingInterventions.length}</CardTitle>
+              <CardTitle className="text-5xl">{pendingInterventions.length}</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="flex items-center text-sm text-red-600">
-                <Clock className="mr-2 h-4 w-4" />
+              <div className="flex items-center text-sm text-yellow-600">
+                <Clock className="mr-2 h-5 w-5" />
                 Requires attention
               </div>
             </CardContent>
           </Card>
 
           <Card>
-            <CardHeader className="pb-3">
+            <CardHeader className="pb-1">
               <CardDescription>In Progress</CardDescription>
-              <CardTitle className="text-3xl">{inProgressInterventions.length}</CardTitle>
+              <CardTitle className="text-5xl">{inProgressInterventions.length}</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="flex items-center text-sm text-orange-600">
-                <Target className="mr-2 h-4 w-4" />
+              <div className="flex items-center text-sm text-green-600">
+                <AlertTriangle className="mr-2 h-5 w-5" />
                 Active interventions
               </div>
             </CardContent>
           </Card>
 
           <Card>
-            <CardHeader className="pb-3">
+            <CardHeader className="pb-1">
               <CardDescription>Resolved</CardDescription>
-              <CardTitle className="text-3xl">{resolvedInterventions.length}</CardTitle>
+              <CardTitle className="text-5xl">{resolvedInterventions.length}</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="flex items-center text-sm text-green-600">
-                <CheckCircle className="mr-2 h-4 w-4" />
+                <CheckCircle className="mr-2 h-5 w-5" />
                 Successfully addressed
               </div>
             </CardContent>
@@ -165,11 +174,11 @@ export function Interventions() {
         </div>
 
         {/* AI Insights Banner */}
-        <Card className="border-2 border-yellow-200 bg-gradient-to-r from-yellow-100 to-yellow-100">
+        <Card className="border-1 border-green-200 bg-gradient-to-r from-green-100 to-green-100">
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
-              <div className="w-8 h-8 rounded-full bg-gradient-to-br from-yellow-500 to-red-600 flex items-center justify-center">
-                <Target className="h-4 w-4 text-black"/>
+              <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-green-500 to-green-200 flex items-center justify-center">
+                <AlertTriangle className="h-4 w-4 text-white"/>
               </div>
               Early Intervention System Powered by AI
             </CardTitle>
@@ -186,7 +195,7 @@ export function Interventions() {
         <Tabs defaultValue="in-progress" className="space-y-6">
           <TabsList className="grid w-full grid-cols-3">
             <TabsTrigger value="in-progress" className="gap-2">
-              <Target className="h-4 w-4" />
+              <AlertTriangle className="h-4 w-4" />
               In Progress ({inProgressInterventions.length})
             </TabsTrigger>
             <TabsTrigger value="pending" className="gap-2">
@@ -236,6 +245,7 @@ export function Interventions() {
           </TabsContent>
         </Tabs>
       </main>
+      </div>
     </div>
   );
 }
