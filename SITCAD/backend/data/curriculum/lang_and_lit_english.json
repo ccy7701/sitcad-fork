@@ -1,0 +1,301 @@
+{
+  "overview": {
+    "domain": "Bahasa dan Literasi - ENGLISH",
+    "domain_identifier": "BI",
+    "description": {
+      "kandungan_pembelajaran": "The English language sub-learning area focuses on pupils’ comprehension ability in listening and reading, and use of appropriate expressions in speaking and writing, which are essential for effective interactions. Creative language elements are integrated into these skills through rhymes, songs, poems and stories. This sub-learning area is aligned with the Common European Framework of Reference for Languages (CEFR).",
+      "skills": [
+        {
+          "kn_code": "KN 1",
+          "kn_title": "LISTENING"
+        },
+        {
+          "kn_code": "KN 2",
+          "kn_title": "SPEAKING"
+        },
+        {
+          "kn_code": "KN 3",
+          "kn_title": "READING"
+        },
+        {
+          "kn_code": "KN 4",
+          "kn_title": "WRITING"
+        }
+      ],
+      "dimensions": [
+        "interactions with others",
+        "interactions with texts or materials"
+      ],
+      "focus": [
+        "Understand texts and materials that are heard or read",
+        "Use the English language to express oneself verbally or in writing"
+      ]
+    }
+  },
+  "domain_content": [
+    {
+      "kn_code": "SKILL 1",
+      "kn_title": "LISTENING",
+      "kn_component_sks": [
+        {
+          "sk_code": "BI 1.1",
+          "sk_title": "Recognise and understand the sounds in songs and spoken language.",
+          "sk_component_spes": [
+            {
+              "spe_code": "BI 1.1.1",
+              "spe_title": "Listen and recognise sounds, letters, words, phrases and simple sentences.",
+              "spe_note": "Examples: Environmental sounds (natural sounds - rainfall, bees buzzing), (man-made sounds - bell rings, whistle blowing); Letters of the alphabet; Numbers 1 to 20; Thematic words (animals, school, colours, food, my body); Greetings (daily, festivals, occasions)"
+            },
+            {
+              "spe_code": "BI 1.1.2",
+              "spe_title": "Listen and recognise sounds in monosyllable words.",
+              "spe_note": "Examples: Monosyllable words (consonant, vowel, consonant - c a t, b e d, s a y); Blend or segment sounds (cat, bed, say)"
+            },
+            {
+              "spe_code": "BI 1.1.3",
+              "spe_title": "Listen and understand rhymes, songs, poems and short stories.",
+              "spe_note": null
+            }
+          ]
+        },
+        {
+          "sk_code": "BI 1.2",
+          "sk_title": "Understand and respond to spoken language.",
+          "sk_component_spes": [
+            {
+              "spe_code": "BI 1.2.1",
+              "spe_title": "Listen, understand and respond in a variety of contexts.",
+              "spe_note": "Examples: Environmental or man-made sounds (thunder, school bell rings); Daily routines (exchange greetings, express feelings, make simple requests); Rhymes, songs and stories"
+            },
+            {
+              "spe_code": "BI 1.2.2",
+              "spe_title": "Listen and follow or respond to questions, requests, instructions or rejections.",
+              "spe_note": "Examples: Questions (How are you today?, Where are you going?, How was school?); Requests (May I borrow your pencil?); Instructions (Do not shout. Please stand up.); Rejections (No, you may not. No, thank you.); All should be said politely and in complete sentences."
+            },
+            {
+              "spe_code": "BI 1.2.3",
+              "spe_title": "Listen, understand and respond to simple descriptions of familiar objects, daily routines, events or stories.",
+              "spe_note": "Examples: Familiar objects (shapes, colours, textures, sizes); Daily routines (in the morning, in the classroom, at night); Events (occasions, locations, functions); Stories (fairytales, folklores, fables, myths, legends, fantasies)"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "kn_code": "SKILL 2",
+      "kn_title": "SPEAKING",
+      "kn_component_sks": [
+        {
+          "sk_code": "BI 2.1",
+          "sk_title": "Communicate simple information.",
+          "sk_component_spes": [
+            {
+              "spe_code": "BI 2.1.1",
+              "spe_title": "Use words, phrases and sentences to express oneself.",
+              "spe_note": "Likes, dislikes, needs, feelings and ideas"
+            },
+            {
+              "spe_code": "BI 2.1.2",
+              "spe_title": "Participate in daily conversations.",
+              "spe_note": "Exchange basic information about oneself; Exchange greetings; Show appreciation (Politely and appropriately, Use suitable gestures and facial expressions)"
+            },
+            {
+              "spe_code": "BI 2.1.3",
+              "spe_title": "Recite simple nursery rhymes and poems or sing songs.",
+              "spe_note": null
+            },
+            {
+              "spe_code": "BI 2.1.4",
+              "spe_title": "Participate in talks about stories.",
+              "spe_note": "Children’s stories, folklores, fables, fairytales, myths, legends and fantasies; Stories read, heard or seen"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "kn_code": "SKILL 3",
+      "kn_title": "READING",
+      "kn_component_sks": [
+        {
+          "sk_code": "BI 3.1",
+          "sk_title": "Display print and book awareness.",
+          "sk_component_spes": [
+            {
+              "spe_code": "BI 3.1.1",
+              "spe_title": "Read, recognise and understand common labels, signs, logos and symbols.",
+              "spe_note": "Examples: Labels (on things, on packages); Signs (safety signs, road signs); Logos (on products, of companies); Symbols (emojis, &, @, !, ?)"
+            },
+            {
+              "spe_code": "BI 3.1.2",
+              "spe_title": "Demonstrate book-handling skills and recognise the basic features of a book.",
+              "spe_note": "Front/back cover; Title, writer, contents and page number"
+            },
+            {
+              "spe_code": "BI 3.1.3",
+              "spe_title": "Understand illustrations or images.",
+              "spe_note": "Illustrations (cartoon strips, drawings); Images (photographs, pictures, digital images)"
+            },
+            {
+              "spe_code": "BI 3.1.4",
+              "spe_title": "Read in the correct manner.",
+              "spe_note": "Distance between the eyes and texts; Read from front to the back; Read from left to right; Read from top to bottom line by line."
+            }
+          ]
+        },
+        {
+          "sk_code": "BI 3.2",
+          "sk_title": "Understand texts and their meanings.",
+          "sk_component_spes": [
+            {
+              "spe_code": "BI 3.2.1",
+              "spe_title": "Read and recognise the shapes, names and sounds of letters of the alphabet.",
+              "spe_note": "The whole-word approach, phonics or a combination of both can be used."
+            },
+            {
+              "spe_code": "BI 3.2.2",
+              "spe_title": "Read and recognise initial, medial and final sounds in a word.",
+              "spe_note": "Examples: Initial sounds (cat, bin, play); Medial sounds (fork, school, feet); Final sounds (cat, bin, fork, feet, brush, jump, sing)"
+            },
+            {
+              "spe_code": "BI 3.2.3",
+              "spe_title": "Read and understand words.",
+              "spe_note": "High-frequency words; Numbers; With the help of visuals or support materials"
+            },
+            {
+              "spe_code": "BI 3.2.4",
+              "spe_title": "Read and understand simple phrases and sentences.",
+              "spe_note": "Examples: Simple phrases (a blue ball, an ant); Simple sentences (This is a blue ball. That was an ant.)"
+            },
+            {
+              "spe_code": "BI 3.2.5",
+              "spe_title": "Read, understand and respond to stories in print or digital materials.",
+              "spe_note": "Examples: Printed materials (notices, flash cards, stories, posters); Digital materials (photographs, movies, cartoons, video clips); Use wh-questions for comprehension; Reflect and relate stories to oneself; Role-play"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "kn_code": "SKILL 4",
+      "kn_title": "WRITING",
+      "kn_component_sks": [
+        {
+          "sk_code": "BI 4.1",
+          "sk_title": "Display prewriting skills.",
+          "sk_component_spes": [
+            {
+              "spe_code": "BI 4.1.1",
+              "spe_title": "Demonstrate fine motor control of hands and fingers by using writing tools correctly.",
+              "spe_note": null
+            },
+            {
+              "spe_code": "BI 4.1.2",
+              "spe_title": "Write with correct pencil hold grip and posture.",
+              "spe_note": "Examples: Hand-eye coordination activities (scribbling, tracing, colouring, drawing); Sitting posture"
+            }
+          ]
+        },
+        {
+          "sk_code": "BI 4.2",
+          "sk_title": "Use basic writing skills for communication.",
+          "sk_component_spes": [
+            {
+              "spe_code": "BI 4.2.1",
+              "spe_title": "Write letters of the alphabet.",
+              "spe_note": "Beginners: tracing and joining the dots; Capital and small letters, numbers, familiar and simple words"
+            },
+            {
+              "spe_code": "BI 4.2.2",
+              "spe_title": "Copy words, phrases and sentences in legible print.",
+              "spe_note": null
+            },
+            {
+              "spe_code": "BI 4.2.3",
+              "spe_title": "Express thoughts and information in drawings, symbols or writings.",
+              "spe_note": "On paper or in digital format; Writing with invented spelling is allowed."
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "performance_metrics": [
+    {
+      "spr_code": "BI 1",
+      "spr_title": "Listen, understand and respond appropriately in a variety of contexts.",
+      "spr_component_sks": ["BI 1.1", "BI 1.2"],
+      "spr_rubric": [
+        {
+          "level": 1,
+          "explanation": "Pupil can recognise and respond to familiar sounds, words, phrases, sentences, and signs accompanied with visuals or non-verbal gestures."
+        },
+        {
+          "level": 2,
+          "explanation": "Pupil can understand and respond to simple phrases, statements, requests, instructions and questions."
+        },
+        {
+          "level": 3,
+          "explanation": "Pupil can understand and identify specific information in simple descriptions of daily routines, events or stories."
+        }
+      ]
+    },
+    {
+      "spr_code": "BI 2",
+      "spr_title": "Respond to conversations appropriately for different purposes.",
+      "spr_component_sks": ["BI 2.1"],
+      "spr_rubric": [
+        {
+          "level": 1,
+          "explanation": "Pupil can understand simple instructions and respond politely in daily conversations with guidance."
+        },
+        {
+          "level": 2,
+          "explanation": "Pupil can understand, respond and use suitable expressions in daily conversations politely with limited prompting."
+        },
+        {
+          "level": 3,
+          "explanation": "Pupil can understand, respond and participate in daily conversations politely."
+        }
+      ]
+    },
+    {
+      "spr_code": "BI 3",
+      "spr_title": "Read and understand texts or visuals in print or digital materials.",
+      "spr_component_sks": ["BI 3.2"],
+      "spr_rubric": [
+        {
+          "level": 1,
+          "explanation": "Pupil can read and sound out words with prompting."
+        },
+        {
+          "level": 2,
+          "explanation": "Pupil can read and understand familiar words and phrases."
+        },
+        {
+          "level": 3,
+          "explanation": "Pupil can read and understand words, phrases and simple sentences."
+        }
+      ]
+    },
+    {
+      "spr_code": "BI 4",
+      "spr_title": "Communicate thoughts and information in drawings, symbols or writings.",
+      "spr_component_sks": ["BI 4.2"],
+      "spr_rubric": [
+        {
+          "level": 1,
+          "explanation": "Pupil can express thoughts or information using symbols or drawings."
+        },
+        {
+          "level": 2,
+          "explanation": "Pupil can express thoughts or information using a combination of symbols, drawings, words and phrases."
+        },
+        {
+          "level": 3,
+          "explanation": "Pupil can express thoughts or information using a combination of symbols, drawings, words, phrases and simple sentences appropriately."
+        }
+      ]
+    }
+  ]
+}

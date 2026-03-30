@@ -1,0 +1,223 @@
+{
+  "overview": {
+    "domain": "Kreativiti dan Estetika",
+    "domain_identifier": "KE",
+    "description": {
+      "kandungan_pembelajaran": "Bidang pembelajaran ini memberi peluang kepada murid menikmati dan meluahkan perasaan, berkongsi idea tentang diri dan apresiasi seni di sekeliling melalui seni visual, muzik dan gerakan serta drama. Murid juga dapat membuat penerokaan menggunakan kesemua deria bagi meningkatkan daya imaginasi dan kreativiti.",
+      "skills": [
+        {
+          "kn_code": "KN 1",
+          "kn_title": "Eksplorasi"
+        },
+        {
+          "kn_code": "KN 2",
+          "kn_title": "Ekspresi"
+        },
+        {
+          "kn_code": "KN 3",
+          "kn_title": "Apresiasi"
+        }
+      ],
+      "dimensions": ["Afektif", "Medium seni"],
+      "focus": [
+        "Meneroka dan mengekspresikan idea melalui hasil seni.",
+        "Meningkatkan kreativiti melalui nyanyian, permainan alat muzik dan ekspresi diri melalui pergerakan.",
+        "Mengekspresi emosi dan berimaginasi melalui watak yang dilakonkan.",
+        "Menghargai karya seni di sekeliling mereka."
+      ]
+    }
+  },
+  "domain_content": [
+    {
+      "kn_code": "KN 1",
+      "kn_title": "Eksplorasi",
+      "kn_component_sks": [
+        {
+          "sk_code": "KE 1.1",
+          "sk_title": "Menunjukkan minat terhadap keindahan alam sekitar.",
+          "sk_component_spes": [
+            {
+              "spe_code": "KE 1.1.1",
+              "spe_title": "Menceritakan pengalaman meneroka keindahan alam sekitar.",
+              "spe_note": "Murid berkongsi pengalaman secara lisan atau melalui lukisan dan penceritaan ringkas tentang perkara yang menarik perhatian semasa melalui aktiviti meneroka persekitaran. Murid boleh bercerita tentang kepelbagaian warna, tekstur, jenis haiwan dan bunyi yang terdapat di persekitaran. Contoh aktiviti yang boleh dilaksanakan adalah seperti jelajah persekitaran luar kelas, lawatan ke taman bunga, lukisan alam dan bermain di taman permainan. Selain memperoleh pengalaman tentang keindahan, murid juga belajar menghargai dan menjaga alam sekitar."
+            }
+          ]
+        },
+        {
+          "sk_code": "KE 1.2",
+          "sk_title": "Menunjukkan minat terhadap karya seni dalam pelbagai media.",
+          "sk_component_spes": [
+            {
+              "spe_code": "KE 1.2.1",
+              "spe_title": "Mengenal kepelbagaian warna, bentuk, tekstur dalam karya seni visual.",
+              "spe_note": null
+            },
+            {
+              "spe_code": "KE 1.2.2",
+              "spe_title": "Mengenal pelbagai bunyi di persekitaran.",
+              "spe_note": "Pic dan tempo"
+            },
+            {
+              "spe_code": "KE 1.2.3",
+              "spe_title": "Mengenal pelbagai pergerakan mengikut rentak muzik.",
+              "spe_note": "Rentak muzik mengikut budaya setempat atau kaum dan masyarakat."
+            },
+            {
+              "spe_code": "KE 1.2.4",
+              "spe_title": "Meniru pelbagai watak dan dialog dalam drama atau cerita.",
+              "spe_note": null
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "kn_code": "KN 2",
+      "kn_title": "Ekspresi",
+      "kn_component_sks": [
+        {
+          "sk_code": "KE 2.1",
+          "sk_title": "Mempamerkan daya imaginasi melalui penghasilan karya seni.",
+          "sk_component_spes": [
+            {
+              "spe_code": "KE 2.1.1",
+              "spe_title": "Mempamerkan daya imaginasi dan perasaan seronok dalam menghasilkan karya seni.",
+              "spe_note": "Kebebasan, sokongan dan kesediaan persekitaran perlu diberi untuk menggalakkan imaginasi, kreativiti dan perasaan seronok murid."
+            }
+          ]
+        },
+        {
+          "sk_code": "KE 2.2",
+          "sk_title": "Menghasilkan karya seni menggunakan daya imaginasi.",
+          "sk_component_spes": [
+            {
+              "spe_code": "KE 2.2.1",
+              "spe_title": "Menggunakan pelbagai teknik dan media untuk menghasilkan karya seni visual.",
+              "spe_note": "Teknik: Mozek, capan, kolaj dan binaan. Media: Pensel, pensel warna, krayon dan warna air"
+            },
+            {
+              "spe_code": "KE 2.2.2",
+              "spe_title": "Menyanyikan lagu.",
+              "spe_note": "Sebutan dan pic yang betul. Mengikut tempo"
+            },
+            {
+              "spe_code": "KE 2.2.3",
+              "spe_title": "Menggunakan pelbagai alat muzik untuk memainkan corak irama melodi lagu.",
+              "spe_note": null
+            },
+            {
+              "spe_code": "KE 2.2.4",
+              "spe_title": "Melakukan pergerakan kreatif mengikut rentak muzik.",
+              "spe_note": null
+            },
+            {
+              "spe_code": "KE 2.2.5",
+              "spe_title": "Melakonkan pelbagai watak mengikut imaginasi dan kreativiti.",
+              "spe_note": null
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "kn_code": "KN 3",
+      "kn_title": "Apresiasi",
+      "kn_component_sks": [
+        {
+          "sk_code": "KE 3.1",
+          "sk_title": "Menunjukkan penghargaan terhadap karya seni.",
+          "sk_component_spes": [
+            {
+              "spe_code": "KE 3.1.1",
+              "spe_title": "Bercerita tentang karya seni sendiri.",
+              "spe_note": "Perkongsian hasil dan pengalaman dalam menghasilkan karya seni."
+            },
+            {
+              "spe_code": "KE 3.1.2",
+              "spe_title": "Menyatakan pandangan terhadap karya seni.",
+              "spe_note": null
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "performance_metrics": [
+    {
+      "spr_code": "KE 1",
+      "spr_title": "Menggunakan kreativiti dalam penghasilan karya seni visual.",
+      "spr_component_sks": ["KE 1.1", "KE 1.2", "KE 2.1", "KE 2.2"],
+      "spr_rubric": [
+        {
+          "level": 1,
+          "explanation": "Murid boleh menghasilkan karya seni visual melalui peniruan."
+        },
+        {
+          "level": 2,
+          "explanation": "Murid boleh menghasilkan karya seni visual dengan bimbingan."
+        },
+        {
+          "level": 3,
+          "explanation": "Murid boleh menghasilkan karya seni visual secara kreatif."
+        }
+      ]
+    },
+    {
+      "spr_code": "KE 2",
+      "spr_title": "Menunjukkan minat dan kebolehan dalam muzik dan gerakan.",
+      "spr_component_sks": ["KE 1.2", "KE 2.2"],
+      "spr_rubric": [
+        {
+          "level": 1,
+          "explanation": "Murid boleh melibatkan diri tetapi tidak menunjukkan minat dan kebolehan dalam muzik dan pergerakan."
+        },
+        {
+          "level": 2,
+          "explanation": "Murid boleh menunjukkan minat tetapi kurang berkebolehan dalam muzik dan pergerakan."
+        },
+        {
+          "level": 3,
+          "explanation": "Murid boleh menunjukkan minat dan kebolehan dalam muzik dan pergerakan."
+        }
+      ]
+    },
+    {
+      "spr_code": "KE 3",
+      "spr_title": "Melakonkan watak dalam drama.",
+      "spr_component_sks": ["KE 1.2", "KE 2.1", "KE 2.2"],
+      "spr_rubric": [
+        {
+          "level": 1,
+          "explanation": "Murid boleh meniru watak dalam lakonan."
+        },
+        {
+          "level": 2,
+          "explanation": "Murid boleh melakonkan pelbagai watak dengan bimbingan."
+        },
+        {
+          "level": 3,
+          "explanation": "Murid boleh melakonkan pelbagai watak secara kreatif."
+        }
+      ]
+    },
+    {
+      "spr_code": "KE 4",
+      "spr_title": "Menunjukkan penghargaan terhadap karya seni.",
+      "spr_component_sks": ["KE 3.1"],
+      "spr_rubric": [
+        {
+          "level": 1,
+          "explanation": "Murid boleh bercerita tentang hasil kerja sendiri."
+        },
+        {
+          "level": 2,
+          "explanation": "Murid boleh menyatakan pandangan terhadap karya seni sendiri dan orang lain dengan rangsangan yang sesuai."
+        },
+        {
+          "level": 3,
+          "explanation": "Murid boleh memberikan ulasan tentang karya seni sendiri serta orang lain dengan yakin."
+        }
+      ]
+    }
+  ]
+}
