@@ -25,15 +25,17 @@ import { cn } from '../lib/utils';
 import { useState } from 'react';
 import logo from '../../images/logo.png';
 
+// ─── TEACHER ROLE ROUTES ───
+// For routes that are not ready for display yet, comment them out.
 const teacherNavItems = [
   { path: '/teacher', icon: LayoutDashboard, label: 'Dashboard', exact: true },
-  { path: '/teacher/ai-analysis', icon: Brain, label: 'AI Analysis' },
-  { path: '/teacher/interventions', icon: AlertCircle, label: 'Interventions' },
-  { path: '/teacher/activities', icon: Calendar, label: 'Activities' },
-  { path: '/teacher/ai-lesson-planning', icon: Sparkles, label: 'Lesson Planning' },
-  { path: '/teacher/reports', icon: FileText, label: 'Reports' },
-  { path: '/teacher/communication', icon: MessageSquare, label: 'Messages' },
-  { path: '/teacher/classroom-mode', icon: Monitor, label: 'Classroom Mode' },
+  // { path: '/teacher/ai-analysis', icon: Brain, label: 'AI Analysis' },
+  // { path: '/teacher/interventions', icon: AlertCircle, label: 'Interventions' },
+  // { path: '/teacher/activities', icon: Calendar, label: 'Activities' },
+  // { path: '/teacher/ai-lesson-planning', icon: Sparkles, label: 'Lesson Planning' },
+  // { path: '/teacher/reports', icon: FileText, label: 'Reports' },
+  // { path: '/teacher/communication', icon: MessageSquare, label: 'Messages' },
+  // { path: '/teacher/classroom-mode', icon: Monitor, label: 'Classroom Mode' },
 ];
 
 const parentNavItems = [
@@ -82,7 +84,7 @@ function NavigationContent({ onNavigate }) {
     <>
       {/* Header */}
       <div className="p-4">
-        <div className="flex items-center gap-2 mb-2">
+        <div className="flex items-center gap-2 mb-5">
           <div className="w-15 h-15 bg-gradient-to-br from-[#eaeeef] to-[#eaeeef] rounded-lg flex items-center justify-center">
             <img src={logo} alt="SITCAD Logo" className="w-15 h-15 object-contain" />
           </div>
@@ -152,7 +154,7 @@ export function Navigation() {
   return (
     <>
       {/* Desktop Navigation */}
-      <div className="hidden lg:flex w-50 bg-white border-r flex-col h-screen sticky top-0">
+      <div className="hidden lg:flex w-60 bg-white border-r flex-col h-screen sticky top-0">
         <NavigationContent />
       </div>
 

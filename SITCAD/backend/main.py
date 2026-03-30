@@ -5,7 +5,7 @@ from firebase_admin import credentials
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from dotenv import load_dotenv
-from routers import auth, admin
+from routers import auth, admin, parents, teachers
 
 load_dotenv()
 
@@ -32,4 +32,6 @@ app.add_middleware(
 
 app.include_router(auth.router)
 app.include_router(admin.router)
-    
+app.include_router(parents.router)
+app.include_router(teachers.router)
+#app.include_router(students.router)

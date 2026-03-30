@@ -1,12 +1,16 @@
 import { useNavigate } from 'react-router';
 import { useAuth } from '../contexts/AuthContext';
-import { getStudentsByRole } from '../data/mockData'; // Removed Student import as it's a type
+import { auth } from '../lib/firebase';
 import { Button } from './ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from './ui/card';
 import { Progress } from './ui/progress';
 import { Badge } from './ui/badge';
-import { LogOut, Users, AlertTriangle, TrendingUp, BookOpen, Calendar, Sparkles, FileText, MessageSquare, Monitor, Brain } from 'lucide-react';
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from './ui/dialog';
+import { Input } from './ui/input';
+import { Label } from './ui/label';
+import { LogOut, Users, AlertTriangle, TrendingUp, BookOpen, Calendar, Sparkles, FileText, MessageSquare, Monitor, Brain, UserPlus, Search } from 'lucide-react';
 import Duckpit from './Duckpit';
+import { useState, useEffect } from 'react';
 
 export function TeacherDashboard() {
   const { user, logout } = useAuth();
@@ -14,13 +18,86 @@ export function TeacherDashboard() {
 
   if (!user) return null;
 
-  const students = getStudentsByRole(user.id, 'teacher');
-  const needsAttention = students.filter(s => s.needsIntervention);
+  const [students, setStudents] = useState([]);
+  const [isLoadingStudents, setIsLoadingStudents] = useState(true);
+  const [assignDialogOpen, setAssignDialogOpen] = useState(false);
+  const [unassignedStudents, setUnassignedStudents] = useState([]);
+  const [selectedStudentId, setSelectedStudentId] = useState(null);
+  const [classroom, setClassroom] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isLoadingUnassigned, setIsLoadingUnassigned] = useState(false);
+
+  // Fetch teacher's students on mount
+  useEffect(() => {
+    const fetchStudents = async () => {
+      try {
+        const idToken = await auth.currentUser.getIdToken();
+        const res = await fetch('http://localhost:8000/teachers/my-students', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ id_token: idToken }),
+        });
+        const data = await res.json();
+        setStudents(data);
+      } catch (error) {
+        console.error('Error fetching students:', error);
+      } finally {
+        setIsLoadingStudents(false);
+      }
+    };
+
+    fetchStudents();
+  }, []);
+
+  const needsAttention = students.filter(s => s.needs_intervention);
+
+  const handleOpenAssignDialog = async () => {
+    setAssignDialogOpen(true);
+    setIsLoadingUnassigned(true);
+    try {
+      const idToken = await auth.currentUser.getIdToken();
+      const res = await fetch('http://localhost:8000/teachers/unassigned', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id_token: idToken }),
+      });
+      const data = await res.json();
+      setUnassignedStudents(data);
+    } catch (error) {
+      console.error('Error fetching unassigned students:', error);
+    } finally {
+      setIsLoadingUnassigned(false);
+    }
+  };
+
+  const handleAssignStudent = async () => {
+    if (!selectedStudentId || !classroom) return;
+    setIsSubmitting(true);
+    try {
+      const idToken = await auth.currentUser.getIdToken();
+      const res = await fetch('http://localhost:8000/teachers/assign', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id_token: idToken, student_id: selectedStudentId, classroom }),
+      });
+      if (res.ok) {
+        const assignedStudent = await res.json();
+        setStudents([...students, assignedStudent]);
+        setSelectedStudentId(null);
+        setClassroom('');
+        setAssignDialogOpen(false);
+      }
+    } catch (error) {
+      console.error('Error assigning student:', error);
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
   const classroomStats = {
     totalStudents: students.length,
-    averageProgress: students.length > 0 ? Math.round(students.reduce((acc, s) => acc + s.overallProgress, 0) / students.length) : 0, // Added check for students.length
+    averageProgress: 0,
     needingSupport: needsAttention.length,
-    onTrack: students.filter(s => s.developmentalStage === 'proficient' || s.developmentalStage === 'advanced').length,
+    onTrack: 0,
   };
 
   const statsCardShadeOpacity = 0.92;
@@ -185,58 +262,124 @@ export function TeacherDashboard() {
 
           {/* All Students */}
           <Card className="border-white/70" style={dashboardCardShadeStyle}>
-            <CardHeader>
-              <CardTitle>My Students</CardTitle>
-              <CardDescription>
-                Click on a student to view their profile and learning progress
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                {students.map(student => (
-                  <Card
-                    key={student.id}
-                    className="cursor-pointer border-white/70 hover:shadow-lg transition-shadow"
-                    style={dashboardCardShadeStyle}
-                    onClick={() => navigate(`/teacher/student/${student.id}`)}
-                  >
-                    <CardHeader>
-                      <div className="flex items-start justify-between">
-                        <div className="flex items-center gap-3">
-                          <img
-                            src={student.avatar}
-                            alt={student.name}
-                            className="w-14 h-14 rounded-full object-cover"
-                          />
-                          <div>
-                            <CardTitle className="text-base">{student.name}</CardTitle>
-                            <p className="text-sm text-muted-foreground">Age {student.age}</p>
+            <CardHeader className="flex flex-row items-center justify-between">
+              <div>
+                <CardTitle>My Students</CardTitle>
+                <CardDescription>
+                  Click on a student to view their profile and learning progress
+                </CardDescription>
+              </div>
+              <Button
+                className="bg-[#3090A0] hover:bg-[#2FBFA5] text-white gap-2 cursor-pointer"
+                onClick={handleOpenAssignDialog}
+              >
+                <UserPlus className="h-4 w-4" />
+                Add Student
+              </Button>
+              <Dialog open={assignDialogOpen} onOpenChange={setAssignDialogOpen}>
+                <DialogContent className="max-w-lg">
+                  <DialogHeader>
+                    <DialogTitle>Add Student to Your Classroom</DialogTitle>
+                    <DialogDescription>
+                      Select an unassigned student (registered by a parent) and assign them to a classroom.
+                    </DialogDescription>
+                  </DialogHeader>
+                  <div className="grid gap-4 py-4">
+                    {isLoadingUnassigned ? (
+                      <p className="text-sm text-muted-foreground text-center py-4">Loading unassigned students...</p>
+                    ) : unassignedStudents.length === 0 ? (
+                      <div className="text-center py-6 space-y-2">
+                        <Search className="h-8 w-8 mx-auto text-muted-foreground" />
+                        <p className="text-sm text-muted-foreground">No unassigned students found.</p>
+                        <p className="text-xs text-muted-foreground">Parents need to register their children first before you can add them here.</p>
+                      </div>
+                    ) : (
+                      <>
+                        <div className="grid gap-2">
+                          <Label>Select Student</Label>
+                          <div className="max-h-48 overflow-y-auto border rounded-md divide-y">
+                            {unassignedStudents.map((s) => (
+                              <button
+                                key={s.id}
+                                type="button"
+                                className={`w-full text-left px-4 py-3 hover:bg-green-50 transition-colors ${
+                                  selectedStudentId === s.id ? 'bg-green-100 font-medium' : ''
+                                }`}
+                                onClick={() => setSelectedStudentId(s.id)}
+                              >
+                                <span className="font-medium">{s.name}</span>
+                                <span className="text-sm text-muted-foreground ml-2">Age {s.age}</span>
+                              </button>
+                            ))}
                           </div>
                         </div>
-                        {student.needsIntervention && (
-                          <AlertTriangle className="h-5 w-5 text-yellow-300" />
-                        )}
-                      </div>
-                    </CardHeader>
-                    <CardContent className="space-y-4">
-                      <div>
-                        <div className="flex items-center justify-between text-sm mb-2">
-                          <span className="text-muted-foreground">Overall Progress</span>
-                          <span className="font-medium">{student.overallProgress}%</span>
+                        <div className="grid gap-2">
+                          <Label htmlFor="assign-classroom">Classroom</Label>
+                          <Input
+                            id="assign-classroom"
+                            placeholder="e.g. Class A"
+                            value={classroom}
+                            onChange={(e) => setClassroom(e.target.value)}
+                          />
                         </div>
-                        <Progress
-                          value={student.overallProgress}
-                          className="[&>div]:bg-yellow-300"
-                        />
-                      </div>
-                      <div>
-                        <p className="text-xs text-muted-foreground">Recent Activity:</p>
-                        <p className="text-sm">{student.recentActivity}</p>
-                      </div>
-                    </CardContent>
-                  </Card>
-                ))}
-              </div>
+                      </>
+                    )}
+                  </div>
+                  <DialogFooter>
+                    <Button variant="outline" onClick={() => setAssignDialogOpen(false)}>
+                      Cancel
+                    </Button>
+                    {unassignedStudents.length > 0 && (
+                      <Button
+                        className="bg-[#3090A0] hover:bg-[#2FBFA5] text-white cursor-pointer"
+                        onClick={handleAssignStudent}
+                        disabled={isSubmitting || !selectedStudentId || !classroom}
+                      >
+                        {isSubmitting ? 'Assigning...' : 'Assign to Classroom'}
+                      </Button>
+                    )}
+                  </DialogFooter>
+                </DialogContent>
+              </Dialog>
+            </CardHeader>
+            <CardContent>
+              {isLoadingStudents ? (
+                <p className="text-sm text-muted-foreground text-center py-8">Loading students...</p>
+              ) : students.length === 0 ? (
+                <div className="text-center py-8 space-y-2">
+                  <Users className="h-8 w-8 mx-auto text-muted-foreground" />
+                  <p className="text-sm text-muted-foreground">No students assigned yet.</p>
+                  <p className="text-xs text-muted-foreground">Click "Add Student" to assign students registered by parents.</p>
+                </div>
+              ) : (
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                  {students.map(student => (
+                    <Card
+                      key={student.id}
+                      className="cursor-pointer border-white/70 hover:shadow-lg transition-shadow pb-4"
+                      style={dashboardCardShadeStyle}
+                      onClick={() => navigate(`/teacher/student/${student.id}`)}
+                    >
+                      <CardHeader>
+                        <div className="flex items-start justify-between">
+                          <div className="flex items-center gap-3">
+                            <div className="w-14 h-14 rounded-full bg-green-200 flex items-center justify-center text-xl font-bold text-green-700">
+                              {student.name.charAt(0)}
+                            </div>
+                            <div>
+                              <CardTitle className="text-base">{student.name}</CardTitle>
+                              <p className="text-sm text-muted-foreground">Age {student.age}{student.classroom && ` • ${student.classroom}`}</p>
+                            </div>
+                          </div>
+                          {student.needs_intervention && (
+                            <AlertTriangle className="h-5 w-5 text-yellow-300" />
+                          )}
+                        </div>
+                      </CardHeader>
+                    </Card>
+                  ))}
+                </div>
+              )}
             </CardContent>
           </Card>
         </main>

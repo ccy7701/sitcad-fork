@@ -317,7 +317,7 @@ export function AIAnalysisDashboard() {
                 Student Development Analysis By AI
               </h1>
               <p className="text-sm text-muted-foreground">
-                Insight powered by Artificial intelligent
+                Insight powered by Artificial Intelligence
               </p>
             </div>
           </div>

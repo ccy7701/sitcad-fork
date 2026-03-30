@@ -1,5 +1,5 @@
-from sqlalchemy import Column, String, DateTime
-from datetime import datetime, timezone
+from sqlalchemy import Column, String, Integer, Boolean, DateTime, ForeignKey, Date
+from datetime import datetime, timezone, date
 from database import Base
 
 class User(Base):
@@ -13,5 +13,19 @@ class User(Base):
   email = Column(String, unique=True, index=True)
   full_name = Column(String)
   role = Column(String, nullable=True)
+  created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc))
+
+
+class Student(Base):
+  __tablename__ = "students"
+
+  id = Column(String, primary_key=True, index=True)
+  name = Column(String, nullable=False)
+  age = Column(Integer, nullable=False)
+  classroom = Column(String, nullable=True)
+  parent_id = Column(String, ForeignKey("users.id"), nullable=False)
+  teacher_id = Column(String, ForeignKey("users.id"), nullable=True)
+  enrollment_date = Column(Date, default=lambda: date.today())
+  needs_intervention = Column(Boolean, default=False)
   created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc))
   
