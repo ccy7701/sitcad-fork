@@ -4,7 +4,7 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from pydantic import BaseModel
 from typing import Optional
-from datetime import date
+from datetime import date, datetime
 from dependencies import get_db
 
 router = APIRouter(prefix="/teachers", tags=["teachers"])
@@ -26,6 +26,25 @@ class TeacherUpdateStudent(BaseModel):
     age: Optional[int] = None
     classroom: Optional[str] = None
     needs_intervention: Optional[bool] = None
+
+class TeacherScoreStudent(BaseModel):
+    id_token: str
+    student_id: str
+    domain_key: str
+    spr_code: str
+    level: int
+
+class StudentProgressOut(BaseModel):
+    id: int
+    student_id: str
+    domain_key: str
+    spr_code: str
+    level: int
+    scored_by: str
+    scored_at: datetime
+
+    class Config:
+        from_attributes = True
 
 class StudentOut(BaseModel):
     id: str
@@ -113,6 +132,65 @@ async def teacher_update_student(student_id: str, request: TeacherUpdateStudent,
     db.commit()
     db.refresh(student)
     return student
+
+
+@router.post("/score", response_model=StudentProgressOut)
+async def teacher_score_student(request: TeacherScoreStudent, db: Session = Depends(get_db)):
+    """Teacher assigns or updates a Standard Prestasi level for a student."""
+    teacher = _verify_teacher(request.id_token, db)
+
+    if request.level not in (1, 2, 3):
+        raise HTTPException(status_code=400, detail="Level must be 1, 2, or 3")
+
+    student = db.query(models.Student).filter(
+        models.Student.id == request.student_id,
+        models.Student.teacher_id == teacher.id,
+    ).first()
+    if not student:
+        raise HTTPException(status_code=404, detail="Student not found or not assigned to you")
+
+    # Upsert: update if exists, create if not
+    progress = db.query(models.StudentProgress).filter(
+        models.StudentProgress.student_id == request.student_id,
+        models.StudentProgress.domain_key == request.domain_key,
+        models.StudentProgress.spr_code == request.spr_code,
+    ).first()
+
+    if progress:
+        progress.level = request.level
+        progress.scored_by = teacher.id
+        progress.scored_at = datetime.now()
+    else:
+        progress = models.StudentProgress(
+            student_id=request.student_id,
+            domain_key=request.domain_key,
+            spr_code=request.spr_code,
+            level=request.level,
+            scored_by=teacher.id,
+        )
+        db.add(progress)
+
+    db.commit()
+    db.refresh(progress)
+    return progress
+
+
+@router.post("/student-progress/{student_id}", response_model=list[StudentProgressOut])
+async def teacher_get_student_progress(student_id: str, request: AuthenticatedRequest, db: Session = Depends(get_db)):
+    """Get all SPR scores for a student assigned to the teacher."""
+    teacher = _verify_teacher(request.id_token, db)
+
+    student = db.query(models.Student).filter(
+        models.Student.id == student_id,
+        models.Student.teacher_id == teacher.id,
+    ).first()
+    if not student:
+        raise HTTPException(status_code=404, detail="Student not found or not assigned to you")
+
+    scores = db.query(models.StudentProgress).filter(
+        models.StudentProgress.student_id == student_id,
+    ).all()
+    return scores
 
 
 @router.post("/{student_id}/unassign")

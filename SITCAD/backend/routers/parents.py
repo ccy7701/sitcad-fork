@@ -5,7 +5,7 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from pydantic import BaseModel
 from typing import Optional
-from datetime import date
+from datetime import date, datetime
 from dependencies import get_db
 
 router = APIRouter(prefix="/parents", tags=["parents"])
@@ -30,6 +30,18 @@ class StudentOut(BaseModel):
     teacher_id: Optional[str]
     enrollment_date: date
     needs_intervention: bool
+
+    class Config:
+        from_attributes = True
+
+class StudentProgressOut(BaseModel):
+    id: int
+    student_id: str
+    domain_key: str
+    spr_code: str
+    level: int
+    scored_by: str
+    scored_at: datetime
 
     class Config:
         from_attributes = True
@@ -95,4 +107,22 @@ async def parent_delete_child(student_id: str, request: AuthenticatedRequest, db
     db.delete(student)
     db.commit()
     return {"detail": "Child removed successfully"}
+
+
+@router.post("/child-progress/{student_id}", response_model=list[StudentProgressOut])
+async def parent_get_child_progress(student_id: str, request: AuthenticatedRequest, db: Session = Depends(get_db)):
+    """Parent views all SPR scores for their child."""
+    parent = _verify_parent(request.id_token, db)
+
+    student = db.query(models.Student).filter(
+        models.Student.id == student_id,
+        models.Student.parent_id == parent.id,
+    ).first()
+    if not student:
+        raise HTTPException(status_code=404, detail="Child not found")
+
+    scores = db.query(models.StudentProgress).filter(
+        models.StudentProgress.student_id == student_id,
+    ).all()
+    return scores
 

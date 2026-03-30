@@ -1,4 +1,4 @@
-from sqlalchemy import Column, String, Integer, Boolean, DateTime, ForeignKey, Date
+from sqlalchemy import Column, String, Integer, Boolean, DateTime, ForeignKey, Date, UniqueConstraint
 from datetime import datetime, timezone, date
 from database import Base
 
@@ -28,4 +28,19 @@ class Student(Base):
   enrollment_date = Column(Date, default=lambda: date.today())
   needs_intervention = Column(Boolean, default=False)
   created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc))
+
+
+class StudentProgress(Base):
+  __tablename__ = "student_progress"
+  __table_args__ = (
+    UniqueConstraint("student_id", "domain_key", "spr_code", name="uq_student_domain_spr"),
+  )
+
+  id = Column(Integer, primary_key=True, autoincrement=True)
+  student_id = Column(String, ForeignKey("students.id"), nullable=False, index=True)
+  domain_key = Column(String, nullable=False)
+  spr_code = Column(String, nullable=False)
+  level = Column(Integer, nullable=False)
+  scored_by = Column(String, ForeignKey("users.id"), nullable=False)
+  scored_at = Column(DateTime, default=lambda: datetime.now(timezone.utc))
   

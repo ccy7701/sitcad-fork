@@ -162,37 +162,37 @@ export function TeacherDashboard() {
         <main className="max-w-7xl mx-auto px-4 py-8 space-y-8">
           {/* Quick Action Cards */}
           <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-3">
-            <Card className="cursor-pointer border-white hover:shadow-lg transition-shadow" style={dashboardCardShadeStyle} onClick={() => navigate('/teacher/activities')}>
+            <Card className="cursor-pointer border-white shadow-md hover:shadow-lg transition-shadow transform-gpu" style={dashboardCardShadeStyle} onClick={() => navigate('/teacher/activities')}>
               <CardContent className="pt-6 text-center">
                 <Calendar className="h-8 w-8 mx-auto mb-2 text-green-600" />
                 <p className="text-sm font-medium">Activities</p>
               </CardContent>
             </Card>
-            <Card className="cursor-pointer border-white/70 hover:shadow-lg transition-shadow" style={dashboardCardShadeStyle} onClick={() => navigate('/teacher/ai-lesson-planning')}>
+            <Card className="cursor-pointer border-white/70 shadow-md hover:shadow-lg transition-shadow transform-gpu" style={dashboardCardShadeStyle} onClick={() => navigate('/teacher/ai-lesson-planning')}>
               <CardContent className="pt-6 text-center">
                 <Sparkles className="h-8 w-8 mx-auto mb-2 text-green-600" />
                 <p className="text-sm font-medium">AI Lessons</p>
               </CardContent>
             </Card>
-            <Card className="cursor-pointer border-white/70 hover:shadow-lg transition-shadow" style={dashboardCardShadeStyle} onClick={() => navigate('/teacher/reports')}>
+            <Card className="cursor-pointer border-white/70 shadow-md hover:shadow-lg transition-shadow transform-gpu" style={dashboardCardShadeStyle} onClick={() => navigate('/teacher/reports')}>
               <CardContent className="pt-6 text-center">
                 <FileText className="h-8 w-8 mx-auto mb-2 text-green-600" />
                 <p className="text-sm font-medium">Reports</p>
               </CardContent>
             </Card>
-            <Card className="cursor-pointer border-white/70 hover:shadow-lg transition-shadow" style={dashboardCardShadeStyle} onClick={() => navigate('/teacher/communication')}>
+            <Card className="cursor-pointer border-white/70 shadow-md hover:shadow-lg transition-shadow transform-gpu" style={dashboardCardShadeStyle} onClick={() => navigate('/teacher/communication')}>
               <CardContent className="pt-6 text-center">
                 <MessageSquare className="h-8 w-8 mx-auto mb-2 text-green-600" />
                 <p className="text-sm font-medium">Messages</p>
               </CardContent>
             </Card>
-            <Card className="cursor-pointer border-white/70 hover:shadow-lg transition-shadow" style={dashboardCardShadeStyle} onClick={() => navigate('/teacher/classroom-mode')}>
+            <Card className="cursor-pointer border-white/70 shadow-md hover:shadow-lg transition-shadow transform-gpu" style={dashboardCardShadeStyle} onClick={() => navigate('/teacher/classroom-mode')}>
               <CardContent className="pt-6 text-center">
                 <Monitor className="h-8 w-8 mx-auto mb-2 text-green-600" />
                 <p className="text-sm font-medium">Classroom</p>
               </CardContent>
             </Card>
-            <Card className="cursor-pointer border-white/70 hover:shadow-lg transition-shadow" style={dashboardCardShadeStyle} onClick={() => navigate('/teacher/ai-analysis')}>
+            <Card className="cursor-pointer border-white/70 shadow-md hover:shadow-lg transition-shadow transform-gpu" style={dashboardCardShadeStyle} onClick={() => navigate('/teacher/ai-analysis')}>
               <CardContent className="pt-6 text-center">
                 <Brain className="h-8 w-8 mx-auto mb-2 text-green-600" />
                 <p className="text-sm font-medium">AI Analysis</p>
@@ -202,7 +202,7 @@ export function TeacherDashboard() {
 
           {/* Statistics Overview */}
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-            <Card className="border-white/70" style={statsCardShadeStyle}>
+            <Card className="border-white/70 shadow-md hover:shadow-lg transition-shadow transform-gpu" style={statsCardShadeStyle}>
               <CardHeader className="pb-1">
                 <CardDescription style={statsLabelStyle}>Total Students</CardDescription>
                 <CardTitle className="text-6xl">{classroomStats.totalStudents}</CardTitle>
@@ -215,7 +215,7 @@ export function TeacherDashboard() {
               </CardContent>
             </Card>
 
-            <Card className="border-white/70" style={statsCardShadeStyle}>
+            <Card className="border-white/70 shadow-md hover:shadow-lg transition-shadow transform-gpu" style={statsCardShadeStyle}>
               <CardHeader className="pb-1">
                 <CardDescription style={statsLabelStyle}>Average Progress</CardDescription>
                 <CardTitle className="text-6xl">{classroomStats.averageProgress}%</CardTitle>
@@ -228,7 +228,7 @@ export function TeacherDashboard() {
               </CardContent>
             </Card>
 
-            <Card className="border-white/70" style={statsCardShadeStyle}>
+            <Card className="border-white/70 shadow-md hover:shadow-lg transition-shadow transform-gpu" style={statsCardShadeStyle}>
               <CardHeader className="pb-1">
                 <CardDescription style={statsLabelStyle}>On Track</CardDescription>
                 <CardTitle className="text-6xl">{classroomStats.onTrack}</CardTitle>
@@ -241,7 +241,7 @@ export function TeacherDashboard() {
               </CardContent>
             </Card>
 
-            <Card className="border-white/70" style={statsCardShadeStyle}>
+            <Card className="border-white/70 shadow-md hover:shadow-lg transition-shadow transform-gpu" style={statsCardShadeStyle}>
               <CardHeader className="pb-1">
                 <CardDescription style={statsLabelStyle}>Needs Support</CardDescription>
                 <CardTitle className="text-6xl">{classroomStats.needingSupport}</CardTitle>
@@ -261,7 +261,7 @@ export function TeacherDashboard() {
           </div>
 
           {/* All Students */}
-          <Card className="border-white/70" style={dashboardCardShadeStyle}>
+          <Card className="border-white/70 shadow-md hover:shadow-lg transition-shadow transform-gpu" style={dashboardCardShadeStyle}>
             <CardHeader className="flex flex-row items-center justify-between">
               <div>
                 <CardTitle>My Students</CardTitle>
@@ -356,7 +356,7 @@ export function TeacherDashboard() {
                   {students.map(student => (
                     <Card
                       key={student.id}
-                      className="cursor-pointer border-white/70 hover:shadow-lg transition-shadow pb-4"
+                      className="cursor-pointer border-white/70 shadow-md hover:shadow-lg transition-shadow transform-gpu pb-4"
                       style={dashboardCardShadeStyle}
                       onClick={() => navigate(`/teacher/student/${student.id}`)}
                     >

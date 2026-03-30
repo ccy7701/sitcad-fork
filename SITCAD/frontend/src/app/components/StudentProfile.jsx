@@ -154,9 +154,10 @@ export function StudentProfile() {
 
         {/* Tabs */}
         <Tabs defaultValue="overview" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-2">
+          <TabsList className="grid w-full grid-cols-3">
             <TabsTrigger value="overview">Overview</TabsTrigger>
-            <TabsTrigger value="info">Information</TabsTrigger>
+            <TabsTrigger value="activities" onClick={() => navigate(`/${user.role}/student/${studentId}/activities`)}>Learning Activities</TabsTrigger>
+            <TabsTrigger value="progress" onClick={() => navigate(`/${user.role}/student/${studentId}/progress`)}>Progress Report</TabsTrigger>
           </TabsList>
 
           {/* Overview Tab */}
@@ -190,6 +191,20 @@ export function StudentProfile() {
               </CardContent>
             </Card>
 
+            {/* <Card>
+              <CardHeader>
+                <CardTitle>Additional Information</CardTitle>
+                <CardDescription>
+                  Extended learning profile (coming soon)
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <p className="text-sm text-muted-foreground">
+                  Detailed learning progress, developmental milestones, and activity history will be available here once integrated with the learning tracking system.
+                </p>
+              </CardContent>
+            </Card> */}
+
             <Card>
               <CardHeader>
                 <CardTitle>Support Status</CardTitle>
@@ -211,42 +226,7 @@ export function StudentProfile() {
               </CardContent>
             </Card>
           </TabsContent>
-
-          {/* Information Tab */}
-          <TabsContent value="info" className="space-y-6">
-            <Card>
-              <CardHeader>
-                <CardTitle>Additional Information</CardTitle>
-                <CardDescription>
-                  Extended learning profile (coming soon)
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <p className="text-sm text-muted-foreground">
-                  Detailed learning progress, developmental milestones, and activity history will be available here once integrated with the learning tracking system.
-                </p>
-              </CardContent>
-            </Card>
-          </TabsContent>
         </Tabs>
-
-        {/* Quick Actions */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <Button
-            variant="outline"
-            size="lg"
-            onClick={() => navigate(`/${user.role}/student/${studentId}/activities`)}
-          >
-            View Learning Activities
-          </Button>
-          <Button
-            variant="outline"
-            size="lg"
-            onClick={() => navigate(`/${user.role}/student/${studentId}/progress`)}
-          >
-            Detailed Progress Report
-          </Button>
-        </div>
       </main>
     </div>
   );
