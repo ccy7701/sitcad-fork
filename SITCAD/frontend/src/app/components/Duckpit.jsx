@@ -213,25 +213,7 @@ const Duckpit = ({
 					/>
 				))}
 			</div>
-			<style>{`
-				@keyframes duckpitFloat {
-					0% {
-						transform: translate3d(0, 18vh, 0) rotate(-8deg);
-						opacity: 0;
-					}
-					12% {
-						opacity: 0.75;
-					}
-					50% {
-						transform: translate3d(18px, -36vh, 0) rotate(6deg);
-						opacity: 0.9;
-					}
-					100% {
-						transform: translate3d(-14px, -118vh, 0) rotate(-10deg);
-						opacity: 0;
-					}
-				}
-			`}</style>
+
 		</div>
 	);
 };
