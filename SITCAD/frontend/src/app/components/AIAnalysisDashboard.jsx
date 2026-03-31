@@ -24,6 +24,7 @@ import {
   Users,
   BarChart3,
 } from "lucide-react";
+import Duckpit from './Duckpit';
 
 export function AIAnalysisDashboard() {
   const { user } = useAuth();
@@ -186,6 +187,11 @@ export function AIAnalysisDashboard() {
 
   const [timeFilter, setTimeFilter] = useState("daily");
 
+  const elevatedCard =
+    "border border-slate-200/90 bg-white/92 backdrop-blur-sm shadow-[0_12px_32px_rgba(15,23,42,0.16)]";
+  const elevatedCardHover =
+    "border border-slate-200/90 bg-white/92 backdrop-blur-sm shadow-[0_12px_32px_rgba(15,23,42,0.16)] transition hover:shadow-[0_16px_40px_rgba(15,23,42,0.22)]";
+
   const learningPatternsData = {
     daily: [
       {
@@ -297,29 +303,29 @@ export function AIAnalysisDashboard() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#66D0BC]-30 via-[#66D0BC]-20 to-[#66D0BC]-10">
-      <header className="bg-white border-b shadow-sm sticky top-0 z-10">
-        <div className="max-w-7xl mx-auto px-4 py-4">
-          <Button
-            variant="ghost"
-            onClick={() => navigate("/teacher")}
-            className="mb-4"
-          >
-            <ArrowLeft className="mr-2 h-4 w-4" />
-            Back to Dashboard
-          </Button>
-          <div className="flex items-center gap-3">
-            <div className="w-12 h-12 bg-gradient-to-br from-pink-500 rounded-lg flex items-center justify-center">
-              <Brain className="w-6 h-6 text-white" />
+    <div className="relative min-h-screen overflow-hidden bg-slate-50">
+      <div className="absolute inset-0 z-0 pointer-events-none">
+        <Duckpit count={24} gravity={0.5} friction={0.9975} wallBounce={0.9} className="h-full w-full opacity-100" />
+      </div>
+      <div className="absolute inset-0 z-0 bg-linear-to-b from-white/72 via-white/58 to-emerald-50/72" />
+
+      <div className="relative z-10">
+      <header className="bg-white/80 border-b shadow-sm sticky top-0 z-20 backdrop-blur-sm">
+        <div className="max-w-7xl mx-auto px-6 py-4">
+          <div className="flex items-center justify-between gap-4">
+            <div className="flex items-center gap-2">
+              <div className="w-8 h-8 bg-linear-to-br from-pink-500 rounded-lg flex items-center justify-center">
+                <Brain className="w-4 h-4 text-white" />
+              </div>
+              <div>
+                <h1 className="text-2xl font-semibold">Student Development Analysis By AI</h1>
+                <p className="text-sm text-muted-foreground mt-1">Insight powered by Artificial intelligent</p>
+              </div>
             </div>
-            <div>
-              <h1 className="text-2xl font-semibold">
-                Student Development Analysis By AI
-              </h1>
-              <p className="text-sm text-muted-foreground">
-                Insight powered by Artificial intelligent
-              </p>
-            </div>
+            <Button variant="ghost" onClick={() => navigate("/teacher")}>
+              <ArrowLeft className="mr-2 h-4 w-4" />
+              Back to Dashboard
+            </Button>
           </div>
         </div>
       </header>
@@ -335,7 +341,7 @@ export function AIAnalysisDashboard() {
 
         {/* Overview Cards */}
         <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
-          <Card className="p-2">
+          <Card className={`${elevatedCard} p-2`}>
             <CardHeader className="pb-2">
               <CardDescription className="text-lg font-medium">
                 Overall Class Score
@@ -352,7 +358,7 @@ export function AIAnalysisDashboard() {
             </CardContent>
           </Card>
 
-          <Card className="p-2">
+          <Card className={`${elevatedCard} p-2`}>
             <CardHeader className="pb-2">
               <CardDescription className="text-lg font-medium">
                 Student Participation
@@ -369,7 +375,7 @@ export function AIAnalysisDashboard() {
             </CardContent>
           </Card>
 
-          <Card className="p-2">
+          <Card className={`${elevatedCard} p-2`}>
             <CardHeader className="pb-2">
               <CardDescription className="text-lg font-medium">
                 High Performers
@@ -387,7 +393,7 @@ export function AIAnalysisDashboard() {
           </Card>
 
           {/* 🔥 Highlight important card */}
-          <Card className="p-2 border-2 border-red-300 bg-red-50">
+          <Card className="p-2 border-2 border-red-300 bg-red-50 shadow-[0_12px_32px_rgba(127,29,29,0.2)]">
             <CardHeader className="pb-2">
               <CardDescription className="text-lg font-medium">
                 Students at Risk
@@ -404,7 +410,7 @@ export function AIAnalysisDashboard() {
             </CardContent>
           </Card>
 
-          <Card className="p-2">
+          <Card className={`${elevatedCard} p-2`}>
             <CardHeader className="pb-2">
               <CardDescription className="text-lg font-medium">
                 Total Students
@@ -439,7 +445,7 @@ export function AIAnalysisDashboard() {
           {/*===LEARNING PATTERN===*/}
           <TabsContent value="patterns" className="space-y-4">
             {/* Header */}
-            <Card className="border-2 border-pink-300 bg-gradient-to-r from-pink-100 to-pink-100">
+            <Card className="border-2 border-pink-300 bg-linear-to-r from-pink-100 to-pink-100 shadow-[0_12px_32px_rgba(131,24,67,0.16)]">
               <CardHeader>
                 <CardTitle className="flex items-center gap-1 text-lg font-bold">
                   <Sparkles className="h-5 w-5 text-pink-600" />
@@ -474,7 +480,7 @@ export function AIAnalysisDashboard() {
 
             {/* Patterns */}
             {learningPatternsData[timeFilter].map((pattern, index) => (
-              <Card key={index} className="hover:shadow-md transition p-2">
+              <Card key={index} className={`${elevatedCardHover} p-2`}>
                 <CardHeader>
                   <div className="flex items-start justify-between gap-2">
                     <div className="flex-1">
@@ -517,7 +523,7 @@ export function AIAnalysisDashboard() {
           {/*===Developmental Areas===*/}
           <TabsContent value="developmental" className="space-y-4">
             {/* 🔥 Header */}
-            <Card className="border-2 border-blue-300 bg-gradient-to-r from-blue-200 to-blue-100">
+            <Card className="border-2 border-blue-300 bg-linear-to-r from-blue-200 to-blue-100 shadow-[0_12px_32px_rgba(30,64,175,0.16)]">
               <CardHeader>
                 <CardTitle className="flex items-center gap-1 text-lg font-bold">
                   📊 Developmental Progress
@@ -532,7 +538,7 @@ export function AIAnalysisDashboard() {
 
             {/*===Development Cards===*/}
             {developmentalInsights.map((area, index) => (
-              <Card key={index} className="p-2 hover:shadow-md transition">
+              <Card key={index} className={`${elevatedCardHover} p-2`}>
                 <CardHeader>
                   <div className="flex items-center justify-between gap-4">
                     <div>
@@ -575,7 +581,7 @@ export function AIAnalysisDashboard() {
           {/*===Predictive Insights===*/}
           <TabsContent value="predictive" className="space-y-4">
             {/* 🔥 Header Card */}
-            <Card className="border-2 border-indigo-200 bg-gradient-to-r from-indigo-50 to-purple-50">
+            <Card className="border-2 border-indigo-200 bg-linear-to-r from-indigo-50 to-purple-50 shadow-[0_12px_32px_rgba(49,46,129,0.16)]">
               <CardHeader>
                 <CardTitle className="flex items-center gap-1 text-lg font-bold">
                   <BarChart3 className="h-5 w-5 text-indigo-600" />
@@ -593,7 +599,7 @@ export function AIAnalysisDashboard() {
             {predictiveInsights.map((insight) => (
               <Card
                 key={insight.id}
-                className="border-2 p-2 hover:shadow-md transition"
+                className={`${elevatedCardHover} border-2 p-2`}
               >
                 <CardHeader>
                   <div className="flex items-start justify-between gap-4">
@@ -659,6 +665,7 @@ export function AIAnalysisDashboard() {
           </TabsContent>
         </Tabs>
       </main>
+      </div>
     </div>
   );
 }

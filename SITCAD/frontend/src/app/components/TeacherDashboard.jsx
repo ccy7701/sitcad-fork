@@ -32,11 +32,12 @@ export function TeacherDashboard() {
     backgroundColor: `rgb(255 255 255 / ${dashboardCardShadeOpacity})`,
   };
   const statsLabelColor = '#374151';
-  const statsLabelSize = '1rem';
+  const statsLabelSize = '1.7rem';
   const statsLabelStyle = {
     color: statsLabelColor,
     fontSize: statsLabelSize,
     fontWeight: 600,
+    lineHeight: 1.2,
   };
 
   const handleLogout = () => {
@@ -69,7 +70,7 @@ export function TeacherDashboard() {
 
       <div className="relative z-10">
         {/* Header */}
-        <header className="bg-white/80 border-b shadow-sm sticky top-0 z-20 backdrop-blur-sm">
+        <header className="bg-white/70 border-b shadow-sm sticky top-0 z-20 backdrop-blur-sm">
           <div className="max-w-7xl mx-auto px-6 py-4">
             <div className="flex items-center justify-between">
               <div>
@@ -125,10 +126,10 @@ export function TeacherDashboard() {
 
           {/* Statistics Overview */}
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-            <Card className="border-white/70" style={statsCardShadeStyle}>
+            <Card className="border-white/70 shadow-[0_8px_24px_rgba(15,23,42,0.12)]" style={statsCardShadeStyle}>
               <CardHeader className="pb-1">
                 <CardDescription style={statsLabelStyle}>Total Students</CardDescription>
-                <CardTitle className="text-6xl">{classroomStats.totalStudents}</CardTitle>
+                <CardTitle className="text-3xl">{classroomStats.totalStudents}</CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="flex items-center text-sm text-green-600">
@@ -138,10 +139,10 @@ export function TeacherDashboard() {
               </CardContent>
             </Card>
 
-            <Card className="border-white/70" style={statsCardShadeStyle}>
+            <Card className="border-white/70 shadow-[0_8px_24px_rgba(15,23,42,0.12)]" style={statsCardShadeStyle}>
               <CardHeader className="pb-1">
                 <CardDescription style={statsLabelStyle}>Average Progress</CardDescription>
-                <CardTitle className="text-6xl">{classroomStats.averageProgress}%</CardTitle>
+                <CardTitle className="text-3xl">{classroomStats.averageProgress}%</CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="flex items-center text-sm text-green-600">
@@ -151,10 +152,10 @@ export function TeacherDashboard() {
               </CardContent>
             </Card>
 
-            <Card className="border-white/70" style={statsCardShadeStyle}>
+            <Card className="border-white/70 shadow-[0_8px_24px_rgba(15,23,42,0.12)]" style={statsCardShadeStyle}>
               <CardHeader className="pb-1">
                 <CardDescription style={statsLabelStyle}>On Track</CardDescription>
-                <CardTitle className="text-6xl">{classroomStats.onTrack}</CardTitle>
+                <CardTitle className="text-3xl">{classroomStats.onTrack}</CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="flex items-center text-sm text-green-600">
@@ -164,10 +165,10 @@ export function TeacherDashboard() {
               </CardContent>
             </Card>
 
-            <Card className="border-white/70" style={statsCardShadeStyle}>
+            <Card className="border-white/70 shadow-[0_8px_24px_rgba(15,23,42,0.12)]" style={statsCardShadeStyle}>
               <CardHeader className="pb-1">
                 <CardDescription style={statsLabelStyle}>Needs Support</CardDescription>
-                <CardTitle className="text-6xl">{classroomStats.needingSupport}</CardTitle>
+                <CardTitle className="text-3xl">{classroomStats.needingSupport}</CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="flex items-center text-sm text-yellow-600">
@@ -184,7 +185,7 @@ export function TeacherDashboard() {
           </div>
 
           {/* All Students */}
-          <Card className="border-white/70" style={dashboardCardShadeStyle}>
+          <Card className="border-white/70 shadow-[0_8px_24px_rgba(15,23,42,0.12)]" style={dashboardCardShadeStyle}>
             <CardHeader>
               <CardTitle>My Students</CardTitle>
               <CardDescription>
@@ -196,7 +197,7 @@ export function TeacherDashboard() {
                 {students.map(student => (
                   <Card
                     key={student.id}
-                    className="cursor-pointer border-white/70 hover:shadow-lg transition-shadow"
+                    className="cursor-pointer border-white/70 shadow-[0_8px_24px_rgba(15,23,42,0.12)] hover:shadow-[0_12px_32px_rgba(15,23,42,0.18)] transition-shadow"
                     style={dashboardCardShadeStyle}
                     onClick={() => navigate(`/teacher/student/${student.id}`)}
                   >

@@ -194,7 +194,7 @@ const Duckpit = ({
 			className={className}
 			style={{ width: '100%', height: '100%', overflow: 'hidden', position: 'relative' }}
 		>
-			<div className="absolute inset-0 bg-[radial-gradient(circle_at_top,_rgba(16,185,129,0.16),_transparent_42%),radial-gradient(circle_at_bottom,_rgba(59,130,246,0.12),_transparent_38%)]" />
+			<div className="absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(16,185,129,0.16),transparent_42%),radial-gradient(circle_at_bottom,rgba(59,130,246,0.12),transparent_38%)]" />
 			<div className="absolute inset-0 overflow-hidden opacity-55">
 				{FALLBACK_DUCKS.map((duck, index) => (
 					<img

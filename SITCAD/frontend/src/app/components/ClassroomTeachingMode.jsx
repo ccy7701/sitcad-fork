@@ -9,6 +9,7 @@ import { Badge } from './ui/badge';
 import { Progress } from './ui/progress';
 import { ArrowLeft, Play, Pause, CheckCircle2, Users, Clock, Book, Calculator, Palette, Award } from 'lucide-react';
 import { toast } from 'sonner';
+import Duckpit from './Duckpit';
 
 const classroomActivities = [
   {
@@ -97,28 +98,34 @@ export function ClassroomTeachingMode() {
     };
   
     return (
-      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50">
-        <header className="bg-white border-b shadow-sm sticky top-0 z-10">
-          <div className="max-w-7xl mx-auto px-4 py-4">
-            <Button variant="ghost" onClick={() => navigate('/teacher')} className="mb-4">
-              <ArrowLeft className="mr-2 h-4 w-4" />
-              Exit Classroom Mode
-            </Button>
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-3">
-                <div className="w-12 h-12 bg-gradient-to-br from-orange-500 to-red-600 rounded-lg flex items-center justify-center">
-                  <Users className="w-6 h-6 text-white" />
+      <div className="relative min-h-screen overflow-hidden bg-slate-50">
+        <div className="absolute inset-0 z-0 pointer-events-none">
+          <Duckpit count={24} gravity={0.5} friction={0.9975} wallBounce={0.9} className="h-full w-full opacity-100" />
+        </div>
+        <div className="absolute inset-0 z-0 bg-linear-to-b from-white/72 via-white/58 to-emerald-50/72" />
+
+        <div className="relative z-10">
+        <header className="bg-white/80 border-b shadow-sm sticky top-0 z-20 backdrop-blur-sm">
+          <div className="max-w-7xl mx-auto px-6 py-4">
+            <div className="flex items-center justify-between gap-4">
+              <div className="flex items-center gap-2">
+                <div className="w-8 h-8 bg-linear-to-br from-orange-500 to-red-600 rounded-lg flex items-center justify-center">
+                  <Users className="w-4 h-4 text-white" />
                 </div>
                 <div>
                   <h1 className="text-2xl font-semibold">Classroom Teaching Mode</h1>
-                  <p className="text-sm text-muted-foreground">
-                    Whole-class instruction and activity management
-                  </p>
+                  <p className="text-sm text-muted-foreground mt-1">Whole-class instruction and activity management</p>
                 </div>
               </div>
-              <div className="text-right">
-                <p className="text-sm text-muted-foreground">Students Present</p>
-                <p className="text-2xl font-semibold">{presentStudents.length}/{students.length}</p>
+              <div className="flex items-center gap-4">
+                <div className="text-right">
+                  <p className="text-sm text-muted-foreground">Students Present</p>
+                  <p className="text-2xl font-semibold">{presentStudents.length}/{students.length}</p>
+                </div>
+                <Button variant="ghost" onClick={() => navigate('/teacher')}>
+                  <ArrowLeft className="mr-2 h-4 w-4" />
+                  Exit Classroom Mode
+                </Button>
               </div>
             </div>
           </div>
@@ -272,7 +279,7 @@ export function ClassroomTeachingMode() {
           </Card>
 
           {/* Quick Actions */}
-          <Card className="bg-gradient-to-r from-purple-50 to-pink-50 border-2 border-purple-200">
+          <Card className="bg-linear-to-r from-purple-50 to-pink-50 border-2 border-purple-200">
             <CardHeader>
               <CardTitle>Quick Actions</CardTitle>
             </CardHeader>
@@ -296,6 +303,7 @@ export function ClassroomTeachingMode() {
             </CardContent>
           </Card>
         </main>
+        </div>
       </div>
     );
   }

@@ -45,6 +45,7 @@ import {
   CheckCircle2,
 } from "lucide-react";
 import { toast } from "sonner";
+import Duckpit from './Duckpit';
 
 const activityTypes = [
   {
@@ -182,26 +183,31 @@ export function ActivityManagement() {
   ];
 
   return (
-    <div className="min-h-screen">
+    <div className="relative min-h-screen overflow-hidden bg-slate-50">
+      <div className="absolute inset-0 z-0 pointer-events-none">
+        <Duckpit count={24} gravity={0.5} friction={0.9975} wallBounce={0.9} className="h-full w-full opacity-100" />
+      </div>
+      <div className="absolute inset-0 z-0 bg-linear-to-b from-white/72 via-white/58 to-emerald-50/72" />
+
+      <div className="relative z-10">
       {/* Header */}
-      <header className="bg-white border-b shadow-sm sticky top-0 z-10">
-        <div className="max-w-7xl mx-auto px-4 py-4">
-          <Button variant="ghost" onClick={handleBack} className="mb-4">
-            <ArrowLeft className="mr-2 h-4 w-4" />
-            Back to Dashboard
-          </Button>
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <div className="w-12 h-12 bg-[#bafde0] rounded-lg flex items-center justify-center">
-                <Calendar className="w-6 h-6 text-Black" />
+      <header className="bg-white/80 border-b shadow-sm sticky top-0 z-20 backdrop-blur-sm">
+        <div className="max-w-7xl mx-auto px-6 py-4">
+          <div className="flex items-center justify-between gap-4">
+            <div className="flex items-center gap-2">
+              <div className="w-8 h-8 bg-[#bafde0] rounded-lg flex items-center justify-center">
+                <Calendar className="w-4 h-4 text-Black" />
               </div>
               <div>
                 <h1 className="text-2xl font-semibold">Activity Management</h1>
-                <p className="text-sm text-muted-foreground">
-                  Create and assign learning activities to student
-                </p>
+                <p className="text-sm text-muted-foreground mt-1">Create and assign learning activities to student</p>
               </div>
             </div>
+            <div className="flex items-center gap-2">
+            <Button variant="ghost" onClick={handleBack}>
+              <ArrowLeft className="mr-2 h-4 w-4" />
+              Back to Dashboard
+            </Button>
             <Dialog open={open} onOpenChange={setOpen}>
               <DialogTrigger asChild>
                 <Button size="lg">
@@ -404,6 +410,7 @@ export function ActivityManagement() {
                 </div>
               </DialogContent>
             </Dialog>
+          </div>
           </div>
         </div>
       </header>
@@ -687,6 +694,7 @@ export function ActivityManagement() {
             })()}
         </DialogContent>
       </Dialog>
+      </div>
     </div>
   );
 }

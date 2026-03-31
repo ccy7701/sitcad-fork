@@ -109,14 +109,14 @@ export function ReportGeneration() {
       <div className="absolute inset-0 z-0 pointer-events-none">
         <Duckpit count={24} gravity={0.5} friction={0.9975} wallBounce={0.9} className="h-full w-full opacity-100" />
       </div>
-      <div className="absolute inset-0 z-0 bg-gradient-to-b from-white/72 via-white/58 to-emerald-50/72" />
+      <div className="absolute inset-0 z-0 bg-linear-to-b from-white/72 via-white/58 to-emerald-50/72" />
 
       <div className="relative z-10">
       <header className="bg-white/80 border-b shadow-sm sticky top-0 z-20 backdrop-blur-sm">
         <div className="max-w-7xl mx-auto px-6 py-4">
           <div className="flex items-center justify-between gap-4">
             <div className="flex items-center gap-2">
-              <div className="w-8 h-8 bg-gradient-to-br from-green-500 to-blue-600 rounded-lg flex items-center justify-center">
+              <div className="w-8 h-8 bg-linear-to-br from-green-500 to-blue-600 rounded-lg flex items-center justify-center">
                 <FileText className="w-4 h-4 text-white" />
               </div>
               <div>
@@ -137,7 +137,7 @@ export function ReportGeneration() {
       <main className="max-w-7xl mx-auto px-4 py-8 space-y-6">
         {/* Configuration Card */}
         <Card className="border-2 border-green-200">
-          <CardHeader className="bg-gradient-to-r from-green-50 to-blue-50">
+          <CardHeader className="bg-linear-to-r from-green-50 to-blue-50">
             <CardTitle className="flex items-center gap-2">
               <Sparkles className="h-5 w-5 text-green-600" />
               Configure Report Generation
@@ -248,7 +248,7 @@ export function ReportGeneration() {
 
             {reports.map((report) => (
               <Card key={report.studentId} className="border-2">
-                <CardHeader className="bg-gradient-to-r from-blue-50 to-purple-50">
+                <CardHeader className="bg-linear-to-r from-blue-50 to-purple-50">
                   <div className="flex items-center justify-between">
                     <div>
                       <CardTitle>{report.studentName}</CardTitle>
