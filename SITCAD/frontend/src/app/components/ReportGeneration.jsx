@@ -238,7 +238,7 @@ export function ReportGeneration() {
               </CardTitle>
               <CardDescription>View and print past reports</CardDescription>
             </CardHeader>
-            <CardContent className="pt-6">
+            <CardContent className="pt-1">
               {reports.length === 0 ? (
                 <p className="text-center text-muted-foreground py-8">
                   No reports generated yet. Generate a report from the Activities page after completing an activity.
@@ -270,9 +270,6 @@ export function ReportGeneration() {
                           </span>
                         </div>
                       </div>
-                      <Button variant="outline" size="sm">
-                        View
-                      </Button>
                     </div>
                   ))}
                 </div>
