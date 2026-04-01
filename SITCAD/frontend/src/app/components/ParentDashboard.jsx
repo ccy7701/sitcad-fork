@@ -7,6 +7,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from './ui/
 import { Progress } from './ui/progress';
 import { Badge } from './ui/badge';
 import { LogOut, Heart, Calendar, TrendingUp, MessageSquare } from 'lucide-react';
+import Duckpit from './Duckpit';
 
 export function ParentDashboard() {
   const { user, logout } = useAuth();
@@ -22,9 +23,15 @@ export function ParentDashboard() {
   };
 
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen relative overflow-hidden bg-slate-50">
+      <div className="absolute inset-0 z-0 pointer-events-none">
+        <Duckpit count={15} interactive={false} className="h-full w-full opacity-100" />
+      </div>
+      <div className="absolute inset-0 z-0 bg-linear-to-b from-white/72 via-white/58 to-emerald-50/72" />
+
+      <div className="relative z-10">
       {/* Header */}
-      <header className="bg-white border-b shadow-sm sticky top-0 z-10">
+      <header className="bg-white/80 border-b shadow-sm sticky top-0 z-20 backdrop-blur-sm">
         <div className="max-w-6xl mx-auto px-6 py-4">
           <div className="flex items-center justify-between">
             <div>
@@ -37,12 +44,12 @@ export function ParentDashboard() {
         </div>
       </header>
 
-      <main className="max-w-6xl mx-auto px-4 py-8 space-y-8">
+      <main className="relative z-10 max-w-6xl mx-auto px-4 py-8 space-y-8">
         {/* Welcome Message */}
-        <Card className="bg-gradient-to-r from-purple-500 to-pink-500 text-white border-0">
+        <Card className="bg-linear-to-r bg-slate-50 shadow-lg border-slate-200">
           <CardHeader>
-            <CardTitle className="text-white">Your Child's Learning Journey</CardTitle>
-            <CardDescription className="text-white/90">
+            <CardTitle className="text-black">Your Child's Learning Journey</CardTitle>
+            <CardDescription className="text-muted-foreground">
               Track progress, view activities, and celebrate achievements together
             </CardDescription>
             <div className="pb-3"></div>
@@ -50,17 +57,18 @@ export function ParentDashboard() {
         </Card>
 
         {/* Children */}
-        {students.length === 0 ? (
-          <Card>
-            <CardContent className="py-12 text-center">
-              <p className="text-muted-foreground">No student profiles linked to your account.</p>
-            </CardContent>
-          </Card>
-        ) : (
+        <Card className="bg-linear-to-r bg-slate-50 shadow-lg border-slate-200">
+          <CardHeader>
+            <CardTitle className="text-black">No student profiles linked to your account</CardTitle>
+            <CardDescription className="text-muted-foreground">
+            </CardDescription>
+            <div className="pb-3"></div>
+          </CardHeader>
+        </Card>
           <div className="space-y-6">
             {students.map(student => (
               <Card key={student.id} className="overflow-hidden">
-                <CardHeader className="bg-gradient-to-r from-purple-50 to-pink-50">
+                <CardHeader className="bg-linear-to-r from-purple-50 to-pink-50">
                   <div className="flex items-center gap-4">
                     <img
                       src={student.avatar}
@@ -144,35 +152,34 @@ export function ParentDashboard() {
               </Card>
             ))}
           </div>
-        )}
-
         {/* Tips for Parents */}
-        <Card className="border-purple-200 bg-purple-50/50">
+        <Card className="bg-linear-to-r bg-slate-50 shadow-lg border-slate-200">
           <CardHeader>
             <CardTitle>Tips for Supporting Learning at Home</CardTitle>
           </CardHeader>
           <CardContent>
             <ul className="space-y-2 text-sm">
               <li className="flex items-start gap-2">
-                <span className="text-purple-600">•</span>
+                <span className="text-lime-600">•</span>
                 <span>Read together for at least 15 minutes each day</span>
               </li>
               <li className="flex items-start gap-2">
-                <span className="text-purple-600">•</span>
+                <span className="text-lime-600">•</span>
                 <span>Practice counting objects during everyday activities</span>
               </li>
               <li className="flex items-start gap-2">
-                <span className="text-purple-600">•</span>
+                <span className="text-lime-600">•</span>
                 <span>Encourage drawing and creative expression</span>
               </li>
               <li className="flex items-start gap-2">
-                <span className="text-purple-600">•</span>
+                <span className="text-lime-600">•</span>
                 <span>Celebrate small achievements and effort</span>
               </li>
             </ul>
           </CardContent>
         </Card>
       </main>
+      </div>
     </div>
   );
 }
