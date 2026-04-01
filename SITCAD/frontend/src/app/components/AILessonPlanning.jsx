@@ -151,7 +151,7 @@ export function AILessonPlanning() {
       <div className="absolute inset-0 z-0 pointer-events-none">
         <Duckpit count={24} gravity={0.5} friction={0.9975} wallBounce={0.9} className="h-full w-full opacity-100" />
       </div>
-      <div className="absolute inset-0 z-0 bg-gradient-to-b from-white/72 via-white/58 to-emerald-50/72" />
+      <div className="absolute inset-0 z-0 bg-linear-to-b from-white/72 via-white/58 to-emerald-50/72" />
 
       <div className="relative z-10">
       {/* Header */}
@@ -159,7 +159,7 @@ export function AILessonPlanning() {
         <div className="max-w-7xl mx-auto px-6 py-4">
           <div className="flex items-center justify-between gap-4">
             <div className="flex items-center gap-2">
-              <div className="w-8 h-8 bg-gradient-to-br from-purple-500 to-pink-600 rounded-lg flex items-center justify-center">
+              <div className="w-8 h-8 bg-linear-to-br from-purple-500 to-pink-600 rounded-lg flex items-center justify-center">
                 <Sparkles className="w-4 h-4 text-white" />
               </div>
               <div>
@@ -178,7 +178,7 @@ export function AILessonPlanning() {
       <main className="max-w-6xl mx-auto px-4 py-8 space-y-6">
         {/* Input Form */}
         <Card className="border-2 border-indigo-200 shadow-md">
-          <CardHeader className="bg-gradient-to-r from-indigo-100 to-purple-100">
+          <CardHeader className="bg-linear-to-r from-indigo-100 to-purple-100">
             <CardTitle className="flex items-center gap-2 text-lg font-semibold">
               <Lightbulb className="h-5 w-5 text-indigo-600" />
               Lesson Plan Generator
@@ -323,7 +323,7 @@ export function AILessonPlanning() {
           <div className="space-y-6 animate-in fade-in duration-500">
             {/* Header */}
             <Card className="shadow-md border border-indigo-200">
-              <CardHeader className="bg-gradient-to-r from-indigo-50 to-purple-50">
+              <CardHeader className="bg-linear-to-r from-indigo-50 to-purple-50">
                 <div className="mb-4 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
                   {/* Left Section */}
                   <div className="space-y-2">
@@ -407,7 +407,7 @@ export function AILessonPlanning() {
                       key={activity.step}
                       className="flex gap-3 p-3 border rounded-lg bg-gray-50"
                     >
-                      <div className="w-12 h-12 rounded-full bg-gradient-to-br from-indigo-400 to-purple-400 text-white flex items-center justify-center text-lg font-bold shrink-0">
+                      <div className="w-12 h-12 rounded-full bg-linear-to-br from-indigo-400 to-purple-400 text-white flex items-center justify-center text-lg font-bold shrink-0">
                         {activity.step}
                       </div>
 

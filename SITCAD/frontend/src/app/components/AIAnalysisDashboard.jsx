@@ -187,11 +187,6 @@ export function AIAnalysisDashboard() {
 
   const [timeFilter, setTimeFilter] = useState("daily");
 
-  const elevatedCard =
-    "border border-slate-200/90 bg-white/92 backdrop-blur-sm shadow-[0_12px_32px_rgba(15,23,42,0.16)]";
-  const elevatedCardHover =
-    "border border-slate-200/90 bg-white/92 backdrop-blur-sm shadow-[0_12px_32px_rgba(15,23,42,0.16)] transition hover:shadow-[0_16px_40px_rgba(15,23,42,0.22)]";
-
   const learningPatternsData = {
     daily: [
       {
@@ -341,7 +336,7 @@ export function AIAnalysisDashboard() {
 
         {/* Overview Cards */}
         <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
-          <Card className={`${elevatedCard} p-2`}>
+          <Card className="p-2">
             <CardHeader className="pb-2">
               <CardDescription className="text-lg font-medium">
                 Overall Class Score
@@ -358,7 +353,7 @@ export function AIAnalysisDashboard() {
             </CardContent>
           </Card>
 
-          <Card className={`${elevatedCard} p-2`}>
+          <Card className="p-2">
             <CardHeader className="pb-2">
               <CardDescription className="text-lg font-medium">
                 Student Participation
@@ -375,7 +370,7 @@ export function AIAnalysisDashboard() {
             </CardContent>
           </Card>
 
-          <Card className={`${elevatedCard} p-2`}>
+          <Card className="p-2">
             <CardHeader className="pb-2">
               <CardDescription className="text-lg font-medium">
                 High Performers
@@ -393,7 +388,7 @@ export function AIAnalysisDashboard() {
           </Card>
 
           {/* 🔥 Highlight important card */}
-          <Card className="p-2 border-2 border-red-300 bg-red-50 shadow-[0_12px_32px_rgba(127,29,29,0.2)]">
+          <Card className="p-2 border-2 border-red-300 bg-red-50">
             <CardHeader className="pb-2">
               <CardDescription className="text-lg font-medium">
                 Students at Risk
@@ -410,7 +405,7 @@ export function AIAnalysisDashboard() {
             </CardContent>
           </Card>
 
-          <Card className={`${elevatedCard} p-2`}>
+          <Card className="p-2">
             <CardHeader className="pb-2">
               <CardDescription className="text-lg font-medium">
                 Total Students
@@ -445,7 +440,7 @@ export function AIAnalysisDashboard() {
           {/*===LEARNING PATTERN===*/}
           <TabsContent value="patterns" className="space-y-4">
             {/* Header */}
-            <Card className="border-2 border-pink-300 bg-linear-to-r from-pink-100 to-pink-100 shadow-[0_12px_32px_rgba(131,24,67,0.16)]">
+            <Card className="border-2 border-pink-300 bg-linear-to-r from-pink-100 to-pink-100">
               <CardHeader>
                 <CardTitle className="flex items-center gap-1 text-lg font-bold">
                   <Sparkles className="h-5 w-5 text-pink-600" />
@@ -480,7 +475,7 @@ export function AIAnalysisDashboard() {
 
             {/* Patterns */}
             {learningPatternsData[timeFilter].map((pattern, index) => (
-              <Card key={index} className={`${elevatedCardHover} p-2`}>
+              <Card key={index} className="hover:shadow-md transition p-2">
                 <CardHeader>
                   <div className="flex items-start justify-between gap-2">
                     <div className="flex-1">
@@ -523,7 +518,7 @@ export function AIAnalysisDashboard() {
           {/*===Developmental Areas===*/}
           <TabsContent value="developmental" className="space-y-4">
             {/* 🔥 Header */}
-            <Card className="border-2 border-blue-300 bg-linear-to-r from-blue-200 to-blue-100 shadow-[0_12px_32px_rgba(30,64,175,0.16)]">
+            <Card className="border-2 border-blue-300 bg-linear-to-r from-blue-200 to-blue-100">
               <CardHeader>
                 <CardTitle className="flex items-center gap-1 text-lg font-bold">
                   📊 Developmental Progress
@@ -538,7 +533,7 @@ export function AIAnalysisDashboard() {
 
             {/*===Development Cards===*/}
             {developmentalInsights.map((area, index) => (
-              <Card key={index} className={`${elevatedCardHover} p-2`}>
+              <Card key={index} className="p-2 hover:shadow-md transition">
                 <CardHeader>
                   <div className="flex items-center justify-between gap-4">
                     <div>
@@ -581,7 +576,7 @@ export function AIAnalysisDashboard() {
           {/*===Predictive Insights===*/}
           <TabsContent value="predictive" className="space-y-4">
             {/* 🔥 Header Card */}
-            <Card className="border-2 border-indigo-200 bg-linear-to-r from-indigo-50 to-purple-50 shadow-[0_12px_32px_rgba(49,46,129,0.16)]">
+            <Card className="border-2 border-indigo-200 bg-linear-to-r from-indigo-50 to-purple-50">
               <CardHeader>
                 <CardTitle className="flex items-center gap-1 text-lg font-bold">
                   <BarChart3 className="h-5 w-5 text-indigo-600" />
@@ -599,7 +594,7 @@ export function AIAnalysisDashboard() {
             {predictiveInsights.map((insight) => (
               <Card
                 key={insight.id}
-                className={`${elevatedCardHover} border-2 p-2`}
+                className="border-2 p-2 hover:shadow-md transition"
               >
                 <CardHeader>
                   <div className="flex items-start justify-between gap-4">
