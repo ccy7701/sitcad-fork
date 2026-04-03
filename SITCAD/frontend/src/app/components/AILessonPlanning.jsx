@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from "react";
+import { useReducer, useEffect, useCallback } from "react";
 import { useNavigate } from "react-router";
 import { useAuth } from "../contexts/AuthContext";
 import { auth } from "../lib/firebase";
@@ -32,6 +32,7 @@ import {
   Trash2,
 } from "lucide-react";
 import { toast } from "sonner";
+import { lessonReducer, initialState } from "../reducers/lessonReducer";
 
 const API_BASE = "http://localhost:8000";
 
@@ -73,6 +74,7 @@ export function AILessonPlanning() {
   useEffect(() => {
     if (user?.role === "teacher") fetchSavedPlans();
   }, [user, fetchSavedPlans]);
+  const [state, dispatch] = useReducer(lessonReducer, initialState);
 
   if (!user || user.role !== "teacher") {
     navigate("/");
@@ -80,11 +82,95 @@ export function AILessonPlanning() {
   }
 
   const generateLessonPlan = async () => {
-    if (!topic) {
+    if (!state.topic) {
       toast.error("Please enter a topic for the lesson");
       return;
     }
 
+    dispatch({ type: "START_GENERATION" });
+
+    // Simulate AI generation with a delay
+    await new Promise((resolve) => setTimeout(resolve, 2000));
+
+    // Mock AI-generated lesson plan
+    const mockLessonPlan = {
+      id: `lesson_${Date.now()}`,
+      title: `${state.topic} Exploration`,
+      ageGroup: state.ageGroup,
+      learningArea: state.learningArea,
+      duration: `${state.duration} minutes`,
+      targetScore: state.targetScore,
+      scoringType: state.scoringType,
+      objectives: [
+        `Introduce basic concepts of ${state.topic}`,
+        "Develop fine motor skills through hands-on activities",
+        "Encourage verbal expression and communication",
+        "Foster curiosity and exploration",
+      ],
+      materials: [
+        "Visual aids and picture cards",
+        "Hands-on manipulatives",
+        "Art supplies (crayons, paper, scissors)",
+        "Interactive storybooks",
+        "Music player for transitions",
+      ],
+      activities: [
+        {
+          step: 1,
+          title: "Circle Time Introduction",
+          description: `Gather students in a circle and introduce the topic of ${state.topic}. Use visual aids and encourage students to share what they know.`,
+          duration: "5-7 minutes",
+        },
+        {
+          step: 2,
+          title: "Interactive Story",
+          description: `Read an engaging story related to ${state.topic}. Pause to ask questions and encourage predictions.`,
+          duration: "8-10 minutes",
+        },
+        {
+          step: 3,
+          title: "Hands-On Activity",
+          description: `Students explore ${state.topic} through a structured activity with manipulatives. Teacher circulates to provide support.`,
+          duration: "10-12 minutes",
+        },
+        {
+          step: 4,
+          title: "Creative Expression",
+          description:
+            "Students create artwork or crafts related to the lesson topic, reinforcing concepts learned.",
+          duration: "8-10 minutes",
+        },
+        {
+          step: 5,
+          title: "Closing & Review",
+          description:
+            "Gather students to review what they learned. Sing a related song and preview upcoming activities.",
+          duration: "3-5 minutes",
+        },
+      ],
+      assessment:
+        "Observe student participation, listen to verbal responses, and review completed activities. Note students who may need additional support or enrichment.",
+      adaptations: [
+        "For visual learners: Provide extra visual supports and diagrams",
+        "For kinesthetic learners: Include more movement-based activities",
+        "For advanced students: Offer extension activities with increased complexity",
+        "For students needing support: Provide one-on-one assistance and simplified instructions",
+        "For English language learners: Use visual cues and gestures to support understanding",
+      ],
+    };
+
+    dispatch({ type: "FINISH_GENERATION", payload: mockLessonPlan });
+    toast.success("Lesson plan generated successfully!");
+  };
+
+  const saveLessonPlan = () => {
+    toast.success("Lesson plan saved to your library!");
+
+    dispatch({ type: "SET_SAVED_MSG", payload: true });
+
+    setTimeout(() => {
+      dispatch({ type: "SET_SAVED_MSG", payload: false });
+    }, 2000); // disappears after 2s
     setLoading(true);
     try {
       const idToken = await getIdToken();
@@ -191,7 +277,7 @@ export function AILessonPlanning() {
             <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
               <div className="space-y-2">
                 <Label className="text-sm font-semibold">Age Group</Label>
-                <Select value={ageGroup} onValueChange={setAgeGroup}>
+                <Select value={state.ageGroup} onValueChange={(val) => dispatch({ type: "SET_FIELD", field: "ageGroup", value: val })}>
                   <SelectTrigger className="text-sm font-medium">
                     <SelectValue />
                   </SelectTrigger>
@@ -205,7 +291,7 @@ export function AILessonPlanning() {
 
               <div className="space-y-2">
                 <Label className="text-sm font-semibold">Learning Area</Label>
-                <Select value={learningArea} onValueChange={setLearningArea}>
+                <Select value={state.learningArea} onValueChange={(val) => dispatch({ type: "SET_FIELD", field: "learningArea", value: val })}>
                   <SelectTrigger className="text-sm font-medium">
                     <SelectValue />
                   </SelectTrigger>
@@ -226,7 +312,7 @@ export function AILessonPlanning() {
                 <Label className="text-sm font-semibold">
                   Duration (minutes)
                 </Label>
-                <Select value={duration} onValueChange={setDuration}>
+                <Select value={state.duration} onValueChange={(val) => dispatch({ type: "SET_FIELD", field: "duration", value: val })}>
                   <SelectTrigger className="text-sm font-medium">
                     <SelectValue />
                   </SelectTrigger>
@@ -247,8 +333,8 @@ export function AILessonPlanning() {
                 className="text-sm"
                 placeholder="e.g., The letter 'B' and animals that start with B"
                 rows={2}
-                value={topic}
-                onChange={(e) => setTopic(e.target.value)}
+                value={state.topic}
+                onChange={(e) => dispatch({ type: "SET_FIELD", field: "topic", value: e.target.value })}
               />
             </div>
 
@@ -260,18 +346,18 @@ export function AILessonPlanning() {
                 className="text-sm"
                 placeholder="Any specific requirements, student considerations, or resources you'd like to include..."
                 rows={3}
-                value={additionalNotes}
-                onChange={(e) => setAdditionalNotes(e.target.value)}
+                value={state.additionalNotes}
+                onChange={(e) => dispatch({ type: "SET_FIELD", field: "additionalNotes", value: e.target.value })}
               />
             </div>
 
             <Button
               onClick={generateLessonPlan}
-              disabled={loading}
+              disabled={state.loading}
               size="lg"
               className="w-full bg-[#3090A0] hover:bg-[#2FBFA5] text-white font-semibold text-base"
             >
-              {loading ? (
+              {state.loading ? (
                 <>
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                   Generating AI Lesson Plan...
@@ -340,7 +426,7 @@ export function AILessonPlanning() {
         )}
 
         {/* Generated / Viewed Lesson Plan */}
-        {lessonPlan && (
+        {state.lessonPlan && (
           <div className="space-y-6 animate-in fade-in duration-500">
             {/* Header */}
             <Card className="shadow-md border border-indigo-200">
@@ -348,22 +434,30 @@ export function AILessonPlanning() {
                 <div className="mb-4 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
                   <div className="space-y-2">
                     <CardTitle className="text-2xl md:text-3xl font-bold text-gray-800 leading-tight">
-                      {lessonPlan.title}
+                      {state.lessonPlan.title}
                     </CardTitle>
 
                     <div className="flex flex-wrap gap-2 mt-2 text-xs md:text-sm">
                       <Badge className="bg-indigo-100 text-indigo-700 font-medium">
                         <Users className="h-3 w-3 mr-1" />
-                        Ages {lessonPlan.age_group}
+                        Ages {state.lessonPlan.ageGroup}
                       </Badge>
 
                       <Badge className="bg-blue-100 text-blue-700 font-medium">
                         <Clock className="h-3 w-3 mr-1" />
-                        {lessonPlan.duration_minutes} minutes
+                        {state.lessonPlan.duration}
                       </Badge>
 
                       <Badge className="bg-purple-100 text-purple-700 capitalize font-medium">
-                        {lessonPlan.learning_area}
+                        {state.lessonPlan.learningArea}
+                      </Badge>
+
+                      <Badge className="bg-green-100 text-green-700 font-medium">
+                        🎯 Target: {state.lessonPlan.targetScore}%
+                      </Badge>
+
+                      <Badge className="bg-orange-100 text-orange-700 font-medium">
+                        📊 {state.lessonPlan.scoringType}
                       </Badge>
                     </div>
                   </div>
@@ -391,7 +485,7 @@ export function AILessonPlanning() {
 
               <CardContent>
                 <ul className="space-y-3 text-base">
-                  {lessonPlan.objectives?.map((obj, index) => (
+                  {state.lessonPlan.objectives.map((obj, index) => (
                     <li key={index} className="flex items-start gap-3">
                       <div className="w-7 h-7 rounded-full bg-indigo-100 text-indigo-700 flex items-center justify-center text-sm font-semibold shrink-0 mt-0.5">
                         {index + 1}
@@ -413,7 +507,7 @@ export function AILessonPlanning() {
 
               <CardContent>
                 <div className="space-y-4">
-                  {lessonPlan.activities?.map((activity) => (
+                  {state.lessonPlan.activities.map((activity) => (
                     <div
                       key={activity.step}
                       className="flex gap-3 p-3 border rounded-lg bg-gray-50"
@@ -455,7 +549,7 @@ export function AILessonPlanning() {
               <CardContent>
                 <div className="flex items-start gap-3 p-3 bg-indigo-50 rounded-lg border border-indigo-200">
                   <p className="text-base text-gray-700 font-medium">
-                    {lessonPlan.assessment}
+                    {state.lessonPlan.assessment}
                   </p>
                 </div>
               </CardContent>
@@ -471,7 +565,7 @@ export function AILessonPlanning() {
 
               <CardContent>
                 <div className="space-y-3">
-                  {lessonPlan.adaptations?.map((adaptation, index) => (
+                  {state.lessonPlan.adaptations.map((adaptation, index) => (
                     <div
                       key={index}
                       className="flex items-start gap-3 p-3 bg-indigo-50 rounded-lg border border-indigo-200"

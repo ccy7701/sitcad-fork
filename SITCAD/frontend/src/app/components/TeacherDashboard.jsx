@@ -205,8 +205,8 @@ export function TeacherDashboard() {
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
             <Card className="border-white/70 shadow-md hover:shadow-lg transition-shadow transform-gpu" style={statsCardShadeStyle}>
               <CardHeader className="pb-1">
-                <CardDescription style={statsLabelStyle}>Total Students</CardDescription>
-                <CardTitle className="text-3xl">{classroomStats.totalStudents}</CardTitle>
+                <CardDescription className="stats-label">Total Students</CardDescription>
+                <CardTitle className="text-6xl">{classroomStats.totalStudents}</CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="flex items-center text-sm text-[#3090A0]">

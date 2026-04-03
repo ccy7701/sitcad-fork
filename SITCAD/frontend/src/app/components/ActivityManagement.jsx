@@ -1,10 +1,14 @@
-import { useState, useEffect, useCallback } from "react";
+import { useReducer, useEffect, useCallback } from "react";
 import { useNavigate } from "react-router";
 import { useAuth } from "../contexts/AuthContext";
 import { auth } from "../lib/firebase";
 import { Button } from "./ui/button";
 import { Label } from "./ui/label";
 import { Textarea } from "./ui/textarea";
+import { activityReducer, initialState } from "../reducers/activityReducer";
+import { toast } from "sonner";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "./ui/tabs";
+import { Checkbox } from "./ui/checkbox";
 import { Input } from "./ui/input";
 import {
   Card,
@@ -29,8 +33,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "./ui/dialog";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "./ui/tabs";
-import { Checkbox } from "./ui/checkbox";
+
 import {
   ArrowLeft,
   Plus,
@@ -48,7 +51,7 @@ import {
   FileText,
   Loader2,
 } from "lucide-react";
-import { toast } from "sonner";
+
 
 const API_BASE = "http://localhost:8000";
 
@@ -68,9 +71,18 @@ const activityTypes = [
   { value: "cognitive", label: "Cognitive", icon: Brain, color: "text-sm bg-[#f46197]/20 text-[#f46197] border-[#f46197]/30" },
 ];
 
+
+
 export function ActivityManagement() {
   const { user } = useAuth();
   const navigate = useNavigate();
+  const [state, dispatch] = useReducer(activityReducer, initialState);
+
+  const handleBack = () => {
+    navigate("/teacher");
+  };
+
+  const savedLessonPlan = JSON.parse(localStorage.getItem("lessonPlan"));
   const [open, setOpen] = useState(false);
   const [selectedActivity, setSelectedActivity] = useState(null);
   const [creationMode, setCreationMode] = useState("manual");
@@ -150,6 +162,31 @@ export function ActivityManagement() {
     return null;
   }
 
+  const students = mockStudents;
+
+  const handleCreateActivity = () => {
+    if (!state.title || !state.description) {
+      toast.error("Please fill in all required fields");
+      return;
+    }
+
+    // Mock activity creation
+    const newActivity = {
+      id: `act_${Date.now()}`,
+      type: state.type,
+      title: state.title,
+      description: state.description,
+      date: new Date().toISOString().split("T")[0],
+      duration: parseInt(state.duration),
+      targetScore: state.targetScore,
+      scoringType: state.scoringType,
+      completed: false,
+      assignedTo: state.assignTo === "all" ? "all" : state.selectedStudents,
+    };
+
+    toast.success(`Activity "${state.title}" created successfully!`);
+
+    dispatch({ type: "RESET_FORM" });
   const handleBack = () => navigate("/teacher");
 
   const resetForm = () => {
@@ -300,6 +337,7 @@ export function ActivityManagement() {
                 <p className="text-sm text-muted-foreground mt-1">Create and assign learning activities to students</p>
               </div>
             </div>
+            <Dialog open={state.open} onOpenChange={(val) => dispatch({ type: "SET_OPEN", payload: val })}>
             <Button variant="ghost" onClick={handleBack} className="cursor-pointer">
               <ArrowLeft className="mr-2 h-4 w-4" />
               Back to Dashboard
@@ -351,7 +389,7 @@ export function ActivityManagement() {
                 </DialogHeader>
                 <div className="space-y-4 py-4">
                   {/* Tabs */}
-                  <Tabs value={creationMode} onValueChange={setCreationMode}>
+                  <Tabs value={state.creationMode} onValueChange={(val) => dispatch({ type: "SET_FIELD", field: "creationMode", value: val })}>
                     <TabsList className="grid w-full grid-cols-2">
                       <TabsTrigger value="manual">Manual</TabsTrigger>
                       <TabsTrigger value="lesson">From Lesson Plan</TabsTrigger>
@@ -363,8 +401,8 @@ export function ActivityManagement() {
                         <Label>Activity Title *</Label>
                         <Input
                           placeholder="e.g., Letter Recognition Practice"
-                          value={title}
-                          onChange={(e) => setTitle(e.target.value)}
+                          value={state.title}
+                          onChange={(e) => dispatch({ type: "SET_FIELD", field: "title", value: e.target.value })}
                         />
                       </div>
 
@@ -372,13 +410,21 @@ export function ActivityManagement() {
                         <Label>Description *</Label>
                         <Textarea
                           rows={3}
-                          value={description}
-                          onChange={(e) => setDescription(e.target.value)}
+                          value={state.description}
+                          onChange={(e) => dispatch({ type: "SET_FIELD", field: "description", value: e.target.value })}
                         />
                       </div>
 
                       <div className="grid grid-cols-2 gap-4">
                         <div className="space-y-2">
+                          <Label>Target Score (%)</Label>
+                          <Select
+                            value={state.targetScore}
+                            onValueChange={(val) => dispatch({ type: "SET_FIELD", field: "targetScore", value: val })}
+                          >
+                            <SelectTrigger>
+                              <SelectValue />
+                            </SelectTrigger>
                           <Label>Learning Area</Label>
                           <Select value={type} onValueChange={setType}>
                             <SelectTrigger><SelectValue /></SelectTrigger>
@@ -390,6 +436,14 @@ export function ActivityManagement() {
                           </Select>
                         </div>
                         <div className="space-y-2">
+                          <Label>Scoring Method</Label>
+                          <Select
+                            value={state.scoringType}
+                            onValueChange={(val) => dispatch({ type: "SET_FIELD", field: "scoringType", value: val })}
+                          >
+                            <SelectTrigger>
+                              <SelectValue />
+                            </SelectTrigger>
                           <Label>Duration (minutes)</Label>
                           <Select value={duration} onValueChange={setDuration}>
                             <SelectTrigger><SelectValue /></SelectTrigger>
@@ -413,6 +467,44 @@ export function ActivityManagement() {
                         </p>
                       ) : (
                         <>
+                          <div className="p-3 bg-indigo-50 border border-indigo-200 rounded-lg">
+                            <p className="font-medium text-sm text-indigo-700">
+                              {savedLessonPlan.title}
+                            </p>
+                            <p className="text-xs text-indigo-600">
+                              {savedLessonPlan.learningArea} •{" "}
+                              {savedLessonPlan.duration}
+                            </p>
+                          </div>
+
+                          <div className="space-y-3 max-h-64 overflow-y-auto">
+                            {savedLessonPlan.activities.map((act, index) => (
+                              <div
+                                key={index}
+                                className="p-3 border rounded-lg hover:bg-gray-50 cursor-pointer"
+                                onClick={() => {
+                                  dispatch({ type: "SET_FIELD", field: "title", value: act.title });
+                                  dispatch({ type: "SET_FIELD", field: "description", value: act.description });
+                                  dispatch({ type: "SET_FIELD", field: "duration", value: act.duration }); // Note: act.duration is usually a string in lesson plan mock
+                                  dispatch({ type: "SET_FIELD", field: "type", value: savedLessonPlan.learningArea });
+
+                                  toast.success(
+                                    "Activity loaded from lesson plan!",
+                                  );
+                                }}
+                              >
+                                <p className="font-medium text-sm">
+                                  {act.title}
+                                </p>
+                                <p className="text-xs text-muted-foreground line-clamp-2">
+                                  {act.description}
+                                </p>
+                                <span className="text-xs text-blue-600">
+                                  {act.duration}
+                                </span>
+                              </div>
+                            ))}
+                          </div>
                           <p className="text-sm text-muted-foreground">Select a lesson plan, then choose an activity step:</p>
                           {lessonPlans.map((plan) => (
                             <div key={plan.id} className="border rounded-lg">
@@ -465,7 +557,7 @@ export function ActivityManagement() {
                   {/* Assign Section */}
                   <div className="space-y-3">
                     <Label>Assign To</Label>
-                    <Tabs value={assignTo} onValueChange={setAssignTo}>
+                    <Tabs value={state.assignTo} onValueChange={(val) => dispatch({ type: "SET_FIELD", field: "assignTo", value: val })}>
                       <TabsList className="grid w-full grid-cols-2">
                         <TabsTrigger value="all">Whole Class</TabsTrigger>
                         <TabsTrigger value="individual">Individual Students</TabsTrigger>
@@ -487,8 +579,8 @@ export function ActivityManagement() {
                             {students.map((student) => (
                               <div key={student.id} className="flex items-center space-x-3">
                                 <Checkbox
-                                  checked={selectedStudents.includes(student.id)}
-                                  onCheckedChange={() => handleStudentToggle(student.id)}
+                                  checked={state.selectedStudents.includes(student.id)}
+                                  onCheckedChange={() => dispatch({ type: "TOGGLE_STUDENT", studentId: student.id })}
                                 />
                                 <span className="text-sm">{student.name}</span>
                               </div>
@@ -501,7 +593,7 @@ export function ActivityManagement() {
 
                   {/* Buttons */}
                   <div className="flex gap-3 pt-4">
-                    <Button variant="outline" className="flex-1" onClick={() => { setOpen(false); resetForm(); }}>
+                    <Button variant="outline" className="flex-1" onClick={() => { dispatch({ type: "SET_OPEN", payload: false }); resetForm(); }}>
                       Cancel
                     </Button>
                     <Button className="flex-1" onClick={handleCreateActivity}>
@@ -528,7 +620,7 @@ export function ActivityManagement() {
                     <Card
                       key={activity.id}
                       className="border-2 cursor-pointer hover:shadow-lg transition-shadow"
-                      onClick={() => setSelectedActivity(activity)}
+                      onClick={() => dispatch({ type: "SELECT_ACTIVITY", payload: activity })}
                     >
                       <CardContent className="pt-6">
                         <div className="flex gap-4">
@@ -582,27 +674,26 @@ export function ActivityManagement() {
         </Card>
       </main>
 
-      {/* Activity Details Modal */}
-      <Dialog open={!!selectedActivity} onOpenChange={() => setSelectedActivity(null)}>
+      <Dialog open={!!state.selectedActivity} onOpenChange={() => dispatch({ type: "SELECT_ACTIVITY", payload: null })}>
         <DialogContent className="max-w-2xl">
-          {selectedActivity && (() => {
-            const activityType = activityTypes.find((t) => t.value === selectedActivity.learning_area);
+          {state.selectedActivity && (() => {
+            const activityType = activityTypes.find((t) => t.value === state.selectedActivity.learning_area);
             const Icon = activityType?.icon || Book;
 
             return (
               <>
                 <DialogHeader>
                   <div className="flex items-center gap-4 mb-2">
-                    <div className={`w-16 h-16 rounded-lg ${activityType?.color || "bg-gray-100"} flex items-center justify-center shrink-0`}>
+                    <div className={`w-16 h-16 rounded-lg  ${activityType?.color || "bg-gray-100"} flex items-center justify-center shrink-0`}>
                       <Icon className="h-8 w-8" />
                     </div>
                     <div className="flex-1">
-                      <DialogTitle className="text-2xl">{selectedActivity.title}</DialogTitle>
+                      <DialogTitle className="text-2xl">{state.selectedActivity.title}</DialogTitle>
                       <DialogDescription className="flex items-center gap-2 mt-1">
                         <Badge variant="outline" className={activityType?.color}>
                           {activityType?.label}
                         </Badge>
-                        <Badge variant="outline" className="capitalize">{selectedActivity.status.replace("_", " ")}</Badge>
+                        <Badge variant="outline" className="capitalize">{state.selectedActivity.status.replace("_", " ")}</Badge>
                         {selectedActivity.source === "lesson_plan" && (
                           <Badge variant="outline" className="text-xs bg-indigo-50 text-indigo-600 border-indigo-200">
                             <Sparkles className="h-3 w-3 mr-1" /> Lesson Plan
@@ -621,7 +712,7 @@ export function ActivityManagement() {
                           <Clock className="h-4 w-4" />
                           <span className="text-base">Duration</span>
                         </div>
-                        <p className="text-lg font-semibold">{selectedActivity.duration_minutes} min</p>
+                        <p className="text-lg font-semibold">{state.selectedActivity.duration_minutes} min</p>
                       </CardContent>
                     </Card>
                     <Card>
@@ -631,7 +722,7 @@ export function ActivityManagement() {
                           <span className="text-base">Created</span>
                         </div>
                         <p className="text-lg font-semibold">
-                          {selectedActivity.created_at ? new Date(selectedActivity.created_at).toLocaleDateString("en-US", { month: "short", day: "numeric" }) : "N/A"}
+                          {selectedActivity.created_at ? new Date(state.selectedActivity.created_at).toLocaleDateString("en-US", { month: "short", day: "numeric" }) : "N/A"}
                         </p>
                       </CardContent>
                     </Card>
@@ -642,12 +733,70 @@ export function ActivityManagement() {
                           <span className="text-base">Assigned</span>
                         </div>
                         <p className="text-lg font-semibold line-clamp-2">
-                          {selectedActivity.assigned_to === "class" ? "Whole Class" : selectedActivity.student_names?.join(", ") || "Individual"}
+                          {state.selectedActivity.assigned_to === "class" ? "Whole Class" : selectedActivity.student_names?.join(", ") || "Individual"}
                         </p>
                       </CardContent>
                     </Card>
                   </div>
 
+                    {/* Description */}
+                    <div>
+                      <h3 className="font-semibold mb-2">
+                        Activity Description
+                      </h3>
+                      <div className="p-4 bg-muted rounded-lg">
+                        <p className="text-sm">
+                          {state.selectedActivity.description}
+                        </p>
+                      </div>
+                    </div>
+
+                    {/* Objectives Section */}
+                    <div>
+                      <h3 className="font-semibold mb-2">
+                        Learning Objectives
+                      </h3>
+                      <ul className="space-y-2">
+                        <li className="flex items-start gap-2 text-sm">
+                          <CheckCircle2 className="h-4 w-4 text-green-600 mt-0.5 shrink-0" />
+                          <span>
+                            Develop {state.selectedActivity.type} skills through
+                            hands-on practice
+                          </span>
+                        </li>
+                        <li className="flex items-start gap-2 text-sm">
+                          <CheckCircle2 className="h-4 w-4 text-green-600 mt-0.5 shrink-0" />
+                          <span>
+                            Build confidence and competence in target area
+                          </span>
+                        </li>
+                        <li className="flex items-start gap-2 text-sm">
+                          <CheckCircle2 className="h-4 w-4 text-green-600 mt-0.5 shrink-0" />
+                          <span>
+                            Foster engagement and enjoyment in learning
+                          </span>
+                        </li>
+                      </ul>
+                    </div>
+
+                    {/* Materials Needed */}
+                    <div>
+                      <h3 className="font-semibold mb-2">Materials Needed</h3>
+                      <div className="flex flex-wrap gap-2">
+                        <Badge className="text-sm" variant="outline">
+                          Worksheets
+                        </Badge>
+                        <Badge className="text-sm" variant="outline">
+                          Pencils
+                        </Badge>
+                        <Badge className="text-sm" variant="outline">
+                          Manipulatives
+                        </Badge>
+                        <Badge className="text-sm" variant="outline">
+                          Visual Aids
+                        </Badge>
+                      </div>
+                    </div>
                   <div>
                     <h3 className="font-semibold mb-2">Activity Description</h3>
                     <div className="p-4 bg-muted rounded-lg">
@@ -657,7 +806,7 @@ export function ActivityManagement() {
 
                   {/* Action Buttons */}
                   <div className="flex gap-3 pt-4">
-                    <Button variant="outline" className="flex-1" onClick={() => setSelectedActivity(null)}>
+                    <Button variant="outline" className="flex-1" onClick={() => dispatch({ type: "SELECT_ACTIVITY", payload: null })}>
                       Close
                     </Button>
                     {selectedActivity.status !== "completed" && (
@@ -754,6 +903,20 @@ export function ActivityManagement() {
                         </>
                       )}
                       <Button
+                        className="flex-1"
+                        onClick={() => {
+                          toast.success("Activity marked as completed!");
+
+                          setTimeout(() => {
+                            toast.success(
+                              "🤖 AI Analysis & Intervention generated!",
+                            );
+                          }, 1000);
+
+                          dispatch({ type: "SELECT_ACTIVITY", payload: null });
+                        }}
+                      >
+                        Mark as Complete
                         className="w-full bg-emerald-600 hover:bg-emerald-700 text-white"
                         onClick={() => handleGenerateReport(selectedActivity.id)}
                         disabled={generatingReport}

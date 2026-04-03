@@ -1,10 +1,11 @@
-import { useEffect, useState, useCallback } from 'react';
+import { useEffect, useReducer, useCallback } from 'react';
 import { useNavigate } from 'react-router';
 import { useAuth } from '../contexts/AuthContext';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from './ui/card';
 import { Badge } from './ui/badge';
 import { Button } from './ui/button';
 import { Users, GraduationCap, ShieldCheck, UserPlus, Trash2, RefreshCw, Mail, Clock } from 'lucide-react';
+import { adminReducer, initialState } from '../reducers/adminReducer';
 import Duckpit from './Duckpit';
 
 const API_BASE = 'http://localhost:8000';
@@ -12,16 +13,21 @@ const API_BASE = 'http://localhost:8000';
 export function AdminDashboard() {
   const { user } = useAuth();
   const navigate = useNavigate();
+  const [state, dispatch] = useReducer(adminReducer, initialState);
   const [stats, setStats] = useState({ teacher: null, parent: null, admin: null, total: null });
   const [users, setUsers] = useState([]);
   const [roleFilter, setRoleFilter] = useState(null);
   const [loadingUsers, setLoadingUsers] = useState(false);
 
   const fetchStats = useCallback(() => {
+    dispatch({ type: 'SET_LOADING', payload: true });
     fetch(`${API_BASE}/admin/stats`)
       .then((res) => res.json())
-      .then((data) => setStats(data))
-      .catch((err) => console.error('Failed to fetch admin stats:', err));
+      .then((data) => dispatch({ type: 'SET_STATS', payload: data }))
+      .catch((err) => {
+        console.error('Failed to fetch admin stats:', err);
+        dispatch({ type: 'SET_ERROR', payload: err.message });
+      });
   }, []);
 
   const fetchUsers = useCallback((role) => {
