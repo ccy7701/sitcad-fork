@@ -1,16 +1,19 @@
-import { useReducer, useEffect, useCallback } from 'react';
+import { useReducer, useEffect, useCallback, useState } from 'react';
 import { useNavigate } from 'react-router';
 import { useAuth } from '../contexts/AuthContext';
-import { auth, getActivitiesByStudent } from '../lib/firebase';
+import { auth } from '../lib/firebase';
+import { mockStudents, getActivitiesByStudent } from '../data/mockData';
 import { Button } from './ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from './ui/card';
 import { Badge } from './ui/badge';
 import { Progress } from './ui/progress';
-import { ArrowLeft, FileText, Download, Sparkles, Loader2, TrendingUp, Award, Target, AlertCircle } from 'lucide-react';
+import { Label } from './ui/label';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select';
+import { Checkbox } from './ui/checkbox';
+import { ArrowLeft, FileText, Download, Sparkles, Loader2, Printer, TrendingUp, Award, Target, Trophy, AlertCircle } from 'lucide-react';
 import { toast } from 'sonner';
 import Duckpit from './Duckpit';
 import { reportReducer, initialReportState } from '../reducers/reportReducer';
-import { ArrowLeft, FileText, Printer, Trophy, Target } from 'lucide-react';
 
 const API_BASE = 'http://localhost:8000';
 
@@ -24,8 +27,8 @@ export function ReportGeneration() {
   const { user } = useAuth();
   const navigate = useNavigate();
   const [state, dispatch] = useReducer(reportReducer, initialReportState);
-  const { reportType, reportPeriod, language, selectedStudents, generating, reports, error } = state;
-  const [reports, setReports] = useState([]);
+  const { reportType, reportPeriod, language, selectedStudents, generating, error, reports } = state;
+  const [pastReports, setPastReports] = useState([]);
   const [viewingReport, setViewingReport] = useState(null);
 
   const fetchReports = useCallback(async () => {
@@ -36,7 +39,7 @@ export function ReportGeneration() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ id_token: idToken }),
       });
-      if (res.ok) setReports(await res.json());
+      if (res.ok) setPastReports(await res.json());
     } catch (err) {
       console.error('Failed to fetch reports:', err);
     }
@@ -329,14 +332,14 @@ export function ReportGeneration() {
       </header>
 
       <main className="max-w-7xl mx-auto px-4 py-8 space-y-6">
-        {/* Generated Reports */}
-        <Card className="border-2 border-[#bafde0] shadow-md">
+        {/* Generate Reports Card */}
+        {/* <Card className="border-2 border-[#bafde0] shadow-md">
           <CardHeader className="bg-[#edfff8] rounded-t-lg pb-5">
             <CardTitle className="flex items-center gap-2 text-lg font-semibold">
-              <FileText className="h-5 w-5 text-green-600" />
-              Generated Reports ({reports.length})
+              <Sparkles className="h-5 w-5 text-green-600" />
+              Generate Reports
             </CardTitle>
-            <CardDescription>View and print past reports</CardDescription>
+            <CardDescription>Generate AI-powered student reports</CardDescription>
           </CardHeader>
           <CardContent className="pt-6 space-y-4">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -368,7 +371,7 @@ export function ReportGeneration() {
                 </Select>
               </div>
             </div>
-            
+
             <div className="space-y-2">
               <Label htmlFor="language">Output Language</Label>
               <Select value={language} onValueChange={(value) => dispatch({ type: 'SET_FIELD', field: 'language', value })}>
@@ -406,38 +409,8 @@ export function ReportGeneration() {
                       <div>
                         <p className="font-medium">{student.name}</p>
                         <p className="text-xs text-muted-foreground">{student.classroom}</p>
-          <CardContent className="pt-1">
-            {reports.length === 0 ? (
-              <p className="text-center text-muted-foreground py-8">
-                No reports generated yet. Generate a report from the Activities page after completing an activity.
-              </p>
-            ) : (
-              <div className="space-y-3">
-                {reports.map(report => (
-                  <div
-                    key={report.id}
-                    className="flex items-center justify-between p-4 border rounded-lg hover:bg-gray-50 cursor-pointer"
-                    onClick={() => setViewingReport(report)}
-                  >
-                    <div>
-                      <p className="font-medium">{report.title}</p>
-                      <p className="text-sm text-muted-foreground mt-1 line-clamp-1">
-                        {report.summary}
-                      </p>
-                      <div className="flex items-center gap-2 mt-2">
-                        {report.activity_learning_area && (
-                          <Badge variant="outline" className="text-xs capitalize">
-                            {report.activity_learning_area}
-                          </Badge>
-                        )}
-                        <span className="text-xs text-muted-foreground">
-                          {new Date(report.created_at).toLocaleDateString()}
-                        </span>
-                        <span className="text-xs text-muted-foreground">
-                          {report.students?.length || 0} students
-                        </span>
                       </div>
-                    </div>
+                    </Label>
                   </div>
                 ))}
               </div>
@@ -473,6 +446,54 @@ export function ReportGeneration() {
                 </>
               )}
             </Button>
+          </CardContent>
+        </Card> */}
+
+        {/* Past Activity Reports Card */}
+        <Card className="border-2 border-[#bafde0] shadow-md">
+          <CardHeader className="bg-[#edfff8] rounded-t-lg pb-5">
+            <CardTitle className="flex items-center gap-2 text-lg font-semibold">
+              <FileText className="h-5 w-5 text-green-600" />
+              Activity Reports ({pastReports.length})
+            </CardTitle>
+            <CardDescription>View and print past reports</CardDescription>
+          </CardHeader>
+          <CardContent>
+            {pastReports.length === 0 ? (
+              <p className="text-center text-muted-foreground py-8">
+                No reports generated yet. Generate a report from the Activities page after completing an activity.
+              </p>
+            ) : (
+              <div className="space-y-3">
+                {pastReports.map(report => (
+                  <div
+                    key={report.id}
+                    className="flex items-center justify-between p-4 border rounded-lg hover:bg-gray-50 cursor-pointer"
+                    onClick={() => setViewingReport(report)}
+                  >
+                    <div>
+                      <p className="font-medium">{report.title}</p>
+                      <p className="text-sm text-muted-foreground mt-1 line-clamp-1">
+                        {report.summary}
+                      </p>
+                      <div className="flex items-center gap-2 mt-2">
+                        {report.activity_learning_area && (
+                          <Badge variant="outline" className="text-xs capitalize">
+                            {report.activity_learning_area}
+                          </Badge>
+                        )}
+                        <span className="text-xs text-muted-foreground">
+                          {new Date(report.created_at).toLocaleDateString()}
+                        </span>
+                        <span className="text-xs text-muted-foreground">
+                          {report.students?.length || 0} students
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
           </CardContent>
         </Card>
 

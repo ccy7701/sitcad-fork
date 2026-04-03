@@ -6,7 +6,7 @@ from firebase_admin import credentials
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from dotenv import load_dotenv
-from routers import auth, admin, parents, teachers, curriculum, lesson_plans, activities, reports
+from routers import ai_integrations, auth, admin, parents, teachers, curriculum, lesson_plans, activities, reports
 
 _BACKEND_DIR = Path(__file__).resolve().parent
 load_dotenv(_BACKEND_DIR / ".env")
@@ -30,6 +30,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+app.include_router(ai_integrations.router)
 app.include_router(auth.router)
 app.include_router(admin.router)
 app.include_router(parents.router)

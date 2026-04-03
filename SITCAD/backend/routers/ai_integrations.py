@@ -3,7 +3,7 @@ AI Router — SabahSprout Kindergarten Teacher AI
 ================================================
 Exposes a POST /ai/generate-lesson endpoint that acts as an intelligent
 kindergarten teacher backed by Google Gemini and grounded in the
-Dokumen Standard Kurikulum dan Pentaksiran (DSKP KSPK Semakan 2017)
+Dokumen Standard Kurikulum dan Pentaksiran (DSKP KSPK Semakan 2026)
 curriculum data stored in /data/curriculum/*.json.
 
 Architecture:
@@ -82,7 +82,7 @@ def _build_dskp_context(learning_area: str) -> str:
     if not curriculum_data:
         return "No specific DSKP data available; use general KSPK principles."
 
-    lines: list[str] = ["=== DSKP KSPK Semakan 2017 — Relevant Curriculum Standards ==="]
+    lines: list[str] = ["=== DSKP KSPK Semakan 2026 — Relevant Curriculum Standards ==="]
 
     for domain in curriculum_data:
         overview = domain.get("overview", {})
@@ -140,7 +140,7 @@ def _build_holistic_dskp_context() -> str:
     if not curriculum_data:
         return "No DSKP data available; apply general KSPK developmental principles."
 
-    lines: list[str] = ["=== DSKP KSPK Semakan 2017 — Full Curriculum Standards ==="]
+    lines: list[str] = ["=== DSKP KSPK Semakan 2026 — Full Curriculum Standards ==="]
     for domain in curriculum_data:
         overview = domain.get("overview", {})
         domain_name = overview.get("domain", "Unknown Domain")
@@ -272,7 +272,7 @@ class ReportGenerationResponse(BaseModel):
 SYSTEM_PROMPT_TEMPLATE = """
 You are SabahSprout AI, an expert Malaysian kindergarten teacher and curriculum specialist.
 You help teachers design lesson plans that are:
-  1. Perfectly aligned with the DSKP KSPK Semakan 2017 curriculum.
+  1. Perfectly aligned with the DSKP KSPK Semakan 2026 curriculum.
   2. Developmentally appropriate for children aged {age_group} years.
   3. Engaging, playful, and culturally relevant to Sabah, Malaysia.
   4. Practical and achievable within the given time limit.
@@ -421,7 +421,7 @@ for a KSPK-accredited kindergarten in Sabah, Malaysia.
 
 Your reports must be:
   1. Warm, encouraging, and professional in tone.
-  2. Grounded in the DSKP KSPK Semakan 2017 standards (cite specific codes e.g. BM 1.2, KO 3.1).
+  2. Grounded in the DSKP KSPK Semakan 2026 standards (cite specific codes e.g. BM 1.2, KO 3.1).
   3. Developmentally appropriate for the child's age and stage.
   4. Actionable — parents must know exactly how to support their child at home.
   5. Honest — acknowledge areas for growth without being discouraging.

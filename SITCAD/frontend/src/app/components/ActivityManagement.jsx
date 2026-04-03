@@ -1,7 +1,8 @@
-import { useReducer, useEffect, useCallback } from "react";
+import { useReducer, useEffect, useCallback, useState } from "react";
 import { useNavigate } from "react-router";
 import { useAuth } from "../contexts/AuthContext";
 import { auth } from "../lib/firebase";
+import Duckpit from './Duckpit';
 import { Button } from "./ui/button";
 import { Label } from "./ui/label";
 import { Textarea } from "./ui/textarea";
@@ -60,7 +61,6 @@ async function getIdToken() {
   if (!firebaseUser) throw new Error("Not authenticated");
   return firebaseUser.getIdToken();
 }
-import Duckpit from './Duckpit';
 
 const activityTypes = [
   { value: "literacy", label: "Literacy", icon: Book, color: "text-sm bg-[#f46197]/20 text-[#f46197] border-[#f46197]/30" },
@@ -78,28 +78,10 @@ export function ActivityManagement() {
   const navigate = useNavigate();
   const [state, dispatch] = useReducer(activityReducer, initialState);
 
-  const handleBack = () => {
-    navigate("/teacher");
-  };
-
-  const savedLessonPlan = JSON.parse(localStorage.getItem("lessonPlan"));
-  const [open, setOpen] = useState(false);
-  const [selectedActivity, setSelectedActivity] = useState(null);
-  const [creationMode, setCreationMode] = useState("manual");
-
   // Backend data
   const [activities, setActivities] = useState([]);
   const [students, setStudents] = useState([]);
   const [lessonPlans, setLessonPlans] = useState([]);
-
-  // Form state
-  const [title, setTitle] = useState("");
-  const [description, setDescription] = useState("");
-  const [type, setType] = useState("literacy");
-  const [duration, setDuration] = useState("20");
-  const [assignTo, setAssignTo] = useState("all");
-  const [selectedStudents, setSelectedStudents] = useState([]);
-  const [selectedLessonPlanId, setSelectedLessonPlanId] = useState(null);
 
   // Report generation state
   const [reportScore, setReportScore] = useState("");
@@ -162,46 +144,10 @@ export function ActivityManagement() {
     return null;
   }
 
-  const students = mockStudents;
-
-  const handleCreateActivity = () => {
-    if (!state.title || !state.description) {
-      toast.error("Please fill in all required fields");
-      return;
-    }
-
-    // Mock activity creation
-    const newActivity = {
-      id: `act_${Date.now()}`,
-      type: state.type,
-      title: state.title,
-      description: state.description,
-      date: new Date().toISOString().split("T")[0],
-      duration: parseInt(state.duration),
-      targetScore: state.targetScore,
-      scoringType: state.scoringType,
-      completed: false,
-      assignedTo: state.assignTo === "all" ? "all" : state.selectedStudents,
-    };
-
-    toast.success(`Activity "${state.title}" created successfully!`);
-
-    dispatch({ type: "RESET_FORM" });
   const handleBack = () => navigate("/teacher");
 
-  const resetForm = () => {
-    setTitle("");
-    setDescription("");
-    setType("literacy");
-    setDuration("20");
-    setAssignTo("all");
-    setSelectedStudents([]);
-    setSelectedLessonPlanId(null);
-    setCreationMode("manual");
-  };
-
   const handleCreateActivity = async () => {
-    if (!title || !description) {
+    if (!state.title || !state.description) {
       toast.error("Please fill in all required fields");
       return;
     }
@@ -213,21 +159,21 @@ export function ActivityManagement() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           id_token: idToken,
-          title,
-          description,
-          learning_area: type,
-          duration_minutes: parseInt(duration),
-          assigned_to: assignTo === "all" ? "class" : "individual",
-          student_ids: assignTo === "individual" ? selectedStudents : undefined,
-          lesson_plan_id: selectedLessonPlanId || undefined,
-          source: selectedLessonPlanId ? "lesson_plan" : "manual",
+          title: state.title,
+          description: state.description,
+          learning_area: state.type,
+          duration_minutes: parseInt(state.duration),
+          assigned_to: state.assignTo === "all" ? "class" : "individual",
+          student_ids: state.assignTo === "individual" ? state.selectedStudents : undefined,
+          lesson_plan_id: state.lessonPlanId || undefined,
+          source: state.lessonPlanId ? "lesson_plan" : "manual",
         }),
       });
 
       if (!res.ok) throw new Error("Failed to create activity");
-      toast.success(`Activity "${title}" created successfully!`);
-      resetForm();
-      setOpen(false);
+      toast.success(`Activity "${state.title}" created successfully!`);
+      dispatch({ type: "RESET_FORM" });
+      dispatch({ type: "SET_OPEN", payload: false });
       fetchActivities();
     } catch (err) {
       console.error(err);
@@ -245,7 +191,7 @@ export function ActivityManagement() {
       });
       if (!res.ok) throw new Error("Failed to complete");
       toast.success("Activity marked as completed!");
-      setSelectedActivity(null);
+      dispatch({ type: "SELECT_ACTIVITY", payload: null });
       fetchActivities();
     } catch (err) {
       toast.error("Failed to mark complete");
@@ -263,7 +209,7 @@ export function ActivityManagement() {
       });
       if (res.ok) {
         toast.success("Activity deleted");
-        setSelectedActivity(null);
+        dispatch({ type: "SELECT_ACTIVITY", payload: null });
         fetchActivities();
       }
     } catch (err) {
@@ -271,16 +217,7 @@ export function ActivityManagement() {
     }
   };
 
-  const handleStudentToggle = (studentId) => {
-    setSelectedStudents((prev) =>
-      prev.includes(studentId)
-        ? prev.filter((id) => id !== studentId)
-        : [...prev, studentId],
-    );
-  };
-
   const handleGenerateReport = async (activityId) => {
-    // Use saved quiz data from the activity if available, otherwise use form inputs
     const activity = activities.find(a => a.id === activityId);
     const score = activity?.quiz_score ?? (reportScore ? parseInt(reportScore) : undefined);
     const total = activity?.quiz_total ?? (reportTotal ? parseInt(reportTotal) : undefined);
@@ -295,7 +232,7 @@ export function ActivityManagement() {
         body: JSON.stringify({
           id_token: idToken,
           activity_id: activityId,
-          score: score,
+          score,
           total_questions: total,
           time_taken_seconds: time,
         }),
@@ -305,7 +242,7 @@ export function ActivityManagement() {
         throw new Error(err.detail || "Failed to generate report");
       }
       toast.success("Report generated! View it in the Reports page.");
-      setSelectedActivity(null);
+      dispatch({ type: "SELECT_ACTIVITY", payload: null });
       setReportScore("");
       setReportTotal("");
       setReportTime("");
@@ -337,7 +274,6 @@ export function ActivityManagement() {
                 <p className="text-sm text-muted-foreground mt-1">Create and assign learning activities to students</p>
               </div>
             </div>
-            <Dialog open={state.open} onOpenChange={(val) => dispatch({ type: "SET_OPEN", payload: val })}>
             <Button variant="ghost" onClick={handleBack} className="cursor-pointer">
               <ArrowLeft className="mr-2 h-4 w-4" />
               Back to Dashboard
@@ -373,7 +309,7 @@ export function ActivityManagement() {
                 Manage and track all learning activities
               </CardDescription>
             </div>
-            <Dialog open={open} onOpenChange={(v) => { setOpen(v); if (!v) resetForm(); }}>
+            <Dialog open={state.open} onOpenChange={(v) => { dispatch({ type: "SET_OPEN", payload: v }); if (!v) dispatch({ type: "RESET_FORM" }); }}>
               <DialogTrigger asChild>
                 <Button size="lg" className="cursor-pointer">
                   <Plus className="mr-2 h-4 w-4" />
@@ -417,16 +353,8 @@ export function ActivityManagement() {
 
                       <div className="grid grid-cols-2 gap-4">
                         <div className="space-y-2">
-                          <Label>Target Score (%)</Label>
-                          <Select
-                            value={state.targetScore}
-                            onValueChange={(val) => dispatch({ type: "SET_FIELD", field: "targetScore", value: val })}
-                          >
-                            <SelectTrigger>
-                              <SelectValue />
-                            </SelectTrigger>
                           <Label>Learning Area</Label>
-                          <Select value={type} onValueChange={setType}>
+                          <Select value={state.type} onValueChange={(val) => dispatch({ type: "SET_FIELD", field: "type", value: val })}>
                             <SelectTrigger><SelectValue /></SelectTrigger>
                             <SelectContent>
                               {activityTypes.map((at) => (
@@ -436,16 +364,8 @@ export function ActivityManagement() {
                           </Select>
                         </div>
                         <div className="space-y-2">
-                          <Label>Scoring Method</Label>
-                          <Select
-                            value={state.scoringType}
-                            onValueChange={(val) => dispatch({ type: "SET_FIELD", field: "scoringType", value: val })}
-                          >
-                            <SelectTrigger>
-                              <SelectValue />
-                            </SelectTrigger>
                           <Label>Duration (minutes)</Label>
-                          <Select value={duration} onValueChange={setDuration}>
+                          <Select value={state.duration} onValueChange={(val) => dispatch({ type: "SET_FIELD", field: "duration", value: val })}>
                             <SelectTrigger><SelectValue /></SelectTrigger>
                             <SelectContent>
                               <SelectItem value="15">15 min</SelectItem>
@@ -467,44 +387,6 @@ export function ActivityManagement() {
                         </p>
                       ) : (
                         <>
-                          <div className="p-3 bg-indigo-50 border border-indigo-200 rounded-lg">
-                            <p className="font-medium text-sm text-indigo-700">
-                              {savedLessonPlan.title}
-                            </p>
-                            <p className="text-xs text-indigo-600">
-                              {savedLessonPlan.learningArea} •{" "}
-                              {savedLessonPlan.duration}
-                            </p>
-                          </div>
-
-                          <div className="space-y-3 max-h-64 overflow-y-auto">
-                            {savedLessonPlan.activities.map((act, index) => (
-                              <div
-                                key={index}
-                                className="p-3 border rounded-lg hover:bg-gray-50 cursor-pointer"
-                                onClick={() => {
-                                  dispatch({ type: "SET_FIELD", field: "title", value: act.title });
-                                  dispatch({ type: "SET_FIELD", field: "description", value: act.description });
-                                  dispatch({ type: "SET_FIELD", field: "duration", value: act.duration }); // Note: act.duration is usually a string in lesson plan mock
-                                  dispatch({ type: "SET_FIELD", field: "type", value: savedLessonPlan.learningArea });
-
-                                  toast.success(
-                                    "Activity loaded from lesson plan!",
-                                  );
-                                }}
-                              >
-                                <p className="font-medium text-sm">
-                                  {act.title}
-                                </p>
-                                <p className="text-xs text-muted-foreground line-clamp-2">
-                                  {act.description}
-                                </p>
-                                <span className="text-xs text-blue-600">
-                                  {act.duration}
-                                </span>
-                              </div>
-                            ))}
-                          </div>
                           <p className="text-sm text-muted-foreground">Select a lesson plan, then choose an activity step:</p>
                           {lessonPlans.map((plan) => (
                             <div key={plan.id} className="border rounded-lg">
@@ -518,11 +400,11 @@ export function ActivityManagement() {
                                     key={index}
                                     className="p-2 border rounded hover:bg-gray-50 cursor-pointer"
                                     onClick={() => {
-                                      setTitle(act.title);
-                                      setDescription(act.description);
-                                      setType(plan.learning_area);
-                                      setDuration(String(plan.duration_minutes));
-                                      setSelectedLessonPlanId(plan.id);
+                                      dispatch({ type: "SET_FIELD", field: "title", value: act.title });
+                                      dispatch({ type: "SET_FIELD", field: "description", value: act.description });
+                                      dispatch({ type: "SET_FIELD", field: "type", value: plan.learning_area });
+                                      dispatch({ type: "SET_FIELD", field: "duration", value: String(plan.duration_minutes) });
+                                      dispatch({ type: "SET_FIELD", field: "lessonPlanId", value: plan.id });
                                       toast.success("Activity loaded from lesson plan!");
                                     }}
                                   >
@@ -537,15 +419,15 @@ export function ActivityManagement() {
                             </div>
                           ))}
 
-                          {selectedLessonPlanId && (
+                          {state.lessonPlanId && (
                             <div className="space-y-3 pt-2">
                               <div className="space-y-2">
                                 <Label>Activity Title *</Label>
-                                <Input value={title} onChange={(e) => setTitle(e.target.value)} />
+                                <Input value={state.title} onChange={(e) => dispatch({ type: "SET_FIELD", field: "title", value: e.target.value })} />
                               </div>
                               <div className="space-y-2">
                                 <Label>Description *</Label>
-                                <Textarea rows={3} value={description} onChange={(e) => setDescription(e.target.value)} />
+                                <Textarea rows={3} value={state.description} onChange={(e) => dispatch({ type: "SET_FIELD", field: "description", value: e.target.value })} />
                               </div>
                             </div>
                           )}
@@ -593,7 +475,7 @@ export function ActivityManagement() {
 
                   {/* Buttons */}
                   <div className="flex gap-3 pt-4">
-                    <Button variant="outline" className="flex-1" onClick={() => { dispatch({ type: "SET_OPEN", payload: false }); resetForm(); }}>
+                    <Button variant="outline" className="flex-1" onClick={() => { dispatch({ type: "SET_OPEN", payload: false }); dispatch({ type: "RESET_FORM" }); }}>
                       Cancel
                     </Button>
                     <Button className="flex-1" onClick={handleCreateActivity}>
@@ -694,7 +576,7 @@ export function ActivityManagement() {
                           {activityType?.label}
                         </Badge>
                         <Badge variant="outline" className="capitalize">{state.selectedActivity.status.replace("_", " ")}</Badge>
-                        {selectedActivity.source === "lesson_plan" && (
+                        {state.selectedActivity.source === "lesson_plan" && (
                           <Badge variant="outline" className="text-xs bg-indigo-50 text-indigo-600 border-indigo-200">
                             <Sparkles className="h-3 w-3 mr-1" /> Lesson Plan
                           </Badge>
@@ -722,7 +604,7 @@ export function ActivityManagement() {
                           <span className="text-base">Created</span>
                         </div>
                         <p className="text-lg font-semibold">
-                          {selectedActivity.created_at ? new Date(state.selectedActivity.created_at).toLocaleDateString("en-US", { month: "short", day: "numeric" }) : "N/A"}
+                          {state.selectedActivity.created_at ? new Date(state.selectedActivity.created_at).toLocaleDateString("en-US", { month: "short", day: "numeric" }) : "N/A"}
                         </p>
                       </CardContent>
                     </Card>
@@ -733,7 +615,7 @@ export function ActivityManagement() {
                           <span className="text-base">Assigned</span>
                         </div>
                         <p className="text-lg font-semibold line-clamp-2">
-                          {state.selectedActivity.assigned_to === "class" ? "Whole Class" : selectedActivity.student_names?.join(", ") || "Individual"}
+                          {state.selectedActivity.assigned_to === "class" ? "Whole Class" : state.selectedActivity.student_names?.join(", ") || "Individual"}
                         </p>
                       </CardContent>
                     </Card>
@@ -741,40 +623,27 @@ export function ActivityManagement() {
 
                     {/* Description */}
                     <div>
-                      <h3 className="font-semibold mb-2">
-                        Activity Description
-                      </h3>
+                      <h3 className="font-semibold mb-2">Activity Description</h3>
                       <div className="p-4 bg-muted rounded-lg">
-                        <p className="text-sm">
-                          {state.selectedActivity.description}
-                        </p>
+                        <p className="text-sm">{state.selectedActivity.description}</p>
                       </div>
                     </div>
 
                     {/* Objectives Section */}
                     <div>
-                      <h3 className="font-semibold mb-2">
-                        Learning Objectives
-                      </h3>
+                      <h3 className="font-semibold mb-2">Learning Objectives</h3>
                       <ul className="space-y-2">
                         <li className="flex items-start gap-2 text-sm">
                           <CheckCircle2 className="h-4 w-4 text-green-600 mt-0.5 shrink-0" />
-                          <span>
-                            Develop {state.selectedActivity.type} skills through
-                            hands-on practice
-                          </span>
+                          <span>Develop {state.selectedActivity.learning_area} skills through hands-on practice</span>
                         </li>
                         <li className="flex items-start gap-2 text-sm">
                           <CheckCircle2 className="h-4 w-4 text-green-600 mt-0.5 shrink-0" />
-                          <span>
-                            Build confidence and competence in target area
-                          </span>
+                          <span>Build confidence and competence in target area</span>
                         </li>
                         <li className="flex items-start gap-2 text-sm">
                           <CheckCircle2 className="h-4 w-4 text-green-600 mt-0.5 shrink-0" />
-                          <span>
-                            Foster engagement and enjoyment in learning
-                          </span>
+                          <span>Foster engagement and enjoyment in learning</span>
                         </li>
                       </ul>
                     </div>
@@ -783,34 +652,20 @@ export function ActivityManagement() {
                     <div>
                       <h3 className="font-semibold mb-2">Materials Needed</h3>
                       <div className="flex flex-wrap gap-2">
-                        <Badge className="text-sm" variant="outline">
-                          Worksheets
-                        </Badge>
-                        <Badge className="text-sm" variant="outline">
-                          Pencils
-                        </Badge>
-                        <Badge className="text-sm" variant="outline">
-                          Manipulatives
-                        </Badge>
-                        <Badge className="text-sm" variant="outline">
-                          Visual Aids
-                        </Badge>
+                        <Badge className="text-sm" variant="outline">Worksheets</Badge>
+                        <Badge className="text-sm" variant="outline">Pencils</Badge>
+                        <Badge className="text-sm" variant="outline">Manipulatives</Badge>
+                        <Badge className="text-sm" variant="outline">Visual Aids</Badge>
                       </div>
                     </div>
-                  <div>
-                    <h3 className="font-semibold mb-2">Activity Description</h3>
-                    <div className="p-4 bg-muted rounded-lg">
-                      <p className="text-sm">{selectedActivity.description}</p>
-                    </div>
-                  </div>
 
                   {/* Action Buttons */}
                   <div className="flex gap-3 pt-4">
                     <Button variant="outline" className="flex-1" onClick={() => dispatch({ type: "SELECT_ACTIVITY", payload: null })}>
                       Close
                     </Button>
-                    {selectedActivity.status !== "completed" && (
-                      <Button className="flex-1" onClick={() => handleCompleteActivity(selectedActivity.id)}>
+                    {state.selectedActivity.status !== "completed" && (
+                      <Button className="flex-1" onClick={() => handleCompleteActivity(state.selectedActivity.id)}>
                         <CheckCircle2 className="mr-2 h-4 w-4" />
                         Mark as Complete
                       </Button>
@@ -818,14 +673,14 @@ export function ActivityManagement() {
                     <Button
                       variant="ghost"
                       className="text-red-500 hover:text-red-700"
-                      onClick={() => handleDeleteActivity(selectedActivity.id)}
+                      onClick={() => handleDeleteActivity(state.selectedActivity.id)}
                     >
                       <Trash2 className="h-4 w-4" />
                     </Button>
                   </div>
 
                   {/* Generate Report Section (completed activities only) */}
-                  {selectedActivity.status === "completed" && (
+                  {state.selectedActivity.status === "completed" && (
                     <div className="border-t pt-5 space-y-4">
                       <div className="flex items-center gap-2">
                         <FileText className="h-5 w-5 text-emerald-600" />
@@ -833,7 +688,7 @@ export function ActivityManagement() {
                       </div>
 
                       {/* Show saved quiz data if available */}
-                      {selectedActivity.quiz_score != null ? (
+                      {state.selectedActivity.quiz_score != null ? (
                         <>
                           <p className="text-sm text-muted-foreground">
                             Quiz results were saved from Classroom Mode and will be included in the report.
@@ -841,22 +696,22 @@ export function ActivityManagement() {
                           <div className="grid grid-cols-3 gap-3">
                             <div className="text-center p-3 bg-emerald-50 rounded-lg border border-emerald-200">
                               <p className="text-2xl font-bold text-emerald-700">
-                                {selectedActivity.quiz_score}/{selectedActivity.quiz_total}
+                                {state.selectedActivity.quiz_score}/{state.selectedActivity.quiz_total}
                               </p>
                               <p className="text-xs text-muted-foreground mt-1">Score</p>
                             </div>
                             <div className="text-center p-3 bg-emerald-50 rounded-lg border border-emerald-200">
                               <p className="text-2xl font-bold text-emerald-700">
-                                {selectedActivity.quiz_total ? Math.round(selectedActivity.quiz_score / selectedActivity.quiz_total * 100) : 0}%
+                                {state.selectedActivity.quiz_total ? Math.round(state.selectedActivity.quiz_score / state.selectedActivity.quiz_total * 100) : 0}%
                               </p>
                               <p className="text-xs text-muted-foreground mt-1">Accuracy</p>
                             </div>
                             <div className="text-center p-3 bg-emerald-50 rounded-lg border border-emerald-200">
                               <p className="text-2xl font-bold text-emerald-700">
-                                {selectedActivity.quiz_time_seconds != null
-                                  ? selectedActivity.quiz_time_seconds >= 60
-                                    ? `${Math.floor(selectedActivity.quiz_time_seconds / 60)}m ${selectedActivity.quiz_time_seconds % 60}s`
-                                    : `${selectedActivity.quiz_time_seconds}s`
+                                {state.selectedActivity.quiz_time_seconds != null
+                                  ? state.selectedActivity.quiz_time_seconds >= 60
+                                    ? `${Math.floor(state.selectedActivity.quiz_time_seconds / 60)}m ${state.selectedActivity.quiz_time_seconds % 60}s`
+                                    : `${state.selectedActivity.quiz_time_seconds}s`
                                   : "N/A"}
                               </p>
                               <p className="text-xs text-muted-foreground mt-1">Time Taken</p>
@@ -903,22 +758,8 @@ export function ActivityManagement() {
                         </>
                       )}
                       <Button
-                        className="flex-1"
-                        onClick={() => {
-                          toast.success("Activity marked as completed!");
-
-                          setTimeout(() => {
-                            toast.success(
-                              "🤖 AI Analysis & Intervention generated!",
-                            );
-                          }, 1000);
-
-                          dispatch({ type: "SELECT_ACTIVITY", payload: null });
-                        }}
-                      >
-                        Mark as Complete
                         className="w-full bg-emerald-600 hover:bg-emerald-700 text-white"
-                        onClick={() => handleGenerateReport(selectedActivity.id)}
+                        onClick={() => handleGenerateReport(state.selectedActivity.id)}
                         disabled={generatingReport}
                       >
                         {generatingReport ? (

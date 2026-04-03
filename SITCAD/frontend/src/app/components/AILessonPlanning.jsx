@@ -1,7 +1,8 @@
-import { useReducer, useEffect, useCallback } from "react";
+import { useReducer, useEffect, useCallback, useState } from "react";
 import { useNavigate } from "react-router";
 import { useAuth } from "../contexts/AuthContext";
 import { auth } from "../lib/firebase";
+import Duckpit from './Duckpit';
 import { Button } from "./ui/button";
 import {
   Card,
@@ -41,21 +42,13 @@ async function getIdToken() {
   if (!firebaseUser) throw new Error("Not authenticated");
   return firebaseUser.getIdToken();
 }
-import Duckpit from './Duckpit';
 
 export function AILessonPlanning() {
   const { user } = useAuth();
   const navigate = useNavigate();
-  const [loading, setLoading] = useState(false);
-  const [lessonPlan, setLessonPlan] = useState(null);
+  const [state, dispatch] = useReducer(lessonReducer, initialState);
   const [savedPlans, setSavedPlans] = useState([]);
   const [activeTab, setActiveTab] = useState("generator");
-
-  const [ageGroup, setAgeGroup] = useState("5");
-  const [learningArea, setLearningArea] = useState("literacy");
-  const [topic, setTopic] = useState("");
-  const [duration, setDuration] = useState("30");
-  const [additionalNotes, setAdditionalNotes] = useState("");
 
   const fetchSavedPlans = useCallback(async () => {
     try {
@@ -74,7 +67,6 @@ export function AILessonPlanning() {
   useEffect(() => {
     if (user?.role === "teacher") fetchSavedPlans();
   }, [user, fetchSavedPlans]);
-  const [state, dispatch] = useReducer(lessonReducer, initialState);
 
   if (!user || user.role !== "teacher") {
     navigate("/");
@@ -163,15 +155,12 @@ export function AILessonPlanning() {
     toast.success("Lesson plan generated successfully!");
   };
 
-  const saveLessonPlan = () => {
-    toast.success("Lesson plan saved to your library!");
-
+  const saveLessonPlan = async () => {
     dispatch({ type: "SET_SAVED_MSG", payload: true });
-
     setTimeout(() => {
       dispatch({ type: "SET_SAVED_MSG", payload: false });
-    }, 2000); // disappears after 2s
-    setLoading(true);
+    }, 2000);
+    dispatch({ type: "START_GENERATION" });
     try {
       const idToken = await getIdToken();
       const res = await fetch(`${API_BASE}/lesson-plans/generate`, {
@@ -179,26 +168,25 @@ export function AILessonPlanning() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           id_token: idToken,
-          title: `${topic}`,
-          age_group: ageGroup,
-          learning_area: learningArea,
-          duration_minutes: parseInt(duration),
-          topic,
-          additional_notes: additionalNotes || null,
+          title: state.topic,
+          age_group: state.ageGroup,
+          learning_area: state.learningArea,
+          duration_minutes: parseInt(state.duration),
+          topic: state.topic,
+          additional_notes: state.additionalNotes || null,
         }),
       });
 
       if (!res.ok) throw new Error("Failed to generate lesson plan");
       const plan = await res.json();
-      setLessonPlan(plan);
+      dispatch({ type: "FINISH_GENERATION", payload: plan });
       toast.success("Lesson plan generated and saved!");
       fetchSavedPlans();
       setActiveTab("list");
     } catch (err) {
       console.error(err);
+      dispatch({ type: "FINISH_GENERATION", payload: null });
       toast.error("Failed to generate lesson plan");
-    } finally {
-      setLoading(false);
     }
   };
 
@@ -213,7 +201,7 @@ export function AILessonPlanning() {
       });
       if (res.ok) {
         toast.success("Lesson plan deleted");
-        if (lessonPlan?.id === planId) setLessonPlan(null);
+        if (state.lessonPlan?.id === planId) dispatch({ type: "FINISH_GENERATION", payload: null });
         fetchSavedPlans();
       }
     } catch (err) {
@@ -377,7 +365,7 @@ export function AILessonPlanning() {
           <TabsContent value="list" className="space-y-6">
 
         {/* Saved Lesson Plans Library */}
-        {!lessonPlan && (
+        {!state.lessonPlan && (
           <Card>
             <CardHeader>
               <CardTitle>Saved Lesson Plans</CardTitle>
@@ -394,7 +382,19 @@ export function AILessonPlanning() {
                   <div
                     key={plan.id}
                     className="flex items-center justify-between p-3 border rounded-lg hover:bg-gray-50 cursor-pointer"
-                    onClick={() => setLessonPlan(plan)}
+                    onClick={() => dispatch({ type: "FINISH_GENERATION", payload: {
+                      id: plan.id,
+                      title: plan.title,
+                      ageGroup: plan.age_group,
+                      learningArea: plan.learning_area,
+                      duration: `${plan.duration_minutes} minutes`,
+                      targetScore: plan.target_score ?? "70",
+                      scoringType: plan.scoring_type ?? "percentage",
+                      objectives: plan.objectives ?? [],
+                      activities: plan.activities ?? [],
+                      assessment: plan.assessment ?? "",
+                      adaptations: plan.adaptations ?? [],
+                    }})}
                   >
                     <div>
                       <p className="font-medium">{plan.title}</p>
@@ -465,7 +465,7 @@ export function AILessonPlanning() {
                   <div className="flex gap-2">
                     <Button
                       variant="outline"
-                      onClick={() => setLessonPlan(null)}
+                      onClick={() => dispatch({ type: "FINISH_GENERATION", payload: null })}
                     >
                       Back to List
                     </Button>

@@ -108,15 +108,6 @@ export function TeacherDashboard() {
   const dashboardCardShadeStyle = {
     backgroundColor: `rgb(255 255 255 / ${dashboardCardShadeOpacity})`,
   };
-  const statsLabelColor = '#374151';
-  const statsLabelSize = '1.7rem';
-  const statsLabelStyle = {
-    color: statsLabelColor,
-    fontSize: statsLabelSize,
-    fontWeight: 600,
-    lineHeight: 1.2,
-  };
-
   const handleLogout = () => {
     logout();
     navigate('/login');
@@ -218,8 +209,8 @@ export function TeacherDashboard() {
 
             <Card className="border-white/70 shadow-md hover:shadow-lg transition-shadow transform-gpu" style={statsCardShadeStyle}>
               <CardHeader className="pb-1">
-                <CardDescription style={statsLabelStyle}>Average Progress</CardDescription>
-                <CardTitle className="text-3xl">{classroomStats.averageProgress}%</CardTitle>
+                <CardDescription className="stats-label">Average Progress</CardDescription>
+                <CardTitle className="text-6xl">{classroomStats.averageProgress}%</CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="flex items-center text-sm text-[#3090A0]">
@@ -231,8 +222,8 @@ export function TeacherDashboard() {
 
             <Card className="border-white/70 shadow-md hover:shadow-lg transition-shadow transform-gpu" style={statsCardShadeStyle}>
               <CardHeader className="pb-1">
-                <CardDescription style={statsLabelStyle}>On Track</CardDescription>
-                <CardTitle className="text-3xl">{classroomStats.onTrack}</CardTitle>
+                <CardDescription className="stats-label">On Track</CardDescription>
+                <CardTitle className="text-6xl">{classroomStats.onTrack}</CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="flex items-center text-sm text-[#3090A0]">
@@ -244,8 +235,8 @@ export function TeacherDashboard() {
 
             <Card className="border-white/70 shadow-md hover:shadow-lg transition-shadow transform-gpu" style={statsCardShadeStyle}>
               <CardHeader className="pb-1">
-                <CardDescription style={statsLabelStyle}>Needs Support</CardDescription>
-                <CardTitle className="text-3xl">{classroomStats.needingSupport}</CardTitle>
+                <CardDescription className="stats-label">Needs Support</CardDescription>
+                <CardTitle className="text-6xl">{classroomStats.needingSupport}</CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="flex items-center text-sm text-yellow-600">
