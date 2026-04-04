@@ -58,6 +58,14 @@ function NavigationContent({ onNavigate }) {
 
   const isActive = (path, exact) => {
     if (exact) {
+      // Special case: treat /role/dashboard as active for /role Dashboard nav item
+      if (
+        (path === '/teacher' && location.pathname === '/teacher/dashboard') ||
+        (path === '/parent' && location.pathname === '/parent/dashboard') ||
+        (path === '/admin' && location.pathname === '/admin/dashboard')
+      ) {
+        return true;
+      }
       return location.pathname === path;
     }
     return location.pathname.startsWith(path);

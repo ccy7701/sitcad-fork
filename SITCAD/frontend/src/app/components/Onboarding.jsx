@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useNavigate } from 'react-router';
+import { useNavigate, Navigate } from 'react-router';
 import { useAuth } from '../contexts/AuthContext';
 import { Button } from './ui/button';
 import { Checkbox } from './ui/checkbox';
@@ -15,6 +15,12 @@ export function Onboarding() {
   const [loading, setLoading] = useState(false);
   const { user, updateRole } = useAuth();
   const navigate = useNavigate();
+
+  // Users who already have a role must not be able to change it via onboarding
+  if (user?.role) {
+    const redirects = { teacher: '/teacher/dashboard', parent: '/parent/dashboard', admin: '/admin/dashboard' };
+    return <Navigate to={redirects[user.role] || '/login'} replace />;
+  }
 
   const handleSubmit = async (e) => {
     e.preventDefault();
