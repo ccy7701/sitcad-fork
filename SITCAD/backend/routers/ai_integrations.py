@@ -1,6 +1,8 @@
 import os
 import json
 import time
+import base64
+import asyncio
 import logging
 from pathlib import Path
 from typing import Literal, Optional
@@ -154,6 +156,27 @@ class GenerateLessonRequest(BaseModel):
     language: Literal["bm", "en"] = Field(default="bm")
 
 
+ActivityType = Literal["quiz", "image", "story"]
+
+
+class ActivityToGenerate(BaseModel):
+    title: str
+    description: str
+    duration: str = ""
+    type: ActivityType = "quiz"
+
+
+class GenerateActivitiesRequest(BaseModel):
+    id_token: str
+    lesson_plan_id: str
+    lesson_title: str = ""
+    topic: str = ""
+    learning_area: str = ""
+    age_group: str = "5"
+    language: Literal["bm", "en"] = "bm"
+    activities: list[ActivityToGenerate] = Field(..., min_length=1)
+
+
 # ---------------------------------------------------------------------------
 # System prompt
 # ---------------------------------------------------------------------------
@@ -170,8 +193,14 @@ CRITICAL RULES:
 - The lesson plan must be written in {language_label}. DSKP standard codes remain in their original form.
 - Always cite specific DSKP standard codes (e.g. BM 1.1.2, KF 2.3.1, PM 1.1) in the dskp_standards array. Each entry must be an object with "code" (the SPE code) and "title" (the SPE title from the DSKP document).
 - Every objective must map to at least one DSKP standard.
-- This system generates content end-to-end from lesson plan to activities. Assume all activities are delivered digitally on-screen — do NOT include physical materials. The "materials" array should list digital resources, on-screen assets, or media used in the activities.
-- Activities represent the individual learning activities this lesson plan comprises. Each activity should have a clear title, a detailed description of what happens, and an estimated duration. Activities should fit within the time budget of {duration} minutes.
+- This system generates content end-to-end from lesson plan to activities. Assume all activities are delivered digitally on-screen — do NOT include physical materials.
+- Each activity MUST be one of these three types:
+    • "quiz"  — an interactive multiple-choice quiz game played on screen.
+    • "image" — a set of educational flashcard images displayed on screen.
+    • "story" — a short illustrated text story read on screen.
+  Do NOT generate video, music, audio, or any other activity type. Every activity must be exactly one of: "quiz", "image", or "story".
+- Activities represent the individual learning activities this lesson plan comprises. Each activity should have a clear title, a detailed description of what happens, an estimated duration, and a "type" field (one of "quiz", "image", "story"). Activities should fit within the time budget of {duration} minutes. Vary the types across activities for a richer lesson — do not make all activities the same type unless the topic strongly demands it.
+- The "materials" array should list the specific digital resources needed for the activities. Each material should directly relate to one or more activities. For example: "Interactive quiz interface for [activity title]", "Flashcard images of [topic]", "Illustrated story reader: [story title]". Do NOT list generic or physical materials.
 - Use Bahasa Melayu terminology for DSKP references when appropriate (you can add English in parentheses).
 - Adaptations must address diverse learners: visual, kinesthetic, EAL children, and children needing extra support.
 - Your entire response MUST be a single valid JSON object following this exact schema:
@@ -183,12 +212,13 @@ CRITICAL RULES:
     ...
   ],
   "objectives": ["<objective1>", "<objective2>", ...],
-  "materials": ["<digital resource 1>", "<on-screen asset 2>", ...],
+  "materials": ["<digital resource specific to an activity>", ...],
   "activities": [
     {{
       "title": "<activity name>",
       "description": "<detailed description of what happens in this activity>",
-      "duration": "<X minutes>"
+      "duration": "<X minutes>",
+      "type": "<quiz|image|story>"
     }}
   ],
   "assessment": "<assessment strategy>",
@@ -316,4 +346,289 @@ async def generate_lesson(request: GenerateLessonRequest, db: Session = Depends(
         "adaptations": lesson_data.get("adaptations", []),
         "teacher_notes": lesson_data.get("teacher_notes", ""),
     }
-        
+
+
+# ---------------------------------------------------------------------------
+# Activity generation system prompts
+# ---------------------------------------------------------------------------
+
+QUIZ_SYSTEM_PROMPT = """\
+You are SabahSprout AI, creating a fun, age-appropriate quiz game for kindergarten children aged {age_group} years.
+The quiz is part of a lesson: "{lesson_title}" (topic: {topic}, area: {learning_area}).
+
+LANGUAGE REQUIREMENT (STRICT — NO EXCEPTIONS):
+- Every piece of text you generate MUST be written entirely in {language_label}.
+- This includes: questions, all answer options, and explanations.
+- Do NOT mix languages. Do NOT use any other language, not even for a single word.
+- If {language_label} is English, write everything in English only. If Bahasa Malaysia, write everything in Bahasa Malaysia only.
+
+RULES:
+- Generate exactly {num_questions} multiple-choice questions.
+- Each question must have exactly 4 options (A, B, C, D).
+- Questions must be simple, visual, and suitable for {age_group}-year-old children.
+- Include a short, encouraging explanation for the correct answer.
+- Return ONLY a single valid JSON object with this schema:
+
+{{
+  "questions": [
+    {{
+      "question": "<question text>",
+      "options": ["<A>", "<B>", "<C>", "<D>"],
+      "correct_answer": <0-3 index>,
+      "explanation": "<short explanation>"
+    }}
+  ]
+}}
+
+Do NOT wrap in markdown code fences. Return raw JSON only.
+"""
+
+IMAGE_SYSTEM_PROMPT = """\
+You are SabahSprout AI, creating educational flashcard content for kindergarten children aged {age_group} years.
+These flashcards will be illustrated using an AI image generator for a lesson: "{lesson_title}" (topic: {topic}, area: {learning_area}).
+
+LANGUAGE REQUIREMENT (STRICT — NO EXCEPTIONS):
+- The "label" and "learning_point" fields MUST be written entirely in {language_label}.
+- Do NOT mix languages in those fields. Do NOT use any other language, not even for a single word.
+- If {language_label} is English, write label and learning_point in English only. If Bahasa Malaysia, write them in Bahasa Malaysia only.
+- The "image_prompt" field MUST always be written in English (required by the image generation model).
+
+RULES:
+- Generate exactly {num_images} flashcard entries.
+- Each entry should teach a specific concept related to the activity.
+- The "image_prompt" must be a concise, vivid English description optimised for photorealistic image generation.
+  • Begin with: "Ultra-realistic photograph, bright natural lighting, vibrant colors, sharp focus, educational."
+  • Describe the main subject clearly (what it is, key details, colors, setting).
+  • Add cultural context for Sabah, Malaysia where relevant (e.g. local foods, plants, settings).
+  • Keep it under 60 words and do NOT request any text, labels, or watermarks in the image.
+- Return ONLY a single valid JSON object with this schema:
+
+{{
+  "images": [
+    {{
+      "label": "<short title for the flashcard, in {language_label}>",
+      "image_prompt": "<concise English prompt for image generation>",
+      "learning_point": "<one sentence the child learns, in {language_label}>"
+    }}
+  ]
+}}
+
+Do NOT wrap in markdown code fences. Return raw JSON only.
+"""
+
+STORY_SYSTEM_PROMPT = """\
+You are SabahSprout AI, writing a short, engaging story for kindergarten children aged {age_group} years.
+The story supports a lesson: "{lesson_title}" (topic: {topic}, area: {learning_area}).
+
+LANGUAGE REQUIREMENT (STRICT — NO EXCEPTIONS):
+- Every piece of text you generate MUST be written entirely in {language_label}.
+- This includes: the story title, all page text, vocabulary words and definitions, and the moral.
+- Do NOT mix languages. Do NOT use any other language, not even for a single word.
+- If {language_label} is English, write everything in English only. If Bahasa Malaysia, write everything in Bahasa Malaysia only.
+
+RULES:
+- Write a short story with exactly {num_pages} pages (each page is 2-4 sentences of simple language).
+- The story must be age-appropriate, engaging, and teach the relevant concept.
+- Include a simple moral or learning outcome.
+- Characters should be relatable to children in Sabah, Malaysia.
+- Include 3-5 vocabulary words with simple definitions.
+- Return ONLY a single valid JSON object with this schema:
+
+{{
+  "story_title": "<engaging story title>",
+  "pages": [
+    {{
+      "page_number": 1,
+      "text": "<2-4 sentences of story text>"
+    }}
+  ],
+  "vocabulary": [
+    {{"word": "<word>", "definition": "<simple definition>"}}
+  ],
+  "moral": "<one sentence moral or learning outcome>"
+}}
+
+Do NOT wrap in markdown code fences. Return raw JSON only.
+"""
+
+
+# ---------------------------------------------------------------------------
+# Activity generation helpers
+# ---------------------------------------------------------------------------
+
+def _handle_response_content(content) -> str:
+    """Normalise Gemini response content (handles list vs string formats)."""
+    if isinstance(content, list):
+        return "".join(x.get("text", "") if isinstance(x, dict) else str(x) for x in content)
+    return str(content).strip()
+
+
+IMAGEN_MODEL = "imagen-4.0-fast-generate-001"
+
+
+async def _generate_flashcard_images(
+    image_metadata: list[dict],
+    api_key: str,
+) -> list[dict]:
+    """
+    Generate actual images for each flashcard entry using Imagen 4.
+    Returns the same list with an added "image_b64" field (base64 PNG).
+    Falls back gracefully if image generation fails.
+    """
+    from google import genai as ggenai
+    from google.genai import types as gtypes
+
+    imagen_client = ggenai.Client(api_key=api_key)
+    loop = asyncio.get_event_loop()
+
+    async def _gen_one(img_data: dict) -> dict:
+        prompt = img_data.get("image_prompt", img_data.get("label", ""))
+        try:
+            resp = await loop.run_in_executor(
+                None,
+                lambda: imagen_client.models.generate_images(
+                    model=IMAGEN_MODEL,
+                    prompt=prompt,
+                    config=gtypes.GenerateImagesConfig(
+                        number_of_images=1,
+                        aspect_ratio="1:1",
+                    ),
+                ),
+            )
+            img_b64 = base64.b64encode(resp.generated_images[0].image.image_bytes).decode("utf-8")
+        except Exception as exc:
+            logger.warning(f"Imagen generation failed for '{img_data.get('label')}': {exc}")
+            img_b64 = None
+
+        return {
+            "label": img_data.get("label", ""),
+            "image_b64": img_b64,
+            "learning_point": img_data.get("learning_point", ""),
+        }
+
+    results = await asyncio.gather(*[_gen_one(img) for img in image_metadata])
+    return list(results)
+
+
+async def _generate_single_activity(
+    activity: ActivityToGenerate,
+    lesson_title: str,
+    topic: str,
+    learning_area: str,
+    age_group: str,
+    language: str,
+    llm: ChatGoogleGenerativeAI,
+    api_key: str,
+) -> dict:
+    """Generate content for a single activity based on its type."""
+    language_label = "English" if language == "en" else "Bahasa Malaysia"
+    common_vars = dict(
+        age_group=age_group,
+        lesson_title=lesson_title,
+        topic=topic,
+        learning_area=learning_area,
+        language_label=language_label,
+    )
+
+    if activity.type == "quiz":
+        system_prompt = QUIZ_SYSTEM_PROMPT.format(num_questions=5, **common_vars)
+    elif activity.type == "image":
+        system_prompt = IMAGE_SYSTEM_PROMPT.format(num_images=4, **common_vars)
+    elif activity.type == "story":
+        system_prompt = STORY_SYSTEM_PROMPT.format(num_pages=5, **common_vars)
+    else:
+        raise ValueError(f"Unknown activity type: {activity.type}")
+
+    user_message = (
+        f"Activity: {activity.title}\n"
+        f"Description: {activity.description}\n"
+        f"Generate the content now."
+    )
+
+    response = await llm.ainvoke([
+        SystemMessage(content=system_prompt),
+        HumanMessage(content=user_message),
+    ])
+    raw = _handle_response_content(response.content)
+    raw = _strip_json_fences(raw)
+
+    try:
+        content_data = json.loads(raw)
+    except json.JSONDecodeError as e:
+        logger.error(f"Failed to parse activity JSON ({activity.type}): {e}\nRaw: {raw[:500]}")
+        raise ValueError(f"AI returned invalid JSON for activity '{activity.title}'")
+
+    # For image activities: generate actual images with Imagen 3
+    if activity.type == "image" and content_data.get("images"):
+        content_data["images"] = await _generate_flashcard_images(
+            content_data["images"], api_key
+        )
+
+    return {
+        "title": activity.title,
+        "description": activity.description,
+        "type": activity.type,
+        "duration": activity.duration,
+        "generated_content": content_data,
+    }
+
+
+# ---------------------------------------------------------------------------
+# Activity generation endpoint
+# ---------------------------------------------------------------------------
+
+@router.post("/generate-activities")
+async def generate_activities(request: GenerateActivitiesRequest, db: Session = Depends(get_db)):
+    """
+    Generate AI content for one or more activities from a lesson plan.
+    Each activity gets content based on its type (quiz, image, story).
+    Returns generated content for review before saving.
+    """
+    teacher = _verify_teacher(request.id_token, db)
+
+    # Verify lesson plan exists and belongs to this teacher
+    plan = db.query(models.LessonPlan).filter(
+        models.LessonPlan.id == request.lesson_plan_id,
+        models.LessonPlan.teacher_id == teacher.id,
+    ).first()
+    if not plan:
+        raise HTTPException(status_code=404, detail="Lesson plan not found")
+
+    gemini_api_key = os.getenv("GEMINI_API_KEY")
+    if not gemini_api_key:
+        raise HTTPException(status_code=503, detail="GEMINI_API_KEY is not configured.")
+
+    llm = ChatGoogleGenerativeAI(
+        model=GEMINI_MODEL,
+        api_key=gemini_api_key,
+        temperature=0.7,
+        max_tokens=4096,
+    )
+
+    # Fan out — generate all activities concurrently
+    tasks = [
+        _generate_single_activity(
+            activity=act,
+            lesson_title=request.lesson_title or plan.title,
+            topic=request.topic or plan.topic,
+            learning_area=request.learning_area or plan.learning_area,
+            age_group=request.age_group,
+            language=request.language,
+            llm=llm,
+            api_key=gemini_api_key,
+        )
+        for act in request.activities
+    ]
+
+    try:
+        results = await asyncio.gather(*tasks)
+    except ValueError as e:
+        raise HTTPException(status_code=500, detail=str(e))
+    except Exception as e:
+        logger.error(f"Activity generation failed: {e}")
+        raise HTTPException(status_code=502, detail=f"AI service error: {str(e)}")
+
+    return {
+        "lesson_plan_id": request.lesson_plan_id,
+        "generated": list(results),
+    }

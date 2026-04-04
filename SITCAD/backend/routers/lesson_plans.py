@@ -31,6 +31,7 @@ class CreateLessonPlanRequest(BaseModel):
     adaptations: Optional[list] = None
     dskp_standards: Optional[list] = None
     teacher_notes: Optional[str] = None
+    language: Optional[str] = None
 
 
 # ── Helpers ───────────────────────────────────────────────────────
@@ -71,6 +72,7 @@ async def save_lesson_plan(request: CreateLessonPlanRequest, db: Session = Depen
         adaptations=request.adaptations or [],
         dskp_standards=request.dskp_standards or [],
         teacher_notes=request.teacher_notes or "",
+        language=request.language,
     )
     db.add(plan)
     db.commit()
@@ -137,5 +139,6 @@ def _plan_to_dict(plan: models.LessonPlan) -> dict:
         "adaptations": plan.adaptations,
         "dskp_standards": plan.dskp_standards,
         "teacher_notes": plan.teacher_notes,
+        "language": plan.language,
         "created_at": plan.created_at.isoformat() if plan.created_at else None,
     }

@@ -1,11 +1,10 @@
-import { useReducer, useEffect, useCallback, useState } from "react";
+import { useReducer, useEffect, useCallback, useState, useRef } from "react";
 import { useNavigate } from "react-router";
 import { useAuth } from "../contexts/AuthContext";
 import { auth } from "../lib/firebase";
 import Duckpit from './Duckpit';
 import { Button } from "./ui/button";
 import { Label } from "./ui/label";
-import { Textarea } from "./ui/textarea";
 import { activityReducer, initialState } from "../reducers/activityReducer";
 import { toast } from "sonner";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "./ui/tabs";
@@ -18,17 +17,9 @@ import {
   CardHeader,
   CardTitle,
 } from "./ui/card";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "./ui/select";
 import { Badge } from "./ui/badge";
 import {
   Dialog,
-  DialogTrigger,
   DialogContent,
   DialogDescription,
   DialogHeader,
@@ -37,7 +28,6 @@ import {
 
 import {
   ArrowLeft,
-  Plus,
   Calendar,
   Clock,
   Book,
@@ -51,6 +41,11 @@ import {
   Trash2,
   FileText,
   Loader2,
+  Gamepad2,
+  ImageIcon,
+  BookText,
+  RotateCcw,
+  Save,
 } from "lucide-react";
 
 
@@ -62,8 +57,47 @@ async function getIdToken() {
   return firebaseUser.getIdToken();
 }
 
-const activityTypes = [
-  { value: "literacy", label: "Literacy", icon: Book, color: "text-sm bg-[#f46197]/20 text-[#f46197] border-[#f46197]/30" },
+const MASCOT_IMAGES = [
+  "/mascot/writing_1.png",
+  "/mascot/holding_book_1.png",
+  "/mascot/magnifying_1.png",
+  "/mascot/clipboard_1.png",
+  "/mascot/holding_book_2.png",
+  "/mascot/whiteboard_1.png",
+  "/mascot/holding_scroll_1.png",
+  "/mascot/holding_book_4.png",
+];
+
+const LOADING_MESSAGES = [
+  "Reading the lesson plan context",
+  "Designing engaging activity content",
+  "Building quiz questions and answers",
+  "Crafting story narratives",
+  "Preparing image descriptions",
+  "Adding age-appropriate details",
+  "Polishing the content",
+  "Almost done! Finishing up",
+];
+
+const ACTIVITY_TYPE_META = {
+  quiz: { label: "Quiz Game", icon: Gamepad2, color: "bg-violet-100 text-violet-700 border-violet-200" },
+  image: { label: "Images", icon: ImageIcon, color: "bg-sky-100 text-sky-700 border-sky-200" },
+  story: { label: "Text Story", icon: BookText, color: "bg-amber-100 text-amber-700 border-amber-200" },
+};
+
+const LEARNING_AREA_LABELS = {
+  literacy_bm: "Literacy (BM)",
+  literacy_en: "Literacy (EN)",
+  numeracy: "Numeracy",
+  social: "Social Skills",
+  motor: "Motor Skills",
+  creative: "Creative Arts",
+  cognitive: "Cognitive",
+};
+
+const learningAreaStats = [
+  { value: "literacy_bm", label: "Literacy (BM)", icon: Book, color: "text-sm bg-[#f46197]/20 text-[#f46197] border-[#f46197]/30" },
+  { value: "literacy_en", label: "Literacy (EN)", icon: Book, color: "text-sm bg-[#f46197]/20 text-[#f46197] border-[#f46197]/30" },
   { value: "numeracy", label: "Numeracy", icon: Calculator, color: "text-sm bg-[#f46197]/20 text-[#f46197] border-[#f46197]/30" },
   { value: "social", label: "Social Skills", icon: Users, color: "text-sm bg-[#f46197]/20 text-[#f46197] border-[#f46197]/30" },
   { value: "motor", label: "Motor Skills", icon: ActivityIcon, color: "text-sm bg-[#f46197]/20 text-[#f46197] border-[#f46197]/30" },
@@ -78,16 +112,32 @@ export function ActivityManagement() {
   const navigate = useNavigate();
   const [state, dispatch] = useReducer(activityReducer, initialState);
 
-  // Backend data
   const [activities, setActivities] = useState([]);
-  const [students, setStudents] = useState([]);
   const [lessonPlans, setLessonPlans] = useState([]);
+  const [activeTab, setActiveTab] = useState("create");
+  const [savingActivities, setSavingActivities] = useState(false);
 
   // Report generation state
   const [reportScore, setReportScore] = useState("");
   const [reportTotal, setReportTotal] = useState("");
   const [reportTime, setReportTime] = useState("");
   const [generatingReport, setGeneratingReport] = useState(false);
+
+  // Mascot carousel
+  const [mascotIndex, setMascotIndex] = useState(0);
+  const mascotInterval = useRef(null);
+
+  useEffect(() => {
+    if (state.step === "generating") {
+      setMascotIndex(0);
+      mascotInterval.current = setInterval(() => {
+        setMascotIndex((prev) => (prev + 1) % MASCOT_IMAGES.length);
+      }, 3000);
+    } else {
+      if (mascotInterval.current) clearInterval(mascotInterval.current);
+    }
+    return () => { if (mascotInterval.current) clearInterval(mascotInterval.current); };
+  }, [state.step]);
 
   const fetchActivities = useCallback(async () => {
     try {
@@ -100,20 +150,6 @@ export function ActivityManagement() {
       if (res.ok) setActivities(await res.json());
     } catch (err) {
       console.error("Failed to fetch activities:", err);
-    }
-  }, []);
-
-  const fetchStudents = useCallback(async () => {
-    try {
-      const idToken = await getIdToken();
-      const res = await fetch(`${API_BASE}/teachers/my-students`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ id_token: idToken }),
-      });
-      if (res.ok) setStudents(await res.json());
-    } catch (err) {
-      console.error("Failed to fetch students:", err);
     }
   }, []);
 
@@ -134,67 +170,102 @@ export function ActivityManagement() {
   useEffect(() => {
     if (user?.role === "teacher") {
       fetchActivities();
-      fetchStudents();
       fetchLessonPlans();
     }
-  }, [user, fetchActivities, fetchStudents, fetchLessonPlans]);
+  }, [user, fetchActivities, fetchLessonPlans]);
 
   if (!user || user.role !== "teacher") {
     navigate("/");
     return null;
   }
 
-  const handleBack = () => navigate("/teacher");
+  const selectedPlan = lessonPlans.find((p) => p.id === state.selectedPlanId);
+  const selectedCount = state.selectedActivities.length;
 
-  const handleCreateActivity = async () => {
-    if (!state.title || !state.description) {
-      toast.error("Please fill in all required fields");
-      return;
-    }
+  // ── Generate activities via AI ──
+  const handleGenerate = async () => {
+    if (!selectedPlan || selectedCount === 0) return;
+
+    const activitiesToGenerate = state.selectedActivities.map((idx) => {
+      const act = selectedPlan.activities[idx];
+      return {
+        title: act.title,
+        description: act.description,
+        duration: act.duration || "",
+        type: act.type || "quiz",
+      };
+    });
+
+    dispatch({ type: "START_GENERATION" });
 
     try {
       const idToken = await getIdToken();
-      const res = await fetch(`${API_BASE}/activities/create`, {
+      const res = await fetch(`${API_BASE}/ai-integrations/generate-activities`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           id_token: idToken,
-          title: state.title,
-          description: state.description,
-          learning_area: state.type,
-          duration_minutes: parseInt(state.duration),
-          assigned_to: state.assignTo === "all" ? "class" : "individual",
-          student_ids: state.assignTo === "individual" ? state.selectedStudents : undefined,
-          lesson_plan_id: state.lessonPlanId || undefined,
-          source: state.lessonPlanId ? "lesson_plan" : "manual",
+          lesson_plan_id: selectedPlan.id,
+          lesson_title: selectedPlan.title,
+          topic: selectedPlan.topic,
+          learning_area: selectedPlan.learning_area,
+          age_group: selectedPlan.age_group,
+          language: selectedPlan.language || (selectedPlan.learning_area === "literacy_en" ? "en" : "bm"),
+          activities: activitiesToGenerate,
         }),
       });
 
-      if (!res.ok) throw new Error("Failed to create activity");
-      toast.success(`Activity "${state.title}" created successfully!`);
-      dispatch({ type: "RESET_FORM" });
-      dispatch({ type: "SET_OPEN", payload: false });
-      fetchActivities();
+      if (!res.ok) {
+        const err = await res.json().catch(() => ({}));
+        throw new Error(err.detail || "Failed to generate activities");
+      }
+
+      const data = await res.json();
+      dispatch({ type: "FINISH_GENERATION", payload: data.generated });
+      toast.success("Activities generated! Review them below.");
     } catch (err) {
       console.error(err);
-      toast.error("Failed to create activity");
+      dispatch({ type: "FINISH_GENERATION", payload: null });
+      toast.error(err.message || "Failed to generate activities. Please try again.");
     }
   };
 
-  const handleCompleteActivity = async (activityId) => {
+  // ── Save all generated activities ──
+  const handleSaveAll = async () => {
+    if (state.generatedResults.length === 0 || !selectedPlan) return;
+    setSavingActivities(true);
+
     try {
       const idToken = await getIdToken();
-      const res = await fetch(`${API_BASE}/activities/${activityId}/complete`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ id_token: idToken }),
-      });
-      if (!res.ok) throw new Error("Failed to complete");
-      toast.success("Activity marked as completed!");
-      dispatch({ type: "SELECT_ACTIVITY", payload: null });
+      for (const result of state.generatedResults) {
+        const res = await fetch(`${API_BASE}/activities/create`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            id_token: idToken,
+            title: result.title,
+            description: result.description,
+            learning_area: selectedPlan.learning_area,
+            duration_minutes: parseInt(result.duration) || selectedPlan.duration_minutes,
+            activity_type: result.type,
+            generated_content: result.generated_content,
+            assigned_to: "class",
+            lesson_plan_id: selectedPlan.id,
+            source: "lesson_plan",
+          }),
+        });
+        if (!res.ok) throw new Error(`Failed to save activity: ${result.title}`);
+      }
+
+      toast.success(`${state.generatedResults.length} ${state.generatedResults.length === 1 ? "activity" : "activities"} saved!`);
+      dispatch({ type: "RESET_FLOW" });
       fetchActivities();
+      setActiveTab("list");
     } catch (err) {
-      toast.error("Failed to mark complete");
+      console.error(err);
+      toast.error("Failed to save activities");
+    } finally {
+      setSavingActivities(false);
     }
   };
 
@@ -214,6 +285,23 @@ export function ActivityManagement() {
       }
     } catch (err) {
       toast.error("Failed to delete");
+    }
+  };
+
+  const handleCompleteActivity = async (activityId) => {
+    try {
+      const idToken = await getIdToken();
+      const res = await fetch(`${API_BASE}/activities/${activityId}/complete`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id_token: idToken }),
+      });
+      if (!res.ok) throw new Error("Failed to complete");
+      toast.success("Activity marked as completed!");
+      dispatch({ type: "SELECT_ACTIVITY", payload: null });
+      fetchActivities();
+    } catch (err) {
+      toast.error("Failed to mark complete");
     }
   };
 
@@ -253,6 +341,91 @@ export function ActivityManagement() {
     }
   };
 
+  // ── Render helpers for generated content ──
+  const renderQuizContent = (content) => (
+    <div className="space-y-4">
+      {content.questions?.map((q, i) => (
+        <div key={i} className="p-4 border rounded-lg bg-white space-y-2">
+          <p className="font-semibold text-gray-800">Q{i + 1}: {q.question}</p>
+          <div className="grid grid-cols-2 gap-2">
+            {q.options?.map((opt, j) => (
+              <div
+                key={j}
+                className={`p-2 rounded-lg border text-sm ${j === q.correct_answer ? "bg-green-50 border-green-300 text-green-800 font-medium" : "bg-gray-50 border-gray-200 text-gray-700"}`}
+              >
+                {String.fromCharCode(65 + j)}. {opt}
+                {j === q.correct_answer && <CheckCircle2 className="inline h-3.5 w-3.5 ml-1.5 text-green-600" />}
+              </div>
+            ))}
+          </div>
+          {q.explanation && <p className="text-xs text-muted-foreground italic mt-1">{q.explanation}</p>}
+        </div>
+      ))}
+    </div>
+  );
+
+  const renderImageContent = (content) => (
+    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      {content.images?.map((img, i) => (
+        <div key={i} className="border rounded-lg bg-white overflow-hidden flex flex-col">
+          {img.image_b64 ? (
+            <img
+              src={`data:image/png;base64,${img.image_b64}`}
+              alt={img.label}
+              className="w-full aspect-square object-cover"
+            />
+          ) : (
+            <div className="w-full aspect-square bg-sky-50 flex items-center justify-center border-b border-sky-100">
+              <p className="text-sm text-sky-400 italic">Image unavailable</p>
+            </div>
+          )}
+          <div className="p-3 space-y-1">
+            <h4 className="font-semibold text-gray-800 text-sm">{img.label}</h4>
+            {img.learning_point && (
+              <p className="text-xs text-muted-foreground"><span className="font-medium">Learning point:</span> {img.learning_point}</p>
+            )}
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+
+  const renderStoryContent = (content) => (
+    <div className="space-y-4">
+      {content.story_title && <h4 className="text-lg font-bold text-gray-800">{content.story_title}</h4>}
+      {content.pages?.map((page, i) => (
+        <div key={i} className="p-4 border rounded-lg bg-white space-y-2">
+          <Badge variant="outline" className="text-xs">Page {page.page_number}</Badge>
+          <p className="text-sm text-gray-800 leading-relaxed">{page.text}</p>
+        </div>
+      ))}
+      {content.vocabulary?.length > 0 && (
+        <div className="p-3 bg-amber-50 rounded-lg border border-amber-200">
+          <p className="text-xs font-semibold text-amber-800 mb-2">Vocabulary</p>
+          <div className="flex flex-wrap gap-2">
+            {content.vocabulary.map((v, i) => (
+              <Badge key={i} variant="outline" className="bg-white text-xs">
+                <span className="font-semibold">{v.word}</span> — {v.definition}
+              </Badge>
+            ))}
+          </div>
+        </div>
+      )}
+      {content.moral && (
+        <p className="text-sm text-gray-700 italic">Moral: {content.moral}</p>
+      )}
+    </div>
+  );
+
+  const renderGeneratedContent = (result) => {
+    const content = result.generated_content;
+    if (!content) return <p className="text-sm text-muted-foreground">No content generated.</p>;
+    if (result.type === "quiz") return renderQuizContent(content);
+    if (result.type === "image") return renderImageContent(content);
+    if (result.type === "story") return renderStoryContent(content);
+    return <pre className="text-xs overflow-auto">{JSON.stringify(content, null, 2)}</pre>;
+  };
+
   return (
     <div className="relative min-h-screen overflow-hidden bg-slate-50">
       <div className="absolute inset-0 z-0 pointer-events-none">
@@ -271,10 +444,10 @@ export function ActivityManagement() {
               </div>
               <div>
                 <h1 className="text-2xl font-semibold">Activity Management</h1>
-                <p className="text-sm text-muted-foreground mt-1">Create and assign learning activities to students</p>
+                <p className="text-sm text-muted-foreground mt-1">Generate and manage AI-powered learning activities</p>
               </div>
             </div>
-            <Button variant="ghost" onClick={handleBack} className="cursor-pointer">
+            <Button variant="ghost" onClick={() => navigate("/teacher")} className="cursor-pointer">
               <ArrowLeft className="mr-2 h-4 w-4" />
               Back to Dashboard
             </Button>
@@ -283,435 +456,397 @@ export function ActivityManagement() {
       </header>
 
       <main className="max-w-7xl mx-auto px-4 py-8 space-y-6">
-        {/* Activity Type Quick Stats */}
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
-          {activityTypes.map(({ value, label, icon: Icon, color }) => (
-            <Card key={value}>
-              <CardContent className="pt-6">
-                <div className={`w-12 h-12 rounded-lg ${color} flex items-center justify-center mb-3`}>
-                  <Icon className="h-6 w-6" />
-                </div>
-                <p className="text-4xl font-bold mb-1">
-                  {activities.filter((a) => a.learning_area === value).length}
-                </p>
-                <p className="text-base font-medium text-muted-foreground">{label}</p>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
+          <TabsList className="grid w-full grid-cols-2">
+            <TabsTrigger value="create" className="cursor-pointer">Create Activities</TabsTrigger>
+            <TabsTrigger value="list" className="cursor-pointer">My Activities</TabsTrigger>
+          </TabsList>
 
-        {/* Activities List */}
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between">
-            <div>
-              <CardTitle className="text-2xl font-bold mb-2">Created Activities</CardTitle>
-              <CardDescription className="text-lg text-muted-foreground mb-4 font-medium">
-                Manage and track all learning activities
-              </CardDescription>
-            </div>
-            <Dialog open={state.open} onOpenChange={(v) => { dispatch({ type: "SET_OPEN", payload: v }); if (!v) dispatch({ type: "RESET_FORM" }); }}>
-              <DialogTrigger asChild>
-                <Button size="lg" className="cursor-pointer">
-                  <Plus className="mr-2 h-4 w-4" />
-                  Create Activity
-                </Button>
-              </DialogTrigger>
-              <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
-                <DialogHeader>
-                  <DialogTitle>Create New Activity</DialogTitle>
-                  <DialogDescription>
-                    Design a learning activity for your students
-                  </DialogDescription>
-                </DialogHeader>
-                <div className="space-y-4 py-4">
-                  {/* Tabs */}
-                  <Tabs value={state.creationMode} onValueChange={(val) => dispatch({ type: "SET_FIELD", field: "creationMode", value: val })}>
-                    <TabsList className="grid w-full grid-cols-2">
-                      <TabsTrigger value="manual">Manual</TabsTrigger>
-                      <TabsTrigger value="lesson">From Lesson Plan</TabsTrigger>
-                    </TabsList>
+          {/* ════════════════════════════════════════════════════
+              TAB 1: CREATE ACTIVITIES (select → generating → results)
+              ════════════════════════════════════════════════════ */}
+          <TabsContent value="create" className="space-y-6">
 
-                    {/* MANUAL */}
-                    <TabsContent value="manual" className="space-y-4 pt-4">
-                      <div className="space-y-2">
-                        <Label>Activity Title *</Label>
-                        <Input
-                          placeholder="e.g., Letter Recognition Practice"
-                          value={state.title}
-                          onChange={(e) => dispatch({ type: "SET_FIELD", field: "title", value: e.target.value })}
-                        />
-                      </div>
-
-                      <div className="space-y-2">
-                        <Label>Description *</Label>
-                        <Textarea
-                          rows={3}
-                          value={state.description}
-                          onChange={(e) => dispatch({ type: "SET_FIELD", field: "description", value: e.target.value })}
-                        />
-                      </div>
-
-                      <div className="grid grid-cols-2 gap-4">
-                        <div className="space-y-2">
-                          <Label>Learning Area</Label>
-                          <Select value={state.type} onValueChange={(val) => dispatch({ type: "SET_FIELD", field: "type", value: val })}>
-                            <SelectTrigger><SelectValue /></SelectTrigger>
-                            <SelectContent>
-                              {activityTypes.map((at) => (
-                                <SelectItem key={at.value} value={at.value}>{at.label}</SelectItem>
-                              ))}
-                            </SelectContent>
-                          </Select>
-                        </div>
-                        <div className="space-y-2">
-                          <Label>Duration (minutes)</Label>
-                          <Select value={state.duration} onValueChange={(val) => dispatch({ type: "SET_FIELD", field: "duration", value: val })}>
-                            <SelectTrigger><SelectValue /></SelectTrigger>
-                            <SelectContent>
-                              <SelectItem value="15">15 min</SelectItem>
-                              <SelectItem value="20">20 min</SelectItem>
-                              <SelectItem value="30">30 min</SelectItem>
-                              <SelectItem value="45">45 min</SelectItem>
-                              <SelectItem value="60">60 min</SelectItem>
-                            </SelectContent>
-                          </Select>
-                        </div>
-                      </div>
-                    </TabsContent>
-
-                    {/* FROM LESSON PLAN */}
-                    <TabsContent value="lesson" className="space-y-4 pt-4">
-                      {lessonPlans.length === 0 ? (
-                        <p className="text-sm text-muted-foreground">
-                          No lesson plans found. Please create one in AI Lesson Planning first.
-                        </p>
-                      ) : (
-                        <>
-                          <p className="text-sm text-muted-foreground">Select a lesson plan, then choose an activity step:</p>
-                          {lessonPlans.map((plan) => (
-                            <div key={plan.id} className="border rounded-lg">
-                              <div className="p-3 bg-indigo-50 border-b border-indigo-200">
-                                <p className="font-medium text-sm text-indigo-700">{plan.title}</p>
-                                <p className="text-xs text-indigo-600 capitalize">{plan.learning_area} &bull; {plan.duration_minutes} min</p>
-                              </div>
-                              <div className="space-y-2 p-3 max-h-48 overflow-y-auto">
-                                {plan.activities?.map((act, index) => (
-                                  <div
-                                    key={index}
-                                    className="p-2 border rounded hover:bg-gray-50 cursor-pointer"
-                                    onClick={() => {
-                                      dispatch({ type: "SET_FIELD", field: "title", value: act.title });
-                                      dispatch({ type: "SET_FIELD", field: "description", value: act.description });
-                                      dispatch({ type: "SET_FIELD", field: "type", value: plan.learning_area });
-                                      dispatch({ type: "SET_FIELD", field: "duration", value: String(plan.duration_minutes) });
-                                      dispatch({ type: "SET_FIELD", field: "lessonPlanId", value: plan.id });
-                                      toast.success("Activity loaded from lesson plan!");
-                                    }}
-                                  >
-                                    <div className="flex items-center gap-2">
-                                      <Sparkles className="h-3 w-3 text-indigo-500" />
-                                      <p className="font-medium text-sm">{act.title}</p>
-                                    </div>
-                                    <p className="text-xs text-muted-foreground line-clamp-1 ml-5">{act.description}</p>
-                                  </div>
-                                ))}
-                              </div>
-                            </div>
-                          ))}
-
-                          {state.lessonPlanId && (
-                            <div className="space-y-3 pt-2">
-                              <div className="space-y-2">
-                                <Label>Activity Title *</Label>
-                                <Input value={state.title} onChange={(e) => dispatch({ type: "SET_FIELD", field: "title", value: e.target.value })} />
-                              </div>
-                              <div className="space-y-2">
-                                <Label>Description *</Label>
-                                <Textarea rows={3} value={state.description} onChange={(e) => dispatch({ type: "SET_FIELD", field: "description", value: e.target.value })} />
-                              </div>
-                            </div>
-                          )}
-                        </>
-                      )}
-                    </TabsContent>
-                  </Tabs>
-
-                  {/* Assign Section */}
-                  <div className="space-y-3">
-                    <Label>Assign To</Label>
-                    <Tabs value={state.assignTo} onValueChange={(val) => dispatch({ type: "SET_FIELD", field: "assignTo", value: val })}>
-                      <TabsList className="grid w-full grid-cols-2">
-                        <TabsTrigger value="all">Whole Class</TabsTrigger>
-                        <TabsTrigger value="individual">Individual Students</TabsTrigger>
-                      </TabsList>
-
-                      <TabsContent value="all" className="pt-4">
-                        <div className="p-4 bg-blue-50 rounded-lg border border-blue-200">
-                          <p className="text-sm text-blue-900">
-                            This activity will be assigned to all {students.length} student{students.length !== 1 ? "s" : ""}
-                          </p>
-                        </div>
-                      </TabsContent>
-
-                      <TabsContent value="individual" className="space-y-3 pt-4">
-                        {students.length === 0 ? (
-                          <p className="text-sm text-muted-foreground">No students assigned to you yet.</p>
-                        ) : (
-                          <div className="space-y-2 max-h-64 overflow-y-auto border rounded-lg p-3">
-                            {students.map((student) => (
-                              <div key={student.id} className="flex items-center space-x-3">
-                                <Checkbox
-                                  checked={state.selectedStudents.includes(student.id)}
-                                  onCheckedChange={() => dispatch({ type: "TOGGLE_STUDENT", studentId: student.id })}
-                                />
-                                <span className="text-sm">{student.name}</span>
-                              </div>
-                            ))}
-                          </div>
-                        )}
-                      </TabsContent>
-                    </Tabs>
-                  </div>
-
-                  {/* Buttons */}
-                  <div className="flex gap-3 pt-4">
-                    <Button variant="outline" className="flex-1" onClick={() => { dispatch({ type: "SET_OPEN", payload: false }); dispatch({ type: "RESET_FORM" }); }}>
-                      Cancel
-                    </Button>
-                    <Button className="flex-1" onClick={handleCreateActivity}>
-                      <Plus className="mr-2 h-4 w-4" />
-                      Create Activity
-                    </Button>
-                  </div>
-                </div>
-              </DialogContent>
-            </Dialog>
-          </CardHeader>
-          <CardContent>
-            {activities.length === 0 ? (
-              <div className="flex items-center justify-center h-32 text-muted-foreground text-sm border border-dashed rounded-lg">
-                No activities yet. Click "Create Activity" to get started.
-              </div>
-            ) : (
+            {/* ─── STEP: SELECT ─── */}
+            {state.step === "select" && (
               <div className="space-y-4">
-                {activities.map((activity) => {
-                  const activityType = activityTypes.find((t) => t.value === activity.learning_area);
-                  const Icon = activityType?.icon || Book;
+                <Card className="border-2 border-indigo-200 shadow-md">
+                  <CardHeader className="bg-linear-to-r from-indigo-100 to-purple-100">
+                    <CardTitle className="flex items-center gap-2 text-lg font-semibold">
+                      <Sparkles className="h-5 w-5 text-[#3090A0]" />
+                      Generate Activities from Lesson Plan
+                    </CardTitle>
+                    <CardDescription className="text-sm text-gray-700 mb-6">
+                      Select a lesson plan, then choose one or more activities to generate with AI.
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    {lessonPlans.length === 0 ? (
+                      <div className="text-center py-8 text-muted-foreground">
+                        <p>No lesson plans found. Create one in the Lesson Planning page first.</p>
+                      </div>
+                    ) : (
+                      <div className="space-y-3">
+                        {lessonPlans.map((plan) => {
+                          const isSelected = state.selectedPlanId === plan.id;
+                          return (
+                            <div key={plan.id} className={`border-2 rounded-lg transition-colors ${isSelected ? "border-indigo-400 bg-indigo-50/50" : "border-gray-200 hover:border-gray-300"}`}>
+                              <div
+                                className="p-4 cursor-pointer"
+                                onClick={() => dispatch({ type: "SELECT_PLAN", payload: isSelected ? null : plan.id })}
+                              >
+                                <div className="flex items-center justify-between">
+                                  <div>
+                                    <h3 className="font-semibold text-gray-800">{plan.title}</h3>
+                                    <div className="flex items-center gap-2 mt-1">
+                                      <Badge variant="outline" className="text-xs capitalize">{LEARNING_AREA_LABELS[plan.learning_area] || plan.learning_area}</Badge>
+                                      <Badge variant="outline" className="text-xs">{plan.duration_minutes} min</Badge>
+                                      <Badge variant="outline" className="text-xs">Ages {plan.age_group}</Badge>
+                                    </div>
+                                  </div>
+                                  <div className="text-xs text-muted-foreground">
+                                    {plan.activities?.length || 0} activities
+                                  </div>
+                                </div>
+                              </div>
 
-                  return (
-                    <Card
-                      key={activity.id}
-                      className="border-2 cursor-pointer hover:shadow-lg transition-shadow"
-                      onClick={() => dispatch({ type: "SELECT_ACTIVITY", payload: activity })}
-                    >
-                      <CardContent className="pt-6">
-                        <div className="flex gap-4">
-                          <div className={`w-16 h-16 rounded-lg ${activityType?.color || "bg-gray-100"} flex items-center justify-center shrink-0`}>
-                            <Icon className="h-8 w-8" />
-                          </div>
-                          <div className="flex-1 space-y-3">
-                            <div className="flex items-start justify-between gap-4">
-                              <div>
-                                <h3 className="font-semibold text-xl">{activity.title}</h3>
-                                <p className="text-base text-muted-foreground mt-1 line-clamp-2">{activity.description}</p>
-                              </div>
-                              <div className="flex flex-col items-end gap-1">
-                                <Badge variant="outline" className={activityType?.color}>
-                                  {activityType?.label || activity.learning_area}
-                                </Badge>
-                                {activity.source === "lesson_plan" && (
-                                  <Badge variant="outline" className="text-xs bg-indigo-50 text-indigo-600 border-indigo-200">
-                                    <Sparkles className="h-3 w-3 mr-1" />
-                                    From Lesson Plan
-                                  </Badge>
-                                )}
-                              </div>
+                              {/* Activity checkboxes */}
+                              {isSelected && plan.activities?.length > 0 && (
+                                <div className="border-t border-indigo-200 p-4 space-y-3">
+                                  <p className="text-sm font-medium text-gray-600">Select activities to generate:</p>
+                                  {plan.activities.map((act, idx) => {
+                                    const typeMeta = ACTIVITY_TYPE_META[act.type] || ACTIVITY_TYPE_META.quiz;
+                                    const TypeIcon = typeMeta.icon;
+                                    const isChecked = state.selectedActivities.includes(idx);
+                                    return (
+                                      <div
+                                        key={idx}
+                                        className={`flex items-start gap-3 p-3 border rounded-lg cursor-pointer transition-colors ${isChecked ? "bg-indigo-50 border-indigo-300" : "bg-white border-gray-200 hover:bg-gray-50"}`}
+                                        onClick={() => dispatch({ type: "TOGGLE_ACTIVITY", payload: idx })}
+                                      >
+                                        <Checkbox
+                                          checked={isChecked}
+                                          className="mt-0.5"
+                                          onCheckedChange={() => dispatch({ type: "TOGGLE_ACTIVITY", payload: idx })}
+                                        />
+                                        <div className="flex-1 min-w-0">
+                                          <div className="flex items-center gap-2 mb-1">
+                                            <h4 className="font-semibold text-sm text-gray-800">{act.title}</h4>
+                                            <Badge variant="outline" className={`text-xs ${typeMeta.color}`}>
+                                              <TypeIcon className="h-3 w-3 mr-1" />{typeMeta.label}
+                                            </Badge>
+                                            {act.duration && (
+                                              <Badge variant="outline" className="text-xs text-blue-700 bg-blue-50 border-blue-200">
+                                                <Clock className="h-3 w-3 mr-1" />{act.duration}
+                                              </Badge>
+                                            )}
+                                          </div>
+                                          <p className="text-sm text-gray-600">{act.description}</p>
+                                        </div>
+                                      </div>
+                                    );
+                                  })}
+                                </div>
+                              )}
                             </div>
-                            <div className="flex flex-wrap items-center gap-4 text-sm text-muted-foreground">
-                              <span className="flex items-center gap-1">
-                                <Clock className="h-4 w-4" />
-                                {activity.duration_minutes} min
-                              </span>
-                              <span className="flex items-center gap-1">
-                                <Calendar className="h-4 w-4" />
-                                {activity.created_at ? new Date(activity.created_at).toLocaleDateString() : "N/A"}
-                              </span>
-                              <Badge variant="secondary">
-                                {activity.assigned_to === "class" ? "Whole Class" : `${activity.student_names?.length || 0} Student(s)`}
+                          );
+                        })}
+                      </div>
+                    )}
+
+                    {/* Generate button */}
+                    {selectedPlan && (
+                      <Button
+                        onClick={handleGenerate}
+                        disabled={selectedCount === 0}
+                        size="lg"
+                        className="w-full bg-[#3090A0] hover:bg-[#2FBFA5] text-white font-semibold text-base cursor-pointer"
+                      >
+                        <Sparkles className="mr-2 h-4 w-4" />
+                        {selectedCount === 0
+                          ? "Select activities to generate"
+                          : selectedCount === 1
+                            ? "Create Activity"
+                            : `Create ${selectedCount} Activities`}
+                      </Button>
+                    )}
+                  </CardContent>
+                </Card>
+              </div>
+            )}
+
+            {/* ─── STEP: GENERATING ─── */}
+            {state.step === "generating" && (
+              <Card className="border-2 border-indigo-200 shadow-md">
+                <CardContent className="pt-8 pb-20 flex flex-col items-center justify-center text-center space-y-8">
+                  <div className="relative w-48 h-48 flex items-center justify-center">
+                    <div className="absolute inset-0 rounded-full border-4 border-[#3090A0]/20 border-t-[#3090A0] animate-spin" />
+                    <img
+                      key={mascotIndex}
+                      src={MASCOT_IMAGES[mascotIndex]}
+                      alt="SabahSprout mascot"
+                      className="w-32 h-32 object-contain"
+                      style={{ animation: "fade-in 500ms ease-out, mascotWobble 2s ease-in-out infinite" }}
+                    />
+                  </div>
+                  <div className="space-y-3 max-w-md">
+                    <h2 className="text-xl font-semibold text-gray-800">
+                      Generating {selectedCount === 1 ? "Your Activity" : `${selectedCount} Activities`}
+                    </h2>
+                    <p key={mascotIndex} className="text-sm text-muted-foreground animate-in fade-in duration-300">
+                      {LOADING_MESSAGES[mascotIndex]}
+                    </p>
+                  </div>
+                </CardContent>
+              </Card>
+            )}
+
+            {/* ─── STEP: RESULTS ─── */}
+            {state.step === "results" && state.generatedResults.length > 0 && (
+              <div className="space-y-4 animate-in fade-in duration-500">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-3">
+                    <CheckCircle2 className="h-6 w-6 text-green-600" />
+                    <h2 className="text-xl font-semibold text-gray-800">
+                      Generated {state.generatedResults.length === 1 ? "Activity" : "Activities"} — Review
+                    </h2>
+                  </div>
+                </div>
+
+                {state.generatedResults.map((result, i) => {
+                  const typeMeta = ACTIVITY_TYPE_META[result.type] || ACTIVITY_TYPE_META.quiz;
+                  const TypeIcon = typeMeta.icon;
+                  return (
+                    <Card key={i} className="shadow-md border border-gray-200">
+                      <CardHeader className="bg-linear-to-r from-indigo-50 to-purple-50 pb-3">
+                        <div className="flex items-center justify-between">
+                          <div>
+                            <CardTitle className="text-lg font-bold text-gray-800">{result.title}</CardTitle>
+                            <p className="text-sm text-muted-foreground mt-1">{result.description}</p>
+                          </div>
+                          <Badge variant="outline" className={`${typeMeta.color} text-sm`}>
+                            <TypeIcon className="h-4 w-4 mr-1.5" />{typeMeta.label}
+                          </Badge>
+                        </div>
+                      </CardHeader>
+                      <CardContent className="pt-4">
+                        {renderGeneratedContent(result)}
+                      </CardContent>
+                    </Card>
+                  );
+                })}
+
+                {/* Bottom action bar */}
+                <div className="flex justify-end gap-3 pb-8">
+                  <Button variant="outline" onClick={() => dispatch({ type: "RESET_FLOW" })} className="cursor-pointer">
+                    <RotateCcw className="mr-2 h-4 w-4" />
+                    Discard & Re-generate
+                  </Button>
+                  <Button
+                    onClick={handleSaveAll}
+                    disabled={savingActivities}
+                    className="bg-[#3090A0] hover:bg-[#2FBFA5] text-white cursor-pointer"
+                  >
+                    {savingActivities ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Save className="mr-2 h-4 w-4" />}
+                    {savingActivities ? "Saving…" : `Save ${state.generatedResults.length === 1 ? "Activity" : "Activities"} to My Activities`}
+                  </Button>
+                </div>
+              </div>
+            )}
+
+          </TabsContent>
+
+          {/* ════════════════════════════════════════════════════
+              TAB 2: MY ACTIVITIES
+              ════════════════════════════════════════════════════ */}
+          <TabsContent value="list" className="space-y-6">
+            {/* Stats */}
+            <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-4">
+              {learningAreaStats.map(({ value, label, icon: Icon, color }) => (
+                <Card key={value}>
+                  <CardContent className="pt-4 pb-3">
+                    <div className={`w-10 h-10 rounded-lg ${color} flex items-center justify-center mb-2`}>
+                      <Icon className="h-5 w-5" />
+                    </div>
+                    <p className="text-3xl font-bold mb-0.5">
+                      {activities.filter((a) => a.learning_area === value).length}
+                    </p>
+                    <p className="text-xs font-medium text-muted-foreground">{label}</p>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+
+            {/* Activity list */}
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-xl font-bold">My Activities</CardTitle>
+                <CardDescription>Click an activity to view details</CardDescription>
+              </CardHeader>
+              <CardContent>
+                {activities.length === 0 ? (
+                  <div className="flex items-center justify-center h-32 text-muted-foreground text-sm border border-dashed rounded-lg">
+                    No activities yet. Go to the Create Activities tab to generate some.
+                  </div>
+                ) : (
+                  <div className="space-y-3">
+                    {activities.map((activity) => {
+                      const typeMeta = ACTIVITY_TYPE_META[activity.activity_type];
+                      const TypeIcon = typeMeta?.icon;
+                      return (
+                        <div
+                          key={activity.id}
+                          className="flex items-center justify-between p-4 border rounded-lg hover:bg-gray-50 cursor-pointer transition-colors"
+                          onClick={() => dispatch({ type: "SELECT_ACTIVITY", payload: activity })}
+                        >
+                          <div className="flex-1 min-w-0">
+                            <h3 className="font-semibold text-gray-800">{activity.title}</h3>
+                            <p className="text-sm text-muted-foreground mt-1">{activity.description}</p>
+                            <div className="flex flex-wrap gap-2 mt-2">
+                              <Badge variant="outline" className="text-xs capitalize">
+                                {LEARNING_AREA_LABELS[activity.learning_area] || activity.learning_area}
                               </Badge>
-                              <Badge variant={activity.status === "completed" ? "default" : activity.status === "in_progress" ? "secondary" : "outline"} className="gap-1 capitalize">
+                              {typeMeta && (
+                                <Badge variant="outline" className={`text-xs ${typeMeta.color}`}>
+                                  <TypeIcon className="h-3 w-3 mr-1" />{typeMeta.label}
+                                </Badge>
+                              )}
+                              {activity.duration_minutes && (
+                                <Badge variant="outline" className="text-xs">
+                                  <Clock className="h-3 w-3 mr-1" />{activity.duration_minutes} min
+                                </Badge>
+                              )}
+                              <Badge variant={activity.status === "completed" ? "default" : "outline"} className="text-xs capitalize gap-1">
                                 {activity.status === "completed" && <CheckCircle2 className="h-3 w-3" />}
                                 {activity.status.replace("_", " ")}
                               </Badge>
                             </div>
                           </div>
+                          <div className="flex items-center gap-2 ml-4 shrink-0">
+                            <span className="text-xs text-muted-foreground">
+                              {activity.created_at ? new Date(activity.created_at).toLocaleDateString() : ""}
+                            </span>
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              className="text-red-500 hover:text-red-700 h-8 w-8 p-0 cursor-pointer"
+                              onClick={(e) => { e.stopPropagation(); handleDeleteActivity(activity.id); }}
+                            >
+                              <Trash2 className="h-4 w-4" />
+                            </Button>
+                          </div>
                         </div>
-                      </CardContent>
-                    </Card>
-                  );
-                })}
-              </div>
-            )}
-          </CardContent>
-        </Card>
+                      );
+                    })}
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+          </TabsContent>
+        </Tabs>
       </main>
 
+      {/* ═══ Activity Detail Dialog ═══ */}
       <Dialog open={!!state.selectedActivity} onOpenChange={() => dispatch({ type: "SELECT_ACTIVITY", payload: null })}>
-        <DialogContent className="max-w-2xl">
+        <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
           {state.selectedActivity && (() => {
-            const activityType = activityTypes.find((t) => t.value === state.selectedActivity.learning_area);
-            const Icon = activityType?.icon || Book;
+            const act = state.selectedActivity;
+            const typeMeta = ACTIVITY_TYPE_META[act.activity_type];
+            const TypeIcon = typeMeta?.icon;
 
             return (
               <>
                 <DialogHeader>
-                  <div className="flex items-center gap-4 mb-2">
-                    <div className={`w-16 h-16 rounded-lg  ${activityType?.color || "bg-gray-100"} flex items-center justify-center shrink-0`}>
-                      <Icon className="h-8 w-8" />
+                  <div className="flex items-start justify-between gap-4 mb-2">
+                    <div>
+                      {act.lesson_plan_title && (
+                        <div className="text-xs text-muted-foreground mb-2">From Lesson Plan: <span className="font-semibold text-foreground">{act.lesson_plan_title}</span></div>
+                      )}
+                      <DialogTitle className="text-xl">{act.title}</DialogTitle>
+                      <DialogDescription className="mt-1">{act.description}</DialogDescription>
                     </div>
-                    <div className="flex-1">
-                      <DialogTitle className="text-2xl">{state.selectedActivity.title}</DialogTitle>
-                      <DialogDescription className="flex items-center gap-2 mt-1">
-                        <Badge variant="outline" className={activityType?.color}>
-                          {activityType?.label}
-                        </Badge>
-                        <Badge variant="outline" className="capitalize">{state.selectedActivity.status.replace("_", " ")}</Badge>
-                        {state.selectedActivity.source === "lesson_plan" && (
-                          <Badge variant="outline" className="text-xs bg-indigo-50 text-indigo-600 border-indigo-200">
-                            <Sparkles className="h-3 w-3 mr-1" /> Lesson Plan
-                          </Badge>
-                        )}
-                      </DialogDescription>
-                    </div>
+                  </div>
+                  <div className="flex flex-wrap gap-2 mt-2">
+                    <Badge variant="outline" className="text-xs capitalize">
+                      {LEARNING_AREA_LABELS[act.learning_area] || act.learning_area}
+                    </Badge>
+                    {typeMeta && (
+                      <Badge variant="outline" className={`text-xs ${typeMeta.color}`}>
+                        <TypeIcon className="h-3 w-3 mr-1" />{typeMeta.label}
+                      </Badge>
+                    )}
+                    {act.duration_minutes && (
+                      <Badge variant="outline" className="text-xs">
+                        <Clock className="h-3 w-3 mr-1" />{act.duration_minutes} min
+                      </Badge>
+                    )}
+                    <Badge variant="outline" className="text-xs capitalize gap-1">
+                      {act.status === "completed" && <CheckCircle2 className="h-3 w-3" />}
+                      {act.status.replace("_", " ")}
+                    </Badge>
+                    <Badge variant="outline" className="text-xs bg-indigo-50 text-indigo-600 border-indigo-200">
+                      <Sparkles className="h-3 w-3 mr-1" /> AI Generated
+                    </Badge>
                   </div>
                 </DialogHeader>
 
-                <div className="space-y-6 py-4">
-                  <div className="grid grid-cols-3 gap-4">
-                    <Card>
-                      <CardContent className="pt-4">
-                        <div className="flex items-center gap-2 text-muted-foreground mb-1">
-                          <Clock className="h-4 w-4" />
-                          <span className="text-base">Duration</span>
-                        </div>
-                        <p className="text-lg font-semibold">{state.selectedActivity.duration_minutes} min</p>
-                      </CardContent>
-                    </Card>
-                    <Card>
-                      <CardContent className="pt-4">
-                        <div className="flex items-center gap-2 text-muted-foreground mb-1">
-                          <Calendar className="h-4 w-4" />
-                          <span className="text-base">Created</span>
-                        </div>
-                        <p className="text-lg font-semibold">
-                          {state.selectedActivity.created_at ? new Date(state.selectedActivity.created_at).toLocaleDateString("en-US", { month: "short", day: "numeric" }) : "N/A"}
-                        </p>
-                      </CardContent>
-                    </Card>
-                    <Card>
-                      <CardContent className="pt-4">
-                        <div className="flex items-center gap-2 text-muted-foreground mb-1">
-                          <Users className="h-4 w-4" />
-                          <span className="text-base">Assigned</span>
-                        </div>
-                        <p className="text-lg font-semibold line-clamp-2">
-                          {state.selectedActivity.assigned_to === "class" ? "Whole Class" : state.selectedActivity.student_names?.join(", ") || "Individual"}
-                        </p>
-                      </CardContent>
-                    </Card>
-                  </div>
-
-                    {/* Description */}
+                <div className="space-y-4 py-4">
+                  {/* Generated Content */}
+                  {act.generated_content && (
                     <div>
-                      <h3 className="font-semibold mb-2">Activity Description</h3>
-                      <div className="p-4 bg-muted rounded-lg">
-                        <p className="text-sm">{state.selectedActivity.description}</p>
-                      </div>
+                      <h3 className="font-semibold mb-3">Generated Content</h3>
+                      {renderGeneratedContent({ type: act.activity_type, generated_content: act.generated_content })}
                     </div>
-
-                    {/* Objectives Section */}
-                    <div>
-                      <h3 className="font-semibold mb-2">Learning Objectives</h3>
-                      <ul className="space-y-2">
-                        <li className="flex items-start gap-2 text-sm">
-                          <CheckCircle2 className="h-4 w-4 text-green-600 mt-0.5 shrink-0" />
-                          <span>Develop {state.selectedActivity.learning_area} skills through hands-on practice</span>
-                        </li>
-                        <li className="flex items-start gap-2 text-sm">
-                          <CheckCircle2 className="h-4 w-4 text-green-600 mt-0.5 shrink-0" />
-                          <span>Build confidence and competence in target area</span>
-                        </li>
-                        <li className="flex items-start gap-2 text-sm">
-                          <CheckCircle2 className="h-4 w-4 text-green-600 mt-0.5 shrink-0" />
-                          <span>Foster engagement and enjoyment in learning</span>
-                        </li>
-                      </ul>
-                    </div>
-
-                    {/* Materials Needed */}
-                    <div>
-                      <h3 className="font-semibold mb-2">Materials Needed</h3>
-                      <div className="flex flex-wrap gap-2">
-                        <Badge className="text-sm" variant="outline">Worksheets</Badge>
-                        <Badge className="text-sm" variant="outline">Pencils</Badge>
-                        <Badge className="text-sm" variant="outline">Manipulatives</Badge>
-                        <Badge className="text-sm" variant="outline">Visual Aids</Badge>
-                      </div>
-                    </div>
+                  )}
 
                   {/* Action Buttons */}
-                  <div className="flex gap-3 pt-4">
-                    <Button variant="outline" className="flex-1" onClick={() => dispatch({ type: "SELECT_ACTIVITY", payload: null })}>
+                  <div className="flex gap-3 pt-4 border-t">
+                    <Button variant="outline" className="flex-1 cursor-pointer" onClick={() => dispatch({ type: "SELECT_ACTIVITY", payload: null })}>
                       Close
                     </Button>
-                    {state.selectedActivity.status !== "completed" && (
-                      <Button className="flex-1" onClick={() => handleCompleteActivity(state.selectedActivity.id)}>
+                    {act.status !== "completed" && (
+                      <Button className="flex-1 cursor-pointer" onClick={() => handleCompleteActivity(act.id)}>
                         <CheckCircle2 className="mr-2 h-4 w-4" />
                         Mark as Complete
                       </Button>
                     )}
                     <Button
                       variant="ghost"
-                      className="text-red-500 hover:text-red-700"
-                      onClick={() => handleDeleteActivity(state.selectedActivity.id)}
+                      className="text-red-500 hover:text-red-700 cursor-pointer"
+                      onClick={() => handleDeleteActivity(act.id)}
                     >
                       <Trash2 className="h-4 w-4" />
                     </Button>
                   </div>
 
                   {/* Generate Report Section (completed activities only) */}
-                  {state.selectedActivity.status === "completed" && (
+                  {act.status === "completed" && (
                     <div className="border-t pt-5 space-y-4">
                       <div className="flex items-center gap-2">
                         <FileText className="h-5 w-5 text-emerald-600" />
                         <h3 className="font-semibold text-lg">Generate Report</h3>
                       </div>
 
-                      {/* Show saved quiz data if available */}
-                      {state.selectedActivity.quiz_score != null ? (
+                      {act.quiz_score != null ? (
                         <>
                           <p className="text-sm text-muted-foreground">
                             Quiz results were saved from Classroom Mode and will be included in the report.
                           </p>
                           <div className="grid grid-cols-3 gap-3">
                             <div className="text-center p-3 bg-emerald-50 rounded-lg border border-emerald-200">
-                              <p className="text-2xl font-bold text-emerald-700">
-                                {state.selectedActivity.quiz_score}/{state.selectedActivity.quiz_total}
-                              </p>
+                              <p className="text-2xl font-bold text-emerald-700">{act.quiz_score}/{act.quiz_total}</p>
                               <p className="text-xs text-muted-foreground mt-1">Score</p>
                             </div>
                             <div className="text-center p-3 bg-emerald-50 rounded-lg border border-emerald-200">
-                              <p className="text-2xl font-bold text-emerald-700">
-                                {state.selectedActivity.quiz_total ? Math.round(state.selectedActivity.quiz_score / state.selectedActivity.quiz_total * 100) : 0}%
-                              </p>
+                              <p className="text-2xl font-bold text-emerald-700">{act.quiz_total ? Math.round(act.quiz_score / act.quiz_total * 100) : 0}%</p>
                               <p className="text-xs text-muted-foreground mt-1">Accuracy</p>
                             </div>
                             <div className="text-center p-3 bg-emerald-50 rounded-lg border border-emerald-200">
                               <p className="text-2xl font-bold text-emerald-700">
-                                {state.selectedActivity.quiz_time_seconds != null
-                                  ? state.selectedActivity.quiz_time_seconds >= 60
-                                    ? `${Math.floor(state.selectedActivity.quiz_time_seconds / 60)}m ${state.selectedActivity.quiz_time_seconds % 60}s`
-                                    : `${state.selectedActivity.quiz_time_seconds}s`
+                                {act.quiz_time_seconds != null
+                                  ? act.quiz_time_seconds >= 60
+                                    ? `${Math.floor(act.quiz_time_seconds / 60)}m ${act.quiz_time_seconds % 60}s`
+                                    : `${act.quiz_time_seconds}s`
                                   : "N/A"}
                               </p>
                               <p className="text-xs text-muted-foreground mt-1">Time Taken</p>
@@ -726,40 +861,22 @@ export function ActivityManagement() {
                           <div className="grid grid-cols-3 gap-3">
                             <div className="space-y-1">
                               <Label className="text-xs font-medium">Score</Label>
-                              <Input
-                                type="number"
-                                min="0"
-                                placeholder="e.g. 6"
-                                value={reportScore}
-                                onChange={(e) => setReportScore(e.target.value)}
-                              />
+                              <Input type="number" min="0" placeholder="e.g. 6" value={reportScore} onChange={(e) => setReportScore(e.target.value)} />
                             </div>
                             <div className="space-y-1">
                               <Label className="text-xs font-medium">Total Questions</Label>
-                              <Input
-                                type="number"
-                                min="1"
-                                placeholder="e.g. 8"
-                                value={reportTotal}
-                                onChange={(e) => setReportTotal(e.target.value)}
-                              />
+                              <Input type="number" min="1" placeholder="e.g. 8" value={reportTotal} onChange={(e) => setReportTotal(e.target.value)} />
                             </div>
                             <div className="space-y-1">
                               <Label className="text-xs font-medium">Time (seconds)</Label>
-                              <Input
-                                type="number"
-                                min="0"
-                                placeholder="e.g. 90"
-                                value={reportTime}
-                                onChange={(e) => setReportTime(e.target.value)}
-                              />
+                              <Input type="number" min="0" placeholder="e.g. 90" value={reportTime} onChange={(e) => setReportTime(e.target.value)} />
                             </div>
                           </div>
                         </>
                       )}
                       <Button
-                        className="w-full bg-emerald-600 hover:bg-emerald-700 text-white"
-                        onClick={() => handleGenerateReport(state.selectedActivity.id)}
+                        className="w-full bg-emerald-600 hover:bg-emerald-700 text-white cursor-pointer"
+                        onClick={() => handleGenerateReport(act.id)}
                         disabled={generatingReport}
                       >
                         {generatingReport ? (

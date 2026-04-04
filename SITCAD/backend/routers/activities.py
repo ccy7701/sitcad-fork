@@ -22,10 +22,12 @@ class CreateActivityRequest(BaseModel):
     description: Optional[str] = None
     learning_area: Optional[str] = None
     duration_minutes: Optional[int] = None
+    activity_type: Optional[str] = None          # "quiz" | "image" | "story"
+    generated_content: Optional[dict] = None     # AI-generated content
     assigned_to: str = "class"                 # "class" | "individual"
     student_ids: Optional[list[str]] = None    # required when assigned_to == "individual"
     lesson_plan_id: Optional[str] = None       # set when created from a lesson plan
-    source: str = "manual"                     # "manual" | "lesson_plan"
+    source: str = "lesson_plan"                # "lesson_plan"
 
 class CompleteActivityRequest(BaseModel):
     id_token: str
@@ -69,15 +71,24 @@ def _activity_to_dict(act: models.Activity, db: Session) -> dict:
         students = db.query(models.Student).filter(models.Student.id.in_(student_ids)).all()
         student_names = [s.name for s in students]
 
+    # Fetch lesson plan title if the activity belongs to one
+    lesson_plan_title = None
+    if act.lesson_plan_id:
+        lp = db.query(models.LessonPlan).filter(models.LessonPlan.id == act.lesson_plan_id).first()
+        lesson_plan_title = lp.title if lp else None
+
     return {
         "id": act.id,
         "teacher_id": act.teacher_id,
         "lesson_plan_id": act.lesson_plan_id,
+        "lesson_plan_title": lesson_plan_title,
         "source": act.source,
         "title": act.title,
         "description": act.description,
         "learning_area": act.learning_area,
         "duration_minutes": act.duration_minutes,
+        "activity_type": act.activity_type,
+        "generated_content": act.generated_content,
         "assigned_to": act.assigned_to,
         "status": act.status,
         "student_ids": student_ids,
@@ -115,6 +126,8 @@ async def create_activity(request: CreateActivityRequest, db: Session = Depends(
         description=request.description,
         learning_area=request.learning_area,
         duration_minutes=request.duration_minutes,
+        activity_type=request.activity_type,
+        generated_content=request.generated_content,
         assigned_to=request.assigned_to,
         status="pending",
     )

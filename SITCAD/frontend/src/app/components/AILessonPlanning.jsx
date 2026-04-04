@@ -53,6 +53,9 @@ import {
   Monitor,
   Layers,
   ClipboardCheck,
+  Gamepad2,
+  ImageIcon,
+  BookText,
 } from "lucide-react";
 import { toast } from "sonner";
 import { lessonReducer, initialState } from "../reducers/lessonReducer";
@@ -86,6 +89,12 @@ const LOADING_MESSAGES = [
   "Adding adaptations for diverse learners",
   "Polishing and finalising your lesson plan",
   "Almost done! Putting the finishing touches",
+];
+
+const ACTIVITY_TYPE_OPTIONS = [
+  { value: "quiz", label: "Quiz Game", icon: Gamepad2, color: "bg-violet-100 text-violet-700 border-violet-200" },
+  { value: "image", label: "Images", icon: ImageIcon, color: "bg-sky-100 text-sky-700 border-sky-200" },
+  { value: "story", label: "Text Story", icon: BookText, color: "bg-amber-100 text-amber-700 border-amber-200" },
 ];
 
 const LEARNING_AREA_LABELS = {
@@ -183,7 +192,7 @@ export function AILessonPlanning() {
 
       const plan = await res.json();
       dispatch({ type: "FINISH_GENERATION", payload: plan });
-      toast.success("Lesson plan generated! Review and customise below.");
+      toast.success("Lesson plan generated!");
     } catch (err) {
       console.error(err);
       dispatch({ type: "FINISH_GENERATION", payload: null });
@@ -218,6 +227,7 @@ export function AILessonPlanning() {
           adaptations: lp.adaptations,
           dskp_standards: lp.dskp_standards,
           teacher_notes: lp.teacher_notes,
+          language: lp.language,
         }),
       });
 
@@ -629,49 +639,77 @@ export function AILessonPlanning() {
                     </CardTitle>
                   </CardHeader>
                   <CardContent className="space-y-4">
-                    {state.lessonPlan.activities?.map((activity, i) => (
-                      <div key={i} className="flex gap-3 p-4 border rounded-lg bg-gray-50 relative">
-                        <div className="flex-1 space-y-2">
-                          <div className="flex items-center justify-between gap-2">
-                            <Input
-                              className="font-semibold text-gray-800 border-dashed flex-1"
-                              value={activity.title}
+                    {state.lessonPlan.activities?.map((activity, i) => {
+                      const typeOpt = ACTIVITY_TYPE_OPTIONS.find(t => t.value === activity.type);
+                      return (
+                        <div key={i} className="flex gap-3 p-4 border rounded-lg bg-gray-50 relative">
+                          <div className="flex-1 space-y-2">
+                            <div className="flex items-center justify-between gap-2">
+                              <Input
+                                className="font-semibold text-gray-800 border-dashed flex-1"
+                                value={activity.title}
+                                onChange={(e) => {
+                                  const newActs = [...state.lessonPlan.activities];
+                                  newActs[i] = { ...newActs[i], title: e.target.value };
+                                  dispatch({ type: "UPDATE_PLAN_FIELD", field: "activities", value: newActs });
+                                }}
+                              />
+                              <Input
+                                className="w-28 text-sm border-dashed text-blue-700"
+                                value={activity.duration}
+                                onChange={(e) => {
+                                  const newActs = [...state.lessonPlan.activities];
+                                  newActs[i] = { ...newActs[i], duration: e.target.value };
+                                  dispatch({ type: "UPDATE_PLAN_FIELD", field: "activities", value: newActs });
+                                }}
+                              />
+                            </div>
+                            <Textarea
+                              className="text-sm border-dashed"
+                              rows={2}
+                              value={activity.description}
                               onChange={(e) => {
                                 const newActs = [...state.lessonPlan.activities];
-                                newActs[i] = { ...newActs[i], title: e.target.value };
+                                newActs[i] = { ...newActs[i], description: e.target.value };
                                 dispatch({ type: "UPDATE_PLAN_FIELD", field: "activities", value: newActs });
                               }}
                             />
-                            <Input
-                              className="w-28 text-sm border-dashed text-blue-700"
-                              value={activity.duration}
-                              onChange={(e) => {
-                                const newActs = [...state.lessonPlan.activities];
-                                newActs[i] = { ...newActs[i], duration: e.target.value };
-                                dispatch({ type: "UPDATE_PLAN_FIELD", field: "activities", value: newActs });
-                              }}
-                            />
+                            <div className="flex items-center gap-2 pt-1">
+                              <Label className="text-xs font-semibold text-gray-500 shrink-0">Activity Type</Label>
+                              <Select
+                                value={activity.type || "quiz"}
+                                onValueChange={(val) => {
+                                  const newActs = [...state.lessonPlan.activities];
+                                  newActs[i] = { ...newActs[i], type: val };
+                                  dispatch({ type: "UPDATE_PLAN_FIELD", field: "activities", value: newActs });
+                                }}
+                              >
+                                <SelectTrigger className="w-44 h-8 text-xs">
+                                  <SelectValue />
+                                </SelectTrigger>
+                                <SelectContent>
+                                  {ACTIVITY_TYPE_OPTIONS.map((opt) => (
+                                    <SelectItem key={opt.value} value={opt.value}>
+                                      <span className="flex items-center gap-1.5">
+                                        <opt.icon className="h-3.5 w-3.5" />
+                                        {opt.label}
+                                      </span>
+                                    </SelectItem>
+                                  ))}
+                                </SelectContent>
+                              </Select>
+                            </div>
                           </div>
-                          <Textarea
-                            className="text-sm border-dashed"
-                            rows={2}
-                            value={activity.description}
-                            onChange={(e) => {
-                              const newActs = [...state.lessonPlan.activities];
-                              newActs[i] = { ...newActs[i], description: e.target.value };
-                              dispatch({ type: "UPDATE_PLAN_FIELD", field: "activities", value: newActs });
-                            }}
-                          />
+                          <button onClick={() => removePlanArrayItem("activities", i)} className="text-gray-400 hover:text-red-500 absolute top-2 right-2 cursor-pointer">
+                            <X className="h-4 w-4" />
+                          </button>
                         </div>
-                        <button onClick={() => removePlanArrayItem("activities", i)} className="text-gray-400 hover:text-red-500 absolute top-2 right-2 cursor-pointer">
-                          <X className="h-4 w-4" />
-                        </button>
-                      </div>
-                    ))}
+                      );
+                    })}
                     <Button
                       variant="ghost"
                       size="sm"
-                      onClick={() => addPlanArrayItem("activities", { title: "", description: "", duration: "5 minutes" })}
+                      onClick={() => addPlanArrayItem("activities", { title: "", description: "", duration: "5 minutes", type: "quiz" })}
                       className="text-indigo-600 cursor-pointer"
                     >
                       <Plus className="h-4 w-4 mr-1" /> Add Activity Step
@@ -865,22 +903,44 @@ export function AILessonPlanning() {
                   </CardContent>
                 </Card>
 
+                {/* Digital Resources */}
+                {viewingPlan.materials?.length > 0 && (
+                  <Card className="shadow-sm border border-gray-200">
+                    <CardHeader><CardTitle className="flex items-center gap-2 text-lg font-semibold"><Monitor className="h-5 w-5 text-emerald-600" /> Digital Resources</CardTitle></CardHeader>
+                    <CardContent>
+                      <ul className="space-y-2">
+                        {viewingPlan.materials.map((mat, i) => (
+                          <li key={i} className="flex items-start gap-2 text-sm text-gray-700">
+                            <span className="text-emerald-500 mt-0.5">•</span>
+                            <span>{mat}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    </CardContent>
+                  </Card>
+                )}
+
                 {/* Activities */}
                 <Card className="shadow-sm border border-gray-200">
                   <CardHeader><CardTitle className="flex items-center gap-2 text-lg font-semibold"><Layers className="h-5 w-5 text-emerald-600" /> Activities</CardTitle></CardHeader>
                   <CardContent>
                     <div className="space-y-4">
-                      {(viewingPlan.activities || []).map((act, i) => (
-                        <div key={i} className="flex gap-3 p-3 border rounded-lg bg-gray-50">
-                          <div className="flex-1">
-                            <div className="flex items-center justify-between mb-1">
-                              <h3 className="font-semibold text-gray-800">{act.title}</h3>
-                              <Badge className="bg-blue-50 text-blue-700 border border-blue-200"><Clock className="h-3 w-3 mr-1" />{act.duration}</Badge>
+                      {(viewingPlan.activities || []).map((act, i) => {
+                        const typeOpt = ACTIVITY_TYPE_OPTIONS.find(t => t.value === act.type);
+                        return (
+                          <div key={i} className="flex gap-3 p-3 border rounded-lg bg-gray-50">
+                            <div className="flex-1">
+                              <div className="flex items-center justify-between mb-1">
+                                <h3 className="font-semibold text-gray-800">{act.title}</h3>
+                                <div className="flex items-center gap-2">
+                                  <Badge className="bg-blue-50 text-blue-700 border border-blue-200"><Clock className="h-3 w-3 mr-1" />{act.duration}</Badge>
+                                </div>
+                              </div>
+                              <p className="text-sm text-gray-600">{act.description}</p>
                             </div>
-                            <p className="text-sm text-gray-600">{act.description}</p>
                           </div>
-                        </div>
-                      ))}
+                        );
+                      })}
                     </div>
                   </CardContent>
                 </Card>

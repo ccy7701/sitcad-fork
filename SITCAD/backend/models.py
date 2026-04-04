@@ -63,6 +63,7 @@ class LessonPlan(Base):
   adaptations = Column(JSON, nullable=True)
   dskp_standards = Column(JSON, nullable=True)   # ["BM 1.1.2", "KO 2.3.1", ...]
   teacher_notes = Column(Text, nullable=True)
+  language = Column(String, nullable=True)          # "bm" or "en"
   created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc))
 
 
@@ -72,11 +73,13 @@ class Activity(Base):
   id = Column(String, primary_key=True, index=True)
   teacher_id = Column(String, ForeignKey("users.id"), nullable=False, index=True)
   lesson_plan_id = Column(String, ForeignKey("lesson_plans.id"), nullable=True)
-  source = Column(String, nullable=False, default="manual")  # "manual" | "lesson_plan"
+  source = Column(String, nullable=False, default="lesson_plan")  # "lesson_plan"
   title = Column(String, nullable=False)
   description = Column(Text, nullable=True)
   learning_area = Column(String, nullable=True)
   duration_minutes = Column(Integer, nullable=True)
+  activity_type = Column(String, nullable=True)                   # "quiz" | "image" | "story"
+  generated_content = Column(JSON, nullable=True)                 # AI-generated content
   assigned_to = Column(String, nullable=False, default="class")  # "class" | "individual"
   status = Column(String, nullable=False, default="pending")     # "pending" | "in_progress" | "completed"
   quiz_score = Column(Integer, nullable=True)
