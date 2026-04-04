@@ -29,9 +29,11 @@ export function ReportGeneration() {
   const [state, dispatch] = useReducer(reportReducer, initialReportState);
   const { reportType, reportPeriod, language, selectedStudents, generating, error, reports } = state;
   const [pastReports, setPastReports] = useState([]);
+  const [loadingReports, setLoadingReports] = useState(true);
   const [viewingReport, setViewingReport] = useState(null);
 
   const fetchReports = useCallback(async () => {
+    setLoadingReports(true);
     try {
       const idToken = await getIdToken();
       const res = await fetch(`${API_BASE}/reports/my-reports`, {
@@ -42,6 +44,8 @@ export function ReportGeneration() {
       if (res.ok) setPastReports(await res.json());
     } catch (err) {
       console.error('Failed to fetch reports:', err);
+    } finally {
+      setLoadingReports(false);
     }
   }, []);
 
@@ -459,7 +463,20 @@ export function ReportGeneration() {
             <CardDescription>View and print past reports</CardDescription>
           </CardHeader>
           <CardContent>
-            {pastReports.length === 0 ? (
+            {loadingReports ? (
+              <div className="space-y-3 py-2">
+                {[...Array(3)].map((_, i) => (
+                  <div key={i} className="p-4 border rounded-lg space-y-2 animate-pulse">
+                    <div className="h-4 bg-gray-200 rounded w-1/2" />
+                    <div className="h-3 bg-gray-100 rounded w-3/4" />
+                    <div className="flex gap-2 mt-2">
+                      <div className="h-5 w-20 bg-gray-100 rounded-full" />
+                      <div className="h-5 w-16 bg-gray-100 rounded-full" />
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : pastReports.length === 0 ? (
               <p className="text-center text-muted-foreground py-8">
                 No reports generated yet. Generate a report from the Activities page after completing an activity.
               </p>

@@ -104,7 +104,9 @@ export function ClassroomTeachingMode() {
   const { user } = useAuth();
   const navigate = useNavigate();
   const [activities, setActivities] = useState([]);
+  const [loadingActivities, setLoadingActivities] = useState(true);
   const [students, setStudents] = useState([]);
+  const [loadingStudents, setLoadingStudents] = useState(true);
   const [activeActivityId, setActiveActivityId] = useState(null);
   const [activityPopupOpen, setActivityPopupOpen] = useState(false);
   const [timer, setTimer] = useState(0);
@@ -122,6 +124,7 @@ export function ClassroomTeachingMode() {
   const [streak, setStreak] = useState(0);
 
   const fetchActivities = useCallback(async () => {
+    setLoadingActivities(true);
     try {
       const idToken = await getIdToken();
       const res = await fetch(`${API_BASE}/activities/classroom-activities`, {
@@ -136,10 +139,13 @@ export function ClassroomTeachingMode() {
       }
     } catch (err) {
       console.error('Failed to fetch classroom activities:', err);
+    } finally {
+      setLoadingActivities(false);
     }
   }, []);
 
   const fetchStudents = useCallback(async () => {
+    setLoadingStudents(true);
     try {
       const idToken = await getIdToken();
       const res = await fetch(`${API_BASE}/teachers/my-students`, {
@@ -150,6 +156,8 @@ export function ClassroomTeachingMode() {
       if (res.ok) setStudents(await res.json());
     } catch (err) {
       console.error('Failed to fetch students:', err);
+    } finally {
+      setLoadingStudents(false);
     }
   }, []);
 
@@ -324,7 +332,26 @@ export function ClassroomTeachingMode() {
         </Card>
 
         {/* Activity List */}
-        {activities.length === 0 ? (
+        {loadingActivities ? (
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {[...Array(4)].map((_, i) => (
+              <div key={i} className="p-5 border-2 rounded-xl space-y-3 animate-pulse">
+                <div className="flex items-start gap-4">
+                  <div className="w-16 h-16 rounded-lg bg-gray-200 shrink-0" />
+                  <div className="flex-1 space-y-2 pt-1">
+                    <div className="h-4 bg-gray-200 rounded w-3/4" />
+                    <div className="h-3 bg-gray-100 rounded w-full" />
+                    <div className="flex gap-2 mt-2">
+                      <div className="h-5 w-16 bg-gray-100 rounded-full" />
+                      <div className="h-5 w-20 bg-gray-100 rounded-full" />
+                    </div>
+                  </div>
+                </div>
+                <div className="h-9 bg-gray-100 rounded-lg w-full" />
+              </div>
+            ))}
+          </div>
+        ) : activities.length === 0 ? (
           <Card>
             <CardContent className="py-12 text-center">
               <p className="text-muted-foreground">No classroom activities found. Create activities assigned to "Whole Class" in Activity Management.</p>
@@ -402,13 +429,23 @@ export function ClassroomTeachingMode() {
         )}
 
         {/* Students Present */}
-        {students.length > 0 && (
-          <Card>
-            <CardHeader>
-              <CardTitle>Students</CardTitle>
-              <CardDescription>{students.length} students in your classroom</CardDescription>
-            </CardHeader>
-            <CardContent>
+        <Card>
+          <CardHeader>
+            <CardTitle>Students</CardTitle>
+            <CardDescription>{loadingStudents ? 'Loading…' : `${students.length} students in your classroom`}</CardDescription>
+          </CardHeader>
+          <CardContent>
+            {loadingStudents ? (
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                {[...Array(4)].map((_, i) => (
+                  <div key={i} className="flex flex-col items-center p-4 border rounded-lg animate-pulse space-y-2">
+                    <div className="w-14 h-14 rounded-full bg-gray-200" />
+                    <div className="h-3 bg-gray-200 rounded w-3/4" />
+                    <div className="h-5 w-16 bg-gray-100 rounded-full" />
+                  </div>
+                ))}
+              </div>
+            ) : students.length > 0 ? (
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                 {students.map((student) => (
                   <div key={student.id} className="flex flex-col items-center p-4 border rounded-lg">
@@ -423,9 +460,11 @@ export function ClassroomTeachingMode() {
                   </div>
                 ))}
               </div>
-            </CardContent>
-          </Card>
-        )}
+            ) : (
+              <p className="text-sm text-muted-foreground text-center py-6">No students assigned yet.</p>
+            )}
+          </CardContent>
+        </Card>
       </main>
 
       {/* Activity Delivery Popup — Kahoot-style Quiz */}
