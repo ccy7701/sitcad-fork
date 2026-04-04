@@ -393,12 +393,27 @@ export function ActivityManagement() {
   const renderStoryContent = (content) => (
     <div className="space-y-4">
       {content.story_title && <h4 className="text-lg font-bold text-gray-800">{content.story_title}</h4>}
-      {content.pages?.map((page, i) => (
-        <div key={i} className="p-4 border rounded-lg bg-white space-y-2">
-          <Badge variant="outline" className="text-xs">Page {page.page_number}</Badge>
-          <p className="text-sm text-gray-800 leading-relaxed">{page.text}</p>
-        </div>
-      ))}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        {content.pages?.map((page, i) => (
+          <div key={i} className="border rounded-lg bg-white overflow-hidden flex flex-col">
+            {page.image_b64 ? (
+              <img
+                src={`data:image/png;base64,${page.image_b64}`}
+                alt={`Page ${page.page_number}`}
+                className="w-full aspect-square object-cover"
+              />
+            ) : (
+              <div className="w-full aspect-square bg-amber-50 flex items-center justify-center border-b border-amber-100">
+                <p className="text-xs text-amber-300 italic">Image unavailable</p>
+              </div>
+            )}
+            <div className="p-3 space-y-1">
+              <Badge variant="outline" className="text-xs">Page {page.page_number}</Badge>
+              <p className="text-sm text-gray-800 leading-relaxed">{page.text}</p>
+            </div>
+          </div>
+        ))}
+      </div>
       {content.vocabulary?.length > 0 && (
         <div className="p-3 bg-amber-50 rounded-lg border border-amber-200">
           <p className="text-xs font-semibold text-amber-800 mb-2">Vocabulary</p>

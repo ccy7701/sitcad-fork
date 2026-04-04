@@ -416,6 +416,14 @@ RULES:
 Do NOT wrap in markdown code fences. Return raw JSON only.
 """
 
+# Fixed illustration style for all story page images — matches the target child-friendly cartoon aesthetic.
+STORY_IMAGE_STYLE = (
+    "Bright, colorful flat vector cartoon illustration in a children's educational storybook style, "
+    "bold black outlines, vibrant saturated colors, round-faced Southeast Asian child characters with "
+    "big expressive eyes and rosy cheeks, clean detailed backgrounds, smooth cel-shading, "
+    "fully visible characters within frame, no text or watermarks."
+)
+
 STORY_SYSTEM_PROMPT = """\
 You are SabahSprout AI, writing a short, engaging story for kindergarten children aged {age_group} years.
 The story supports a lesson: "{lesson_title}" (topic: {topic}, area: {learning_area}).
@@ -432,6 +440,10 @@ RULES:
 - Include a simple moral or learning outcome.
 - Characters should be relatable to children in Sabah, Malaysia.
 - Include 3-5 vocabulary words with simple definitions.
+- Each page MUST include an "image_prompt" field: a concise English description (under 40 words) of ONLY what is happening in that specific scene — characters, actions, objects, setting.
+  • Describe the main character's appearance consistently across all pages (e.g. same name, clothing, features).
+  • Cultural context: Sabah, Malaysia.
+  • Each page's prompt must be distinct.
 - Return ONLY a single valid JSON object with this schema:
 
 {{
@@ -439,7 +451,8 @@ RULES:
   "pages": [
     {{
       "page_number": 1,
-      "text": "<2-4 sentences of story text>"
+      "text": "<2-4 sentences of story text>",
+      "image_prompt": "<scene-only description for this page>"
     }}
   ],
   "vocabulary": [
@@ -469,6 +482,7 @@ IMAGEN_MODEL = "imagen-4.0-fast-generate-001"
 async def _generate_flashcard_images(
     image_metadata: list[dict],
     api_key: str,
+    aspect_ratio: str = "1:1",
 ) -> list[dict]:
     """
     Generate actual images for each flashcard entry using Imagen 4.
@@ -491,7 +505,7 @@ async def _generate_flashcard_images(
                     prompt=prompt,
                     config=gtypes.GenerateImagesConfig(
                         number_of_images=1,
-                        aspect_ratio="1:1",
+                        aspect_ratio=aspect_ratio,
                     ),
                 ),
             )
@@ -558,11 +572,30 @@ async def _generate_single_activity(
         logger.error(f"Failed to parse activity JSON ({activity.type}): {e}\nRaw: {raw[:500]}")
         raise ValueError(f"AI returned invalid JSON for activity '{activity.title}'")
 
-    # For image activities: generate actual images with Imagen 3
+    # For image activities: generate actual images with Imagen 4
     if activity.type == "image" and content_data.get("images"):
         content_data["images"] = await _generate_flashcard_images(
             content_data["images"], api_key
         )
+
+    # For story activities: generate one image per page with Imagen 4
+    if activity.type == "story" and content_data.get("pages"):
+        pages_with_prompts = [
+            {
+                "image_prompt": f"{STORY_IMAGE_STYLE} {p.get('image_prompt', '')}".strip(),
+                "label": f"Page {p.get('page_number', i+1)}",
+                "learning_point": "",
+            }
+            for i, p in enumerate(content_data["pages"])
+            if p.get("image_prompt")
+        ]
+        if pages_with_prompts:
+            generated = await _generate_flashcard_images(pages_with_prompts, api_key, aspect_ratio="1:1")
+            # Map results back onto pages by order
+            gen_iter = iter(generated)
+            for page in content_data["pages"]:
+                if page.get("image_prompt"):
+                    page["image_b64"] = next(gen_iter).get("image_b64")
 
     return {
         "title": activity.title,
