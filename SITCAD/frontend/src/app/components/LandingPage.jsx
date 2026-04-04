@@ -104,8 +104,6 @@ export function LandingPage() {
     return () => window.removeEventListener("wheel", handler);
   }, [next, prev]);
 
-  const [isPaused, setIsPaused] = useState(false);
-  const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
   const [isPlaying, setIsPlaying] = useState(true);
   const [wordIndex, setWordIndex] = useState(0);
 
@@ -121,7 +119,7 @@ export function LandingPage() {
 
     const interval = setInterval(() => {
       setCurrent((prev) => (prev === TOTAL_SLIDES - 1 ? 0 : prev + 1));
-    }, 10000);
+    }, 15000);
 
     return () => clearInterval(interval);
   }, [isPlaying]);
@@ -230,11 +228,6 @@ export function LandingPage() {
         from { stroke-dashoffset: 210; }
         to   { stroke-dashoffset: 0; }
       }
-      @keyframes starPop {
-        0%   { opacity: 0; transform: scale(0) translate(0px, 0px); }
-        40%  { opacity: 1; }
-        100% { opacity: 0; transform: scale(1.1) translate(var(--tx), var(--ty)); }
-      }
       .word-cycle {
         display: inline-block;
         animation:
@@ -247,18 +240,11 @@ export function LandingPage() {
         stroke-dashoffset: 210;
         animation: drawLine 0.45s ease-out 0.2s forwards;
       }
-      .star-particle {
-        position: absolute;
-        pointer-events: none;
-        font-size: 1rem;
-        line-height: 1;
-        animation: starPop 0.65s ease-out forwards;
-      }
     `}</style>
+
       <div
-        className={`h-screen w-screen overflow-hidden relative bg-white ${
-          !isPlaying ? "cursor-pointer" : "cursor-default"
-        }`}
+        className={`h-screen w-screen overflow-hidden relative bg-white ${!isPlaying ? "cursor-pointer" : "cursor-default"
+          }`}
       >
         {!isPlaying && (
           <div className="fixed top-20 right-6 bg-none/90 backdrop-blur-md px-4 py-2 rounded-full text-sm shadow-lg z-50 flex items-center gap-2 animate-fade-in">
@@ -298,7 +284,8 @@ export function LandingPage() {
              shadow-lg
              rounded-full
              hover:scale-105 
-             transition-all duration-300 bg-white"
+             transition-all duration-300 bg-white
+             cursor-pointer"
                 onClick={() => navigate("/login")}
               >
                 Log In
@@ -314,7 +301,8 @@ export function LandingPage() {
              font-semibold
              shadow-lg 
              hover:scale-105 
-             transition-all duration-300"
+             transition-all duration-300
+             cursor-pointer"
                 onClick={() => navigate("/register")}
               >
                 Get Started
@@ -375,53 +363,29 @@ export function LandingPage() {
             <div className="text-center max-w-3xl mx-auto space-y-7 animate-fade-in-up">
               <h1 className="text-5xl lg:text-7xl font-bold leading-[1.1] font-serif tracking-tight">
                 Where Learning Meets{" "}
-                <span className="relative inline-block">
-                  {[
-                    { tx: "-32px", ty: "-24px", d: "0ms" },
-                    { tx: "30px", ty: "-20px", d: "55ms" },
-                    { tx: "-26px", ty: "22px", d: "25ms" },
-                    { tx: "28px", ty: "20px", d: "80ms" },
-                    { tx: "2px", ty: "-32px", d: "40ms" },
-                  ].map((s, i) => (
-                    <span
-                      key={`star-${wordIndex}-${i}`}
-                      className="star-particle"
-                      style={{
-                        "--tx": s.tx,
-                        "--ty": s.ty,
-                        color: CYCLE_WORDS[wordIndex].color,
-                        top: "40%",
-                        left: "50%",
-                        animationDelay: s.d,
-                      }}
-                    >
-                      ★
-                    </span>
-                  ))}
-                  <span
-                    key={wordIndex}
-                    className="word-cycle relative"
-                    style={{
-                      color: "#FFFFFF",
-                      textShadow: `3px 3px 0 ${CYCLE_WORDS[wordIndex].color}, -3px 3px 0 ${CYCLE_WORDS[wordIndex].color}, 3px -3px 0 ${CYCLE_WORDS[wordIndex].color}, -3px -3px 0 ${CYCLE_WORDS[wordIndex].color}`,
-                      filter: `drop-shadow(0 0 4px ${CYCLE_WORDS[wordIndex].color}99)`,
-                    }}
+                <span
+                  key={wordIndex}
+                  className="word-cycle relative inline-block"
+                  style={{
+                    color: "#FFFFFF",
+                    textShadow: `3px 3px 0 ${CYCLE_WORDS[wordIndex].color}, -3px 3px 0 ${CYCLE_WORDS[wordIndex].color}, 3px -3px 0 ${CYCLE_WORDS[wordIndex].color}, -3px -3px 0 ${CYCLE_WORDS[wordIndex].color}`,
+                    filter: `drop-shadow(0 0 4px ${CYCLE_WORDS[wordIndex].color}99)`,
+                  }}
+                >
+                  {CYCLE_WORDS[wordIndex].word}
+                  <svg
+                    className="absolute -bottom-2 left-0 w-full"
+                    viewBox="0 0 200 12"
+                    fill="none"
                   >
-                    {CYCLE_WORDS[wordIndex].word}
-                    <svg
-                      className="absolute -bottom-2 left-0 w-full"
-                      viewBox="0 0 200 12"
-                      fill="none"
-                    >
-                      <path
-                        d="M2 8c40-6 80-6 196-2"
-                        stroke={CYCLE_WORDS[wordIndex].color}
-                        strokeWidth="3.5"
-                        strokeLinecap="round"
-                        className="word-underline"
-                      />
-                    </svg>
-                  </span>
+                    <path
+                      d="M2 8c40-6 80-6 196-2"
+                      stroke={CYCLE_WORDS[wordIndex].color}
+                      strokeWidth="3.5"
+                      strokeLinecap="round"
+                      className="word-underline"
+                    />
+                  </svg>
                 </span>
               </h1>
               <p className="text-xl xl:text-2xl font-bold text-muted-foreground leading-relaxed max-w-2xl mx-auto">
@@ -464,61 +428,61 @@ export function LandingPage() {
                   <CardContent className="p-4 lg:p-6">
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-3xl mx-auto items-stretch">
 
-  {/* ===== PARENT PLAN ===== */}
-  <div className="flex flex-col justify-between h-full rounded-xl border-2 border-[#3090A0]/50 backdrop-blur-md bg-white/40 p-6 transition-all duration-300 hover:-translate-y-2 hover:shadow-xl hover:scale-[1.03]">
+                      {/* ===== PARENT PLAN ===== */}
+                      <div className="flex flex-col justify-between h-full rounded-xl border-2 border-[#3090A0]/50 backdrop-blur-md bg-white/40 p-6 transition-all duration-300 hover:-translate-y-2 hover:shadow-xl hover:scale-[1.03]">
 
-    <div>
-      <h3 className="text-2xl font-bold text-center mb-4 text-[#3090A0]">
-        Parent
-      </h3>
+                        <div>
+                          <h3 className="text-2xl font-bold text-center mb-4 text-[#3090A0]">
+                            Parent
+                          </h3>
 
-      <div className="text-center mb-5">
-        <p className="text-4xl font-bold">RM99</p>
-        <p className="text-lg text-muted-foreground">per year</p>
-      </div>
+                          <div className="text-center mb-5">
+                            <p className="text-4xl font-bold">RM99</p>
+                            <p className="text-lg text-muted-foreground">per year</p>
+                          </div>
 
-      <div className="space-y-2 text-lg">
-        <p>✔ Real-time progress updates</p>
-        <p>✔ Direct teacher communication</p>
-        <p>✔ Child development insights</p>
-        <p>✔ Activity recommendations</p>
-        <p className="text-muted-foreground">✖ AI lesson tools</p>
-      </div>
-    </div>
+                          <div className="space-y-2 text-lg">
+                            <p>✔ Real-time progress updates</p>
+                            <p>✔ Direct teacher communication</p>
+                            <p>✔ Child development insights</p>
+                            <p>✔ Activity recommendations</p>
+                            <p className="text-muted-foreground">✖ AI lesson tools</p>
+                          </div>
+                        </div>
 
-    <Button className="mt-6 w-full bg-[#55B0A0] hover:bg-[#3fc9b0] text-white text-lg">
-      Choose Plan
-    </Button>
-  </div>
+                        <Button className="mt-6 w-full bg-[#55B0A0] hover:bg-[#3fc9b0] text-white text-lg">
+                          Choose Plan
+                        </Button>
+                      </div>
 
-  {/* ===== TEACHER PLAN (HIGHLIGHT) ===== */}
-  <div className="flex flex-col justify-between h-full rounded-xl border-2 border-[#3090A0]/50 backdrop-blur-md bg-white/40 p-6 transition-all duration-300 hover:-translate-y-3 hover:shadow-xl hover:scale-[1.03]">
+                      {/* ===== TEACHER PLAN (HIGHLIGHT) ===== */}
+                      <div className="flex flex-col justify-between h-full rounded-xl border-2 border-[#3090A0]/50 backdrop-blur-md bg-white/40 p-6 transition-all duration-300 hover:-translate-y-3 hover:shadow-xl hover:scale-[1.03]">
 
-    <div>
-      <h3 className="text-2xl font-bold text-center mb-4 text-[#3090A0]">
-        Teacher
-      </h3>
+                        <div>
+                          <h3 className="text-2xl font-bold text-center mb-4 text-[#3090A0]">
+                            Teacher
+                          </h3>
 
-      <div className="text-center mb-5">
-        <p className="text-4xl font-bold">RM199</p>
-        <p className="text-lg text-muted-foreground">per year</p>
-      </div>
+                          <div className="text-center mb-5">
+                            <p className="text-4xl font-bold">RM199</p>
+                            <p className="text-lg text-muted-foreground">per year</p>
+                          </div>
 
-      <div className="space-y-2 text-lg">
-        <p>✔ AI lesson planning</p>
-        <p>✔ Student progress tracking</p>
-        <p>✔ Automated reports</p>
-        <p>✔ Classroom management tools</p>
-        <p>✔ Parent communication system</p>
-      </div>
-    </div>
+                          <div className="space-y-2 text-lg">
+                            <p>✔ AI lesson planning</p>
+                            <p>✔ Student progress tracking</p>
+                            <p>✔ Automated reports</p>
+                            <p>✔ Classroom management tools</p>
+                            <p>✔ Parent communication system</p>
+                          </div>
+                        </div>
 
-    <Button className="mt-6 w-full bg-[#55B0A0] hover:bg-[#3fc9b0] text-white text-lg">
-      Choose Plan
-    </Button>
-  </div>
+                        <Button className="mt-6 w-full bg-[#55B0A0] hover:bg-[#3fc9b0] text-white text-lg">
+                          Choose Plan
+                        </Button>
+                      </div>
 
-</div>
+                    </div>
                   </CardContent>
                 </Card>
               </div>
@@ -836,7 +800,7 @@ export function LandingPage() {
 
                 {/* Right Copyright */}
                 <p className="flex items-center gap-1 text-sm text-muted-foreground">
-                  &copy; 2026 Sabah Sprout · Made with
+                  &copy; 2026 SabahSprout · Made with
                   <Heart className="h-3 w-3 text-[#F46197] fill-[#F46197]" />
                   for Sabahan
                 </p>
@@ -851,7 +815,7 @@ export function LandingPage() {
         {current > 0 && (
           <button
             onClick={prev}
-            className="fixed left-4 top-1/2 -translate-y-1/2 z-50 w-12 h-12 rounded-full bg-white/90 border-2 border-[#E3E3E3] shadow-lg flex items-center justify-center hover:bg-[#ACFCD9]/20 hover:border-[#55D6BE] transition-all duration-200 hover:scale-110 group"
+            className="fixed left-4 top-1/2 -translate-y-1/2 z-50 w-12 h-12 rounded-full bg-white/90 border-2 border-[#E3E3E3] shadow-lg flex items-center justify-center hover:bg-[#ACFCD9]/20 hover:border-[#55D6BE] transition-all duration-200 hover:scale-110 group cursor-pointer"
             aria-label="Previous slide"
           >
             <ChevronLeft className="h-6 w-6 text-muted-foreground group-hover:text-[#55D6BE] transition-colors" />
@@ -862,7 +826,7 @@ export function LandingPage() {
         {current < TOTAL_SLIDES - 1 && (
           <button
             onClick={next}
-            className="fixed right-4 top-1/2 -translate-y-1/2 z-50 w-12 h-12 rounded-full bg-white/90 border-2 border-[#E3E3E3] shadow-lg flex items-center justify-center hover:bg-[#ACFCD9]/10 hover:border-[#55D6BE] transition-all duration-200 hover:scale-110 group"
+            className="fixed right-4 top-1/2 -translate-y-1/2 z-50 w-12 h-12 rounded-full bg-white/90 border-2 border-[#E3E3E3] shadow-lg flex items-center justify-center hover:bg-[#ACFCD9]/10 hover:border-[#55D6BE] transition-all duration-200 hover:scale-110 group cursor-pointer"
             aria-label="Next slide"
           >
             <ChevronRight className="h-6 w-6 text-muted-foreground group-hover:text-[#55D6BE] transition-colors" />
@@ -877,15 +841,14 @@ export function LandingPage() {
             <button
               key={i}
               onClick={() => goTo(i)}
-              className="group relative flex items-center"
+              className="group relative flex items-center cursor-pointer"
               aria-label={`Go to ${label}`}
             >
               <div
-                className={`rounded-full transition-all duration-300 ${
-                  i === current
+                className={`rounded-full transition-all duration-300 ${i === current
                     ? "w-8 h-3 bg-gradient-to-r from-[#55D6BE] to-[#55D6BE]"
                     : "w-3 h-3 bg-[#E3E3E3] hover:bg-[#ACFCD9]"
-                }`}
+                  }`}
               />
               {/* Tooltip */}
               <span className="absolute -top-8 left-1/2 -translate-x-1/2 text-[10px] font-medium bg-foreground text-white px-2 py-0.5 rounded opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap">
@@ -899,7 +862,7 @@ export function LandingPage() {
         <div className="fixed right-6 bottom-15 z-40 flex items-center gap-3 bg-white/80 backdrop-blur-sm rounded-full px-4 py-2 border border-[#E3E3E3] shadow-sm">
           <button
             onClick={() => setIsPlaying(!isPlaying)}
-            className="hover:scale-110 transition-transform"
+            className="hover:scale-110 transition-transform cursor-pointer"
           >
             {isPlaying ? (
               <Pause className="h-4 w-4 text-[#55D6BE]" />
