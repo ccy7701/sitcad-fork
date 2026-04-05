@@ -53,14 +53,9 @@ export function AuthProvider({ children }) {
               role: dbUser.role,
             });
           } else {
-            // Fallback for safety if sync fails during re-auth
-            setUser({
-              id: firebaseUser.uid,
-              name: firebaseUser.displayName || 'User',
-              email: firebaseUser.email || '',
-              photo: firebaseUser.photoURL,
-              role: null,
-            });
+            // Treat a failed backend sync as unauthenticated to prevent
+            // routing users with a known role to /onboarding.
+            setUser(null);
           }
         } catch (error) {
           console.error("Auth sync error:", error);

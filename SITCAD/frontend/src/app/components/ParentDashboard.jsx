@@ -280,7 +280,19 @@ export function ParentDashboard() {
             </CardHeader>
             <CardContent>
               {isLoadingChildren ? (
-                <p className="text-sm text-muted-foreground text-center py-8">Loading your children...</p>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                  {[...Array(3)].map((_, i) => (
+                    <div key={i} className="p-5 border rounded-xl space-y-3 animate-pulse">
+                      <div className="flex items-center gap-3">
+                        <div className="w-14 h-14 rounded-full bg-gray-200 shrink-0" />
+                        <div className="flex-1 space-y-2">
+                          <div className="h-4 bg-gray-200 rounded w-1/2" />
+                          <div className="h-3 bg-gray-100 rounded w-2/3" />
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
               ) : children.length === 0 ? (
                 <div className="text-center py-8 space-y-2">
                   <Heart className="h-8 w-8 mx-auto text-muted-foreground" />
@@ -329,7 +341,18 @@ export function ParentDashboard() {
             </CardHeader>
             <CardContent>
               {isLoadingReports ? (
-                <p className="text-sm text-muted-foreground text-center py-8">Loading reports...</p>
+                <div className="space-y-3 py-2">
+                  {[...Array(3)].map((_, i) => (
+                    <div key={i} className="p-4 border rounded-lg space-y-2 animate-pulse">
+                      <div className="h-4 bg-gray-200 rounded w-1/2" />
+                      <div className="h-3 bg-gray-100 rounded w-3/4" />
+                      <div className="flex gap-2 mt-2">
+                        <div className="h-5 w-20 bg-gray-100 rounded-full" />
+                        <div className="h-5 w-16 bg-gray-100 rounded-full" />
+                      </div>
+                    </div>
+                  ))}
+                </div>
               ) : reports.length === 0 ? (
                 <div className="text-center py-8 space-y-2">
                   <FileText className="h-8 w-8 mx-auto text-muted-foreground" />

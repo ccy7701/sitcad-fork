@@ -22,16 +22,19 @@ class CreateActivityRequest(BaseModel):
     description: Optional[str] = None
     learning_area: Optional[str] = None
     duration_minutes: Optional[int] = None
+    activity_type: Optional[str] = None          # "quiz" | "image" | "story"
+    generated_content: Optional[dict] = None     # AI-generated content
     assigned_to: str = "class"                 # "class" | "individual"
     student_ids: Optional[list[str]] = None    # required when assigned_to == "individual"
     lesson_plan_id: Optional[str] = None       # set when created from a lesson plan
-    source: str = "manual"                     # "manual" | "lesson_plan"
+    source: str = "lesson_plan"                # "lesson_plan"
 
 class CompleteActivityRequest(BaseModel):
     id_token: str
     quiz_score: Optional[int] = None
     quiz_total: Optional[int] = None
     quiz_time_seconds: Optional[int] = None
+    results_data: Optional[dict] = None          # Generic activity results for AI analysis
 
 
 # ── Helpers ───────────────────────────────────────────────────────
@@ -64,27 +67,53 @@ def _activity_to_dict(act: models.Activity, db: Session) -> dict:
         row.student_id
         for row in db.query(models.ActivityStudent).filter(models.ActivityStudent.activity_id == act.id).all()
     ]
-    student_names = []
+    students = []
     if student_ids:
-        students = db.query(models.Student).filter(models.Student.id.in_(student_ids)).all()
-        student_names = [s.name for s in students]
+        student_objs = db.query(models.Student).filter(models.Student.id.in_(student_ids)).all()
+        students = [{"id": s.id, "name": s.name} for s in student_objs]
+
+    # Fetch lesson plan title if the activity belongs to one
+    lesson_plan_title = None
+    if act.lesson_plan_id:
+        lp = db.query(models.LessonPlan).filter(models.LessonPlan.id == act.lesson_plan_id).first()
+        lesson_plan_title = lp.title if lp else None
+
+    # Fetch latest AI insights if analysis is completed
+    latest_insights = None
+    if act.analysis_status == "completed":
+        latest_report = (
+            db.query(models.Report)
+            .filter(models.Report.activity_id == act.id)
+            .order_by(models.Report.created_at.desc())
+            .first()
+        )
+        if latest_report and latest_report.details:
+            latest_insights = latest_report.details.get("ai_insights")
 
     return {
         "id": act.id,
         "teacher_id": act.teacher_id,
         "lesson_plan_id": act.lesson_plan_id,
+        "lesson_plan_title": lesson_plan_title,
         "source": act.source,
         "title": act.title,
         "description": act.description,
         "learning_area": act.learning_area,
         "duration_minutes": act.duration_minutes,
+        "activity_type": act.activity_type,
+        "generated_content": act.generated_content,
         "assigned_to": act.assigned_to,
         "status": act.status,
         "student_ids": student_ids,
-        "student_names": student_names,
+        "students": students,
         "quiz_score": act.quiz_score,
         "quiz_total": act.quiz_total,
         "quiz_time_seconds": act.quiz_time_seconds,
+        "results_data": act.results_data,
+        "analysis_status": act.analysis_status,
+        "analysis_error": act.analysis_error,
+        "_latestInsights": latest_insights,
+        "started_at": act.started_at.isoformat() if act.started_at else None,
         "created_at": act.created_at.isoformat() if act.created_at else None,
         "completed_at": act.completed_at.isoformat() if act.completed_at else None,
     }
@@ -115,6 +144,8 @@ async def create_activity(request: CreateActivityRequest, db: Session = Depends(
         description=request.description,
         learning_area=request.learning_area,
         duration_minutes=request.duration_minutes,
+        activity_type=request.activity_type,
+        generated_content=request.generated_content,
         assigned_to=request.assigned_to,
         status="pending",
     )
@@ -176,6 +207,7 @@ async def start_activity(activity_id: str, request: AuthenticatedRequest, db: Se
     if not activity:
         raise HTTPException(status_code=404, detail="Activity not found")
     activity.status = "in_progress"
+    activity.started_at = datetime.now(timezone.utc)
     db.commit()
     db.refresh(activity)
     return _activity_to_dict(activity, db)
@@ -199,6 +231,8 @@ async def complete_activity(activity_id: str, request: CompleteActivityRequest, 
         activity.quiz_total = request.quiz_total
     if request.quiz_time_seconds is not None:
         activity.quiz_time_seconds = request.quiz_time_seconds
+    if request.results_data is not None:
+        activity.results_data = request.results_data
     db.commit()
     db.refresh(activity)
     return _activity_to_dict(activity, db)

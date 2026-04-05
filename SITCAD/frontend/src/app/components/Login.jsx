@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useNavigate } from 'react-router';
+import { useNavigate, Navigate } from 'react-router';
 import { useAuth } from '../contexts/AuthContext';
 import { Button } from './ui/button';
 import { Input } from './ui/input';
@@ -15,34 +15,29 @@ export function Login() {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
-  // Add googleLogin to the destructuring list
-  const { login, googleLogin, user } = useAuth();
+  const { login, googleLogin, user, loading: authLoading } = useAuth();
   const navigate = useNavigate();
+
+  // Wait for auth to resolve on initial load before deciding where to redirect.
+  // Do NOT block when the user has actively initiated a login (loading=true),
+  // otherwise the page goes blank mid-flow while AuthContext loading is true.
+  if (authLoading && !loading) return null;
 
   // Redirect if already logged in
   if (user) {
     const redirects = { teacher: '/teacher/dashboard', parent: '/parent/dashboard', admin: '/admin/dashboard' };
-    navigate(redirects[user.role] || '/onboarding');
-    return null;
+    return <Navigate to={redirects[user.role] || '/onboarding'} replace />;
   }
+
+  const roleRedirects = { teacher: '/teacher/dashboard', parent: '/parent/dashboard', admin: '/admin/dashboard' };
 
   const handleGoogleLogin = async () => {
     setLoading(true);
     setError('');
     try {
-      const firebaseUser = await googleLogin();
-      const idToken = await firebaseUser.getIdToken();
-
-      const response = await fetch('http://localhost:8000/auth/sync', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ id_token: idToken })
-      });
-
-      if (!response.ok) throw new Error('Backend sync failed');
-
-      const dbUser = await response.json();
-      navigate(dbUser.role === 'teacher' ? '/teacher/dashboard' : '/parent/dashboard');
+      // googleLogin() handles Firebase auth + backend sync and returns dbUser
+      const dbUser = await googleLogin();
+      navigate(roleRedirects[dbUser.role] || '/onboarding');
     } catch (err) {
       console.error(err);
       setError('Failed to sign in with Google. Please try again.');
@@ -58,7 +53,7 @@ export function Login() {
 
     try {
       const role = await login(email, password);
-      navigate(role === 'teacher' ? '/teacher/dashboard' : '/parent/dashboard');
+      navigate(roleRedirects[role] || '/onboarding');
     } catch (err) {
       const code = err.code;
       if (code === 'auth/invalid-credential' || code === 'auth/wrong-password' || code === 'auth/user-not-found') {
@@ -199,7 +194,15 @@ export function Login() {
                 variant="outline"
                 className="w-full h-12 border-muted hover:bg-muted/50 transition-colors cursor-pointer"
                 onClick={handleGoogleLogin}
+                disabled={loading}
               >
+                {loading ? (
+                  <>
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    Signing in...
+                  </>
+                ) : (
+                  <>
                 <svg className="mr-2 h-4 w-4" viewBox="0 0 24 24">
                   <path
                     d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
@@ -219,6 +222,8 @@ export function Login() {
                   />
                 </svg>
                 Continue with Google
+                  </>
+                )}
               </Button>
             </form>
           </div>
