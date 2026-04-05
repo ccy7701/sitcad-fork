@@ -29,10 +29,10 @@ import logo from '../../images/logo.png';
 // For routes that are not ready for display yet, comment them out.
 const teacherNavItems = [
   { path: '/teacher', icon: LayoutDashboard, label: 'Dashboard', exact: true },
-  { path: '/teacher/activities', icon: Calendar, label: 'Activities' },
   { path: '/teacher/ai-lesson-planning', icon: Sparkles, label: 'Lesson Planning' },
-  { path: '/teacher/reports', icon: FileText, label: 'Reports' },
+  { path: '/teacher/activities', icon: Calendar, label: 'Activities' },
   { path: '/teacher/classroom-mode', icon: Monitor, label: 'Classroom Mode' },
+  { path: '/teacher/reports', icon: FileText, label: 'Reports' },
   { path: '/teacher/ai-analysis', icon: Brain, label: 'AI Analysis (WIP)' },
   { path: '/teacher/interventions', icon: AlertCircle, label: 'Interventions (WIP)' },
   { path: '/teacher/communication', icon: MessageSquare, label: 'Messages (WIP)' },
