@@ -92,8 +92,8 @@ const LOADING_MESSAGES = [
 ];
 
 const ACTIVITY_TYPE_OPTIONS = [
-  { value: "quiz", label: "Quiz Game", icon: Gamepad2, color: "bg-violet-100 text-violet-700 border-violet-200" },
-  { value: "image", label: "Images", icon: ImageIcon, color: "bg-sky-100 text-sky-700 border-sky-200" },
+  { value: "quiz", label: "Quiz", icon: Gamepad2, color: "bg-violet-100 text-violet-700 border-violet-200" },
+  { value: "image", label: "Flashcards", icon: ImageIcon, color: "bg-sky-100 text-sky-700 border-sky-200" },
   { value: "story", label: "Text Story", icon: BookText, color: "bg-amber-100 text-amber-700 border-amber-200" },
 ];
 
@@ -933,6 +933,11 @@ export function AILessonPlanning() {
                               <div className="flex items-center justify-between mb-1">
                                 <h3 className="font-semibold text-gray-800">{act.title}</h3>
                                 <div className="flex items-center gap-2">
+                                  {typeOpt && (
+                                    <Badge className={typeOpt.color}>
+                                      <typeOpt.icon className="h-3 w-3 mr-1" />{typeOpt.label}
+                                    </Badge>
+                                  )}
                                   <Badge className="bg-blue-50 text-blue-700 border border-blue-200"><Clock className="h-3 w-3 mr-1" />{act.duration}</Badge>
                                 </div>
                               </div>

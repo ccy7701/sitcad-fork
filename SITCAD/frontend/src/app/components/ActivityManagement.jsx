@@ -25,6 +25,16 @@ import {
   DialogHeader,
   DialogTitle,
 } from "./ui/dialog";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "./ui/alert-dialog";
 
 import {
   ArrowLeft,
@@ -80,8 +90,8 @@ const LOADING_MESSAGES = [
 ];
 
 const ACTIVITY_TYPE_META = {
-  quiz: { label: "Quiz Game", icon: Gamepad2, color: "bg-violet-100 text-violet-700 border-violet-200" },
-  image: { label: "Images", icon: ImageIcon, color: "bg-sky-100 text-sky-700 border-sky-200" },
+  quiz: { label: "Quiz", icon: Gamepad2, color: "bg-violet-100 text-violet-700 border-violet-200" },
+  image: { label: "Flashcards", icon: ImageIcon, color: "bg-sky-100 text-sky-700 border-sky-200" },
   story: { label: "Text Story", icon: BookText, color: "bg-amber-100 text-amber-700 border-amber-200" },
 };
 
@@ -126,6 +136,9 @@ export function ActivityManagement() {
   // Mascot carousel
   const [mascotIndex, setMascotIndex] = useState(0);
   const mascotInterval = useRef(null);
+
+  // Delete confirmation
+  const [deleteTargetId, setDeleteTargetId] = useState(null);
 
   useEffect(() => {
     if (state.step === "generating") {
@@ -270,7 +283,7 @@ export function ActivityManagement() {
   };
 
   const handleDeleteActivity = async (activityId) => {
-    if (!window.confirm("Delete this activity?")) return;
+    setDeleteTargetId(null);
     try {
       const idToken = await getIdToken();
       const res = await fetch(`${API_BASE}/activities/${activityId}/delete`, {
@@ -307,9 +320,12 @@ export function ActivityManagement() {
 
   const handleGenerateReport = async (activityId) => {
     const activity = activities.find(a => a.id === activityId);
-    const score = activity?.quiz_score ?? (reportScore ? parseInt(reportScore) : undefined);
-    const total = activity?.quiz_total ?? (reportTotal ? parseInt(reportTotal) : undefined);
-    const time = activity?.quiz_time_seconds ?? (reportTime ? parseInt(reportTime) : undefined);
+    const isQuiz = activity?.activity_type === 'quiz';
+    const score = isQuiz ? (activity?.quiz_score ?? (reportScore ? parseInt(reportScore) : undefined)) : undefined;
+    const total = isQuiz ? (activity?.quiz_total ?? (reportTotal ? parseInt(reportTotal) : undefined)) : undefined;
+    const time = isQuiz
+      ? (activity?.quiz_time_seconds ?? (reportTime ? parseInt(reportTime) : undefined))
+      : (activity?.results_data?.time_seconds ?? undefined);
 
     setGeneratingReport(true);
     try {
@@ -745,7 +761,7 @@ export function ActivityManagement() {
                               variant="ghost"
                               size="sm"
                               className="text-red-500 hover:text-red-700 h-8 w-8 p-0 cursor-pointer"
-                              onClick={(e) => { e.stopPropagation(); handleDeleteActivity(activity.id); }}
+                              onClick={(e) => { e.stopPropagation(); setDeleteTargetId(activity.id); }}
                             >
                               <Trash2 className="h-4 w-4" />
                             </Button>
@@ -763,7 +779,7 @@ export function ActivityManagement() {
 
       {/* ═══ Activity Detail Dialog ═══ */}
       <Dialog open={!!state.selectedActivity} onOpenChange={() => dispatch({ type: "SELECT_ACTIVITY", payload: null })}>
-        <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
+        <DialogContent className="max-w-3xl max-h-[90vh] flex flex-col p-0">
           {state.selectedActivity && (() => {
             const act = state.selectedActivity;
             const typeMeta = ACTIVITY_TYPE_META[act.activity_type];
@@ -771,69 +787,50 @@ export function ActivityManagement() {
 
             return (
               <>
-                <DialogHeader>
-                  <div className="flex items-start justify-between gap-4 mb-2">
-                    <div>
-                      {act.lesson_plan_title && (
-                        <div className="text-xs text-muted-foreground mb-2">From Lesson Plan: <span className="font-semibold text-foreground">{act.lesson_plan_title}</span></div>
+                <div className="flex-1 overflow-y-auto px-6 py-4">
+                  <DialogHeader>
+                    <div className="flex items-start justify-between gap-4 mt-4 mb-2">
+                      <div>
+                        {act.lesson_plan_title && (
+                          <div className="text-xs text-muted-foreground mb-2">From Lesson Plan: <span className="font-semibold text-foreground">{act.lesson_plan_title}</span></div>
+                        )}
+                        <DialogTitle className="text-xl">{act.title}</DialogTitle>
+                        <DialogDescription className="mt-1">{act.description}</DialogDescription>
+                      </div>
+                    </div>
+                    <div className="flex flex-wrap gap-2 mt-2">
+                      <Badge variant="outline" className="text-xs capitalize">
+                        {LEARNING_AREA_LABELS[act.learning_area] || act.learning_area}
+                      </Badge>
+                      {typeMeta && (
+                        <Badge variant="outline" className={`text-xs ${typeMeta.color}`}>
+                          <TypeIcon className="h-3 w-3 mr-1" />{typeMeta.label}
+                        </Badge>
                       )}
-                      <DialogTitle className="text-xl">{act.title}</DialogTitle>
-                      <DialogDescription className="mt-1">{act.description}</DialogDescription>
-                    </div>
-                  </div>
-                  <div className="flex flex-wrap gap-2 mt-2">
-                    <Badge variant="outline" className="text-xs capitalize">
-                      {LEARNING_AREA_LABELS[act.learning_area] || act.learning_area}
-                    </Badge>
-                    {typeMeta && (
-                      <Badge variant="outline" className={`text-xs ${typeMeta.color}`}>
-                        <TypeIcon className="h-3 w-3 mr-1" />{typeMeta.label}
+                      {act.duration_minutes && (
+                        <Badge variant="outline" className="text-xs">
+                          <Clock className="h-3 w-3 mr-1" />{act.duration_minutes} min
+                        </Badge>
+                      )}
+                      <Badge variant="outline" className="text-xs capitalize gap-1">
+                        {act.status === "completed" && <CheckCircle2 className="h-3 w-3" />}
+                        {act.status.replace("_", " ")}
                       </Badge>
-                    )}
-                    {act.duration_minutes && (
-                      <Badge variant="outline" className="text-xs">
-                        <Clock className="h-3 w-3 mr-1" />{act.duration_minutes} min
-                      </Badge>
-                    )}
-                    <Badge variant="outline" className="text-xs capitalize gap-1">
-                      {act.status === "completed" && <CheckCircle2 className="h-3 w-3" />}
-                      {act.status.replace("_", " ")}
-                    </Badge>
-                  </div>
-                </DialogHeader>
-
-                <div className="space-y-4 py-4">
-                  {/* Generated Content */}
-                  {act.generated_content && (
-                    <div>
-                      <h3 className="font-semibold mb-3">Generated Content</h3>
-                      {renderGeneratedContent({ type: act.activity_type, generated_content: act.generated_content })}
                     </div>
-                  )}
+                  </DialogHeader>
 
-                  {/* Action Buttons */}
-                  <div className="flex gap-3 pt-4 border-t">
-                    <Button variant="outline" className="flex-1 cursor-pointer" onClick={() => dispatch({ type: "SELECT_ACTIVITY", payload: null })}>
-                      Close
-                    </Button>
-                    {act.status !== "completed" && (
-                      <Button className="flex-1 cursor-pointer" onClick={() => handleCompleteActivity(act.id)}>
-                        <CheckCircle2 className="mr-2 h-4 w-4" />
-                        Mark as Complete
-                      </Button>
+                  <div className="space-y-4 mt-4">
+                    {/* Generated Content */}
+                    {act.generated_content && (
+                      <div>
+                        <h3 className="font-semibold mb-3">Generated Content</h3>
+                        {renderGeneratedContent({ type: act.activity_type, generated_content: act.generated_content })}
+                      </div>
                     )}
-                    <Button
-                      variant="ghost"
-                      className="text-red-500 hover:text-red-700 cursor-pointer"
-                      onClick={() => handleDeleteActivity(act.id)}
-                    >
-                      <Trash2 className="h-4 w-4" />
-                    </Button>
-                  </div>
 
-                  {/* Generate Report Section (completed activities only) */}
-                  {act.status === "completed" && (
-                    <div className="border-t pt-5 space-y-4">
+                    {/* Generate Report Section (completed activities only) */}
+                    {act.status === "completed" && (
+                      <div className="border-t pt-5 space-y-4">
                       <div className="flex items-center gap-2">
                         <FileText className="h-5 w-5 text-emerald-600" />
                         <h3 className="font-semibold text-lg">Generate Report</h3>
@@ -864,6 +861,26 @@ export function ActivityManagement() {
                               <p className="text-xs text-muted-foreground mt-1">Time Taken</p>
                             </div>
                           </div>
+                        </>
+                      ) : act.activity_type === 'image' || act.activity_type === 'story' ? (
+                        <>
+                          <p className="text-sm text-muted-foreground">
+                            {act.results_data?.time_seconds != null
+                              ? 'Activity duration was recorded from Classroom Mode.'
+                              : 'No duration data saved. The report will note this activity was completed.'}
+                          </p>
+                          {act.results_data?.time_seconds != null && (
+                            <div className="grid grid-cols-1 gap-3">
+                              <div className="text-center p-3 bg-emerald-50 rounded-lg border border-emerald-200">
+                                <p className="text-2xl font-bold text-emerald-700">
+                                  {act.results_data.time_seconds >= 60
+                                    ? `${Math.floor(act.results_data.time_seconds / 60)}m ${act.results_data.time_seconds % 60}s`
+                                    : `${act.results_data.time_seconds}s`}
+                                </p>
+                                <p className="text-xs text-muted-foreground mt-1">Time Elapsed</p>
+                              </div>
+                            </div>
+                          )}
                         </>
                       ) : (
                         <>
@@ -899,12 +916,54 @@ export function ActivityManagement() {
                       </Button>
                     </div>
                   )}
+                  </div>
+                </div>
+
+                {/* Bottom Action Buttons - Sticky Footer */}
+                <div className="border-t bg-background px-6 py-4 flex gap-3 shrink-0">
+                  <Button variant="outline" className="flex-1 cursor-pointer" onClick={() => dispatch({ type: "SELECT_ACTIVITY", payload: null })}>
+                    Close
+                  </Button>
+                  {act.status !== "completed" && (
+                    <Button className="flex-1 cursor-pointer" onClick={() => handleCompleteActivity(act.id)}>
+                      <CheckCircle2 className="mr-2 h-4 w-4" />
+                      Mark as Complete
+                    </Button>
+                  )}
+                  <Button
+                    variant="ghost"
+                    className="text-red-500 hover:text-red-700 cursor-pointer"
+                    onClick={() => setDeleteTargetId(act.id)}
+                  >
+                    <Trash2 className="h-4 w-4" />
+                  </Button>
                 </div>
               </>
             );
           })()}
         </DialogContent>
       </Dialog>
+
+      {/* Delete Activity Confirmation */}
+      <AlertDialog open={!!deleteTargetId} onOpenChange={(open) => { if (!open) setDeleteTargetId(null); }}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Delete this activity?</AlertDialogTitle>
+            <AlertDialogDescription>
+              This will permanently delete the activity and all its content. This action cannot be undone.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel className="cursor-pointer">Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              className="bg-red-600 hover:bg-red-700 text-white cursor-pointer"
+              onClick={() => handleDeleteActivity(deleteTargetId)}
+            >
+              Delete
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
       </div>
     </div>
   );
