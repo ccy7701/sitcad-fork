@@ -2,7 +2,6 @@ import os
 import json
 import time
 import uuid
-import base64
 import asyncio
 import logging
 from pathlib import Path
@@ -595,18 +594,20 @@ async def _generate_flashcard_images(
     aspect_ratio: str = "1:1",
 ) -> list[dict]:
     """
-    Generate actual images for each flashcard entry using Imagen 4.
-    Returns the same list with an added "image_b64" field (base64 PNG).
-    Falls back gracefully if image generation fails.
+    Generate images via Imagen 4, upload to Firebase Storage,
+    and return public URLs instead of base64 blobs.
     """
     from google import genai as ggenai
     from google.genai import types as gtypes
+    from firebase_admin import storage
 
     imagen_client = ggenai.Client(api_key=api_key)
+    bucket = storage.bucket()
     loop = asyncio.get_event_loop()
 
     async def _gen_one(img_data: dict) -> dict:
         prompt = img_data.get("image_prompt", img_data.get("label", ""))
+        image_url = None
         try:
             resp = await loop.run_in_executor(
                 None,
@@ -619,14 +620,18 @@ async def _generate_flashcard_images(
                     ),
                 ),
             )
-            img_b64 = base64.b64encode(resp.generated_images[0].image.image_bytes).decode("utf-8")
+            image_bytes = resp.generated_images[0].image.image_bytes
+            blob_name = f"activity-images/{uuid.uuid4()}.png"
+            blob = bucket.blob(blob_name)
+            blob.upload_from_string(image_bytes, content_type="image/png")
+            blob.make_public()
+            image_url = blob.public_url
         except Exception as exc:
             logger.warning(f"Imagen generation failed for '{img_data.get('label')}': {exc}")
-            img_b64 = None
 
         return {
             "label": img_data.get("label", ""),
-            "image_b64": img_b64,
+            "image_url": image_url,
             "learning_point": img_data.get("learning_point", ""),
         }
 
@@ -705,7 +710,7 @@ async def _generate_single_activity(
             gen_iter = iter(generated)
             for page in content_data["pages"]:
                 if page.get("image_prompt"):
-                    page["image_b64"] = next(gen_iter).get("image_b64")
+                    page["image_url"] = next(gen_iter).get("image_url")
 
     return {
         "title": activity.title,
@@ -1070,13 +1075,15 @@ async def analyze_activity(request: AnalyzeActivityRequest, db: Session = Depend
 
 
 def _strip_images_for_analysis(content: dict) -> dict:
-    """Remove base64 image data from generated content to reduce token usage."""
+    """Remove image data/URLs from generated content to reduce token usage."""
     import copy
     stripped = copy.deepcopy(content)
     # Strip from flashcard images
     for img in stripped.get("images", []):
         img.pop("image_b64", None)
+        img.pop("image_url", None)
     # Strip from story pages
     for page in stripped.get("pages", []):
         page.pop("image_b64", None)
+        page.pop("image_url", None)
     return stripped

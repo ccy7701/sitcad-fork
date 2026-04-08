@@ -176,7 +176,7 @@ export function AILessonPlanning() {
 
   useEffect(() => {
     if (user?.role === "teacher") fetchSavedPlans();
-  }, [user, fetchSavedPlans]);
+  }, [user?.id, fetchSavedPlans]);
 
   if (!user || user.role !== "teacher") {
     navigate("/");

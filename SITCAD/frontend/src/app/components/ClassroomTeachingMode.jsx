@@ -479,9 +479,9 @@ function ImageDelivery({ activity, onComplete }) {
       </div>
 
       <div className="flex flex-col items-center">
-        {card.image_b64 ? (
+        {(card.image_url || card.image_b64) ? (
           <img
-            src={`data:image/png;base64,${card.image_b64}`}
+            src={card.image_url || `data:image/png;base64,${card.image_b64}`}
             alt={card.label}
             className="w-full max-w-sm rounded-xl shadow-lg aspect-square object-cover"
           />
@@ -663,9 +663,9 @@ function StoryDelivery({ activity, onComplete }) {
       </div>
 
       <div className="flex flex-col items-center">
-        {page.image_b64 ? (
+        {(page.image_url || page.image_b64) ? (
           <img
-            src={`data:image/png;base64,${page.image_b64}`}
+            src={page.image_url || `data:image/png;base64,${page.image_b64}`}
             alt={`Page ${page.page_number}`}
             className="w-full max-w-md rounded-xl shadow-lg aspect-square object-cover"
           />
@@ -750,7 +750,7 @@ export function ClassroomTeachingMode() {
       fetchActivities();
       fetchStudents();
     }
-  }, [user, fetchActivities, fetchStudents]);
+  }, [user?.id, fetchActivities, fetchStudents]);
 
   if (!user || user.role !== 'teacher') {
     navigate('/');

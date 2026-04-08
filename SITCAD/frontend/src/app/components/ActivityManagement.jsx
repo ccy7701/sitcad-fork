@@ -219,7 +219,7 @@ export function ActivityManagement() {
       fetchActivities();
       fetchLessonPlans();
     }
-  }, [user, fetchActivities, fetchLessonPlans]);
+  }, [user?.id, fetchActivities, fetchLessonPlans]);
 
   if (!user || user.role !== "teacher") {
     navigate("/");
@@ -418,9 +418,9 @@ export function ActivityManagement() {
     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
       {content.images?.map((img, i) => (
         <div key={i} className="border rounded-lg bg-white overflow-hidden flex flex-col">
-          {img.image_b64 ? (
+          {(img.image_url || img.image_b64) ? (
             <img
-              src={`data:image/png;base64,${img.image_b64}`}
+              src={img.image_url || `data:image/png;base64,${img.image_b64}`}
               alt={img.label}
               className="w-full aspect-square object-cover"
             />
@@ -446,9 +446,9 @@ export function ActivityManagement() {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {content.pages?.map((page, i) => (
           <div key={i} className="border rounded-lg bg-white overflow-hidden flex flex-col">
-            {page.image_b64 ? (
+            {(page.image_url || page.image_b64) ? (
               <img
-                src={`data:image/png;base64,${page.image_b64}`}
+                src={page.image_url || `data:image/png;base64,${page.image_b64}`}
                 alt={`Page ${page.page_number}`}
                 className="w-full aspect-square object-cover"
               />
