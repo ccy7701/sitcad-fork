@@ -1,3 +1,4 @@
+import os
 import models
 import database
 import firebase_admin
@@ -14,7 +15,11 @@ load_dotenv(_BACKEND_DIR / ".env")
 
 # Initialize Firebase Admin SDK
 cred = credentials.Certificate(str(_BACKEND_DIR / "sitcad-sabahsprout-firebase-adminsdk.json"))
-firebase_admin.initialize_app(cred)
+firebase_admin.initialize_app(cred, {
+    "storageBucket": os.environ.get(
+        "FIREBASE_STORAGE_BUCKET", "sitcad-sabahsprout.firebasestorage.app"
+    ),
+})
 
 # Create Database tables automatically on startup
 models.Base.metadata.create_all(bind=database.engine)
@@ -25,7 +30,10 @@ app = FastAPI(title="SITCAD SabahSprout API")
 # Allows your Vite frontend (port 5173) to communicate with this API
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:5173"],
+    allow_origins=[
+        "http://localhost:5173",
+        "http://127.0.0.1:5173"
+    ],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
