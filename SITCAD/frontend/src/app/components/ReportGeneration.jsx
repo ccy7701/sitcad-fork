@@ -63,7 +63,7 @@ export function ReportGeneration() {
     if (user?.role === 'teacher') {
       fetchReports();
     }
-  }, [user, fetchReports]);
+  }, [user?.id, fetchReports]);
 
   if (!user || user.role !== 'teacher') {
     navigate('/');
