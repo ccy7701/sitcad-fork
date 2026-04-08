@@ -112,13 +112,13 @@ const LEARNING_AREA_LABELS = {
 };
 
 const learningAreaStats = [
-  { value: "literacy_bm", label: "Literacy (BM)", icon: Book, color: "text-sm bg-[#f46197]/20 text-[#f46197] border-[#f46197]/30" },
-  { value: "literacy_en", label: "Literacy (EN)", icon: Book, color: "text-sm bg-[#f46197]/20 text-[#f46197] border-[#f46197]/30" },
-  { value: "numeracy", label: "Numeracy", icon: Calculator, color: "text-sm bg-[#f46197]/20 text-[#f46197] border-[#f46197]/30" },
-  { value: "social", label: "Social Skills", icon: Users, color: "text-sm bg-[#f46197]/20 text-[#f46197] border-[#f46197]/30" },
-  { value: "motor", label: "Motor Skills", icon: ActivityIcon, color: "text-sm bg-[#f46197]/20 text-[#f46197] border-[#f46197]/30" },
-  { value: "creative", label: "Creative Arts", icon: Palette, color: "text-sm bg-[#f46197]/20 text-[#f46197] border-[#f46197]/30" },
-  { value: "cognitive", label: "Cognitive", icon: Brain, color: "text-sm bg-[#f46197]/20 text-[#f46197] border-[#f46197]/30" },
+  { value: "literacy_bm", label: "Literacy (BM)", icon: Book, color: "text-sm bg-[#ffffff]/20 text-[#3090A0] border-[#3090A0]/30" },
+  { value: "literacy_en", label: "Literacy (EN)", icon: Book, color: "text-sm bg-[#ffffff]/20 text-[#3090A0] border-[#3090A0]/30" },
+  { value: "numeracy", label: "Numeracy", icon: Calculator, color: "text-sm bg-[#ffffff]/20 text-[#3090A0] border-[#3090A0]/30" },
+  { value: "social", label: "Social Skills", icon: Users, color: "text-sm bg-[#ffffff]/20 text-[#3090A0] border-[#3090A0]/30" },
+  { value: "motor", label: "Motor Skills", icon: ActivityIcon, color: "text-sm bg-[#ffffff]/20 text-[#3090A0] border-[#3090A0]/30" },
+  { value: "creative", label: "Creative Arts", icon: Palette, color: "text-sm bg-[#ffffff]/20 text-[#3090A0] border-[#3090A0]/30" },
+  { value: "cognitive", label: "Cognitive", icon: Brain, color: "text-sm bg-[#ffffff]/20 text-[#3090A0] border-[#3090A0]/30" },
 ];
 
 
