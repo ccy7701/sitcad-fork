@@ -159,4 +159,16 @@ class Intervention(Base):
   resolved_at = Column(DateTime, nullable=True)
   created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc))
   updated_at = Column(DateTime, default=lambda: datetime.now(timezone.utc), onupdate=lambda: datetime.now(timezone.utc))
+
+
+class Message(Base):
+  __tablename__ = "messages"
+
+  id = Column(String, primary_key=True, index=True)
+  sender_id = Column(String, ForeignKey("users.id"), nullable=False, index=True)
+  recipient_id = Column(String, ForeignKey("users.id"), nullable=False, index=True)
+  subject = Column(String, nullable=False)
+  body = Column(Text, nullable=False)
+  read = Column(Boolean, default=False)
+  created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc))
   
