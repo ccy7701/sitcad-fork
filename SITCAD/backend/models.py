@@ -119,4 +119,22 @@ class ReportStudent(Base):
   id = Column(Integer, primary_key=True, autoincrement=True)
   report_id = Column(String, ForeignKey("reports.id"), nullable=False, index=True)
   student_id = Column(String, ForeignKey("students.id"), nullable=False, index=True)
+
+
+class Intervention(Base):
+  __tablename__ = "interventions"
+
+  id = Column(String, primary_key=True, index=True)
+  teacher_id = Column(String, ForeignKey("users.id"), nullable=False, index=True)
+  student_id = Column(String, ForeignKey("students.id"), nullable=False, index=True)
+  priority = Column(String, nullable=False, default="medium")           # "high" | "medium" | "low"
+  status = Column(String, nullable=False, default="pending")            # "pending" | "in_progress" | "resolved"
+  area = Column(String, nullable=False)                                  # learning area or developmental area
+  concern = Column(Text, nullable=False)
+  recommended_actions = Column(JSON, nullable=True)                      # list of action strings
+  inclinations = Column(JSON, nullable=True)                             # list of strength/inclination observations
+  source_report_ids = Column(JSON, nullable=True)                        # list of report IDs that informed this
+  ai_reasoning = Column(Text, nullable=True)                             # AI's justification
+  created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc))
+  updated_at = Column(DateTime, default=lambda: datetime.now(timezone.utc), onupdate=lambda: datetime.now(timezone.utc))
   

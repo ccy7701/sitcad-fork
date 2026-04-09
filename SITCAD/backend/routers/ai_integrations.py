@@ -468,6 +468,7 @@ LANGUAGE REQUIREMENT (STRICT — NO EXCEPTIONS):
 - This includes: questions, all answer options, and explanations.
 - Do NOT mix languages. Do NOT use any other language, not even for a single word.
 - If {language_label} is English, write everything in English only. If Bahasa Malaysia, write everything in Bahasa Malaysia only.
+- The "image_prompt" field MUST always be written in English (required by the image generation model).
 
 RULES:
 - Generate exactly {num_questions} multiple-choice questions.
@@ -476,6 +477,11 @@ RULES:
 - Make every question EASY and OBVIOUS: the correct answer should be clearly identifiable, and the wrong options (distractors) should be clearly and unmistakably different from the correct answer.
 - Use very simple, short vocabulary. Avoid tricky wording or close distractors.
 - Include a short, encouraging explanation for the correct answer.
+- Each question MUST include an "image_prompt" field: a concise English description (under 50 words) for generating an illustrative image that helps the child understand the question.
+  • Begin with: "Bright colorful cartoon illustration, children's educational style, simple and cheerful,"
+  • Describe the key concept or object in the question clearly.
+  • Do NOT include any text, letters, numbers, or watermarks in the image description.
+  • Cultural context: Sabah, Malaysia where relevant.
 - Return ONLY a single valid JSON object with this schema:
 
 {{
@@ -484,7 +490,8 @@ RULES:
       "question": "<question text>",
       "options": ["<A>", "<B>", "<C>", "<D>"],
       "correct_answer": <0-3 index>,
-      "explanation": "<short explanation>"
+      "explanation": "<short explanation>",
+      "image_prompt": "<concise English prompt for image generation>"
     }}
   ]
 }}
@@ -692,6 +699,26 @@ async def _generate_single_activity(
         content_data["images"] = await _generate_flashcard_images(
             content_data["images"], api_key
         )
+
+    # For quiz activities: generate one image per question with Imagen 4
+    if activity.type == "quiz" and content_data.get("questions"):
+        questions_with_prompts = [
+            {
+                "image_prompt": q.get("image_prompt", ""),
+                "label": f"Q{i+1}",
+                "learning_point": "",
+            }
+            for i, q in enumerate(content_data["questions"])
+            if q.get("image_prompt")
+        ]
+        if questions_with_prompts:
+            generated = await _generate_flashcard_images(questions_with_prompts, api_key, aspect_ratio="1:1")
+            gen_iter = iter(generated)
+            for q in content_data["questions"]:
+                if q.get("image_prompt"):
+                    q["image_url"] = next(gen_iter).get("image_url")
+                    # Remove the prompt from final output
+                    q.pop("image_prompt", None)
 
     # For story activities: generate one image per page with Imagen 4
     if activity.type == "story" and content_data.get("pages"):
@@ -1086,4 +1113,301 @@ def _strip_images_for_analysis(content: dict) -> dict:
     for page in stripped.get("pages", []):
         page.pop("image_b64", None)
         page.pop("image_url", None)
+    # Strip from quiz question images
+    for q in stripped.get("questions", []):
+        q.pop("image_url", None)
     return stripped
+
+
+# ---------------------------------------------------------------------------
+# Student Intervention Analysis (Phase 4)
+# ---------------------------------------------------------------------------
+
+class GenerateInterventionsRequest(BaseModel):
+    id_token: str
+    student_id: str
+
+
+INTERVENTION_SYSTEM_PROMPT = """\
+You are SabahSprout AI, an expert Malaysian kindergarten developmental specialist.
+You analyse a student's holistic performance data to determine:
+  1. Whether the child requires specific intervention in any learning area.
+  2. Whether the child shows unique inclinations or strengths that could be nurtured.
+
+You will be given:
+- The student's profile (name, age)
+- Their DSKP SPR attainment scores across learning domains (level 1 = needs support, 2 = developing, 3 = proficient)
+- Summaries of recent activity reports including AI insights, quiz results, timing data, and flagged observations
+
+YOUR ANALYSIS MUST CONSIDER:
+A. **Academic performance** — quiz scores, accuracy across learning areas.
+B. **Response patterns** — questions that took unusually long may indicate comprehension difficulty; very fast answers may indicate rushing or strong confidence.
+C. **Engagement metrics** — time spent on flashcards (< 2s may mean disinterest), story pages skipped quickly, overall session durations.
+D. **Cross-domain patterns** — e.g. a child scoring poorly in numeracy but well in motor skills might thrive with kinesthetic/hands-on approaches.
+E. **Retry patterns** — frequent retries on certain question types indicate specific concept gaps.
+F. **Consistency** — does the child perform consistently or show high variance across sessions?
+
+RULES:
+- Generate 0-3 intervention items. Only flag genuine concerns — do NOT fabricate interventions if data shows the student is doing well.
+- For each intervention, assign a priority: "high" (urgent, significant gap), "medium" (notable concern), or "low" (minor, worth monitoring).
+- For each, list 2-4 specific, actionable recommended actions the teacher or parent can take.
+- Separately, identify 0-3 positive inclinations/strengths the student shows — areas where they naturally excel or show enthusiasm.
+- If the student is performing well overall, it is perfectly valid to return 0 interventions and only inclinations.
+
+Return ONLY a single valid JSON object with this exact schema:
+{{
+  "interventions": [
+    {{
+      "area": "<learning area or developmental area>",
+      "priority": "<high|medium|low>",
+      "concern": "<2-3 sentence description of the concern based on data>",
+      "recommended_actions": ["<action 1>", "<action 2>", ...],
+      "reasoning": "<why this was flagged, citing specific data points>"
+    }}
+  ],
+  "inclinations": [
+    {{
+      "area": "<area of strength>",
+      "observation": "<what the data shows>",
+      "suggestion": "<how to nurture this strength>"
+    }}
+  ],
+  "overall_summary": "<2-3 sentence holistic assessment of the child>"
+}}
+
+Do NOT wrap the JSON in markdown code fences. Return raw JSON only.
+"""
+
+
+@router.post("/generate-interventions")
+async def generate_interventions(request: GenerateInterventionsRequest, db: Session = Depends(get_db)):
+    """
+    Analyse a student's holistic performance data across all activities/reports
+    and generate AI-powered intervention recommendations.
+    """
+    teacher = _verify_teacher(request.id_token, db)
+
+    student = db.query(models.Student).filter(
+        models.Student.id == request.student_id,
+        models.Student.teacher_id == teacher.id,
+    ).first()
+    if not student:
+        raise HTTPException(status_code=404, detail="Student not found or not assigned to you")
+
+    # Gather Payload B: StudentProgress SPR scores
+    progress_records = db.query(models.StudentProgress).filter(
+        models.StudentProgress.student_id == student.id
+    ).all()
+    spr_scores = [
+        {"domain_key": p.domain_key, "spr_code": p.spr_code, "level": p.level}
+        for p in progress_records
+    ]
+
+    # Gather Payload A: All reports involving this student
+    report_student_links = db.query(models.ReportStudent).filter(
+        models.ReportStudent.student_id == student.id
+    ).all()
+    report_ids = [rl.report_id for rl in report_student_links]
+
+    reports = []
+    if report_ids:
+        report_rows = db.query(models.Report).filter(
+            models.Report.id.in_(report_ids)
+        ).order_by(models.Report.created_at.desc()).limit(10).all()
+
+        for r in report_rows:
+            report_data = {
+                "title": r.title,
+                "summary": r.summary,
+                "created_at": r.created_at.isoformat() if r.created_at else None,
+            }
+            # Include AI insights if present
+            if r.details:
+                report_data["ai_insights"] = r.details.get("ai_insights")
+                report_data["results_summary"] = r.details.get("results_summary")
+                report_data["activity_type"] = r.details.get("activity_type")
+                report_data["learning_area"] = r.details.get("learning_area")
+            reports.append(report_data)
+
+    if not reports and not spr_scores:
+        raise HTTPException(
+            status_code=400,
+            detail="No performance data available for this student yet. Complete some activities first."
+        )
+
+    # Build the user message
+    student_info = {"name": student.name, "age": student.age}
+
+    user_parts = [
+        f"=== Student Profile ===\n{json.dumps(student_info, indent=2)}",
+    ]
+
+    if spr_scores:
+        user_parts.append(f"\n=== DSKP SPR Attainment Scores ===\n{json.dumps(spr_scores, indent=2)}")
+
+    if reports:
+        # Strip image data from report details to save tokens
+        for r in reports:
+            if r.get("ai_insights"):
+                r["ai_insights"].pop("_fallback", None)
+        user_parts.append(f"\n=== Recent Activity Reports (most recent first, up to 10) ===\n{json.dumps(reports, indent=2)}")
+
+    user_message = "\n".join(user_parts)
+
+    # Call Gemini
+    gemini_api_key = os.getenv("GEMINI_API_KEY")
+    if not gemini_api_key:
+        raise HTTPException(status_code=503, detail="GEMINI_API_KEY is not configured.")
+
+    try:
+        llm = ChatGoogleGenerativeAI(
+            model=GEMINI_MODEL,
+            api_key=gemini_api_key,
+            temperature=0.3,
+            max_tokens=4096,
+        )
+        response = await _invoke_with_retry(llm, [
+            SystemMessage(content=INTERVENTION_SYSTEM_PROMPT),
+            HumanMessage(content=user_message),
+        ])
+        raw = _handle_response_content(response.content)
+        raw = _strip_json_fences(raw)
+        result = json.loads(raw)
+    except json.JSONDecodeError as e:
+        logger.error(f"Failed to parse intervention JSON: {e}\nRaw: {raw[:500]}")
+        raise HTTPException(status_code=500, detail="AI returned an invalid response. Try again.")
+    except Exception as e:
+        logger.error(f"Intervention analysis failed: {e}")
+        raise HTTPException(status_code=502, detail=f"AI service error: {str(e)}")
+
+    # Delete existing interventions for this student by this teacher (replace with fresh analysis)
+    db.query(models.Intervention).filter(
+        models.Intervention.student_id == student.id,
+        models.Intervention.teacher_id == teacher.id,
+    ).delete()
+    db.flush()
+
+    # Persist new interventions
+    created_interventions = []
+    for item in result.get("interventions", []):
+        intervention = models.Intervention(
+            id=str(uuid.uuid4()),
+            teacher_id=teacher.id,
+            student_id=student.id,
+            priority=item.get("priority", "medium"),
+            status="pending",
+            area=item.get("area", "General"),
+            concern=item.get("concern", ""),
+            recommended_actions=item.get("recommended_actions", []),
+            ai_reasoning=item.get("reasoning", ""),
+            source_report_ids=report_ids[:10],
+        )
+        db.add(intervention)
+        created_interventions.append(intervention)
+
+    # Update student's needs_intervention flag based on whether any high/medium concerns exist
+    has_concerns = any(
+        item.get("priority") in ("high", "medium")
+        for item in result.get("interventions", [])
+    )
+    student.needs_intervention = has_concerns
+    db.commit()
+
+    return {
+        "student_id": student.id,
+        "student_name": student.name,
+        "interventions": result.get("interventions", []),
+        "inclinations": result.get("inclinations", []),
+        "overall_summary": result.get("overall_summary", ""),
+        "intervention_count": len(created_interventions),
+        "needs_intervention": has_concerns,
+    }
+
+
+@router.post("/student-interventions")
+async def list_student_interventions(request: GenerateInterventionsRequest, db: Session = Depends(get_db)):
+    """List saved interventions for a student."""
+    teacher = _verify_teacher(request.id_token, db)
+
+    interventions = db.query(models.Intervention).filter(
+        models.Intervention.student_id == request.student_id,
+        models.Intervention.teacher_id == teacher.id,
+    ).order_by(models.Intervention.created_at.desc()).all()
+
+    return [
+        {
+            "id": i.id,
+            "student_id": i.student_id,
+            "priority": i.priority,
+            "status": i.status,
+            "area": i.area,
+            "concern": i.concern,
+            "recommended_actions": i.recommended_actions,
+            "inclinations": i.inclinations,
+            "ai_reasoning": i.ai_reasoning,
+            "created_at": i.created_at.isoformat() if i.created_at else None,
+        }
+        for i in interventions
+    ]
+
+
+class UpdateInterventionStatusRequest(BaseModel):
+    id_token: str
+    intervention_id: str
+    status: str  # "pending" | "in_progress" | "resolved"
+
+
+@router.post("/update-intervention-status")
+async def update_intervention_status(request: UpdateInterventionStatusRequest, db: Session = Depends(get_db)):
+    """Update the status of an intervention."""
+    teacher = _verify_teacher(request.id_token, db)
+
+    intervention = db.query(models.Intervention).filter(
+        models.Intervention.id == request.intervention_id,
+        models.Intervention.teacher_id == teacher.id,
+    ).first()
+    if not intervention:
+        raise HTTPException(status_code=404, detail="Intervention not found")
+
+    if request.status not in ("pending", "in_progress", "resolved"):
+        raise HTTPException(status_code=400, detail="Invalid status")
+
+    intervention.status = request.status
+    db.commit()
+    return {"id": intervention.id, "status": intervention.status}
+
+
+class ListAllInterventionsRequest(BaseModel):
+    id_token: str
+
+
+@router.post("/all-interventions")
+async def list_all_interventions(request: ListAllInterventionsRequest, db: Session = Depends(get_db)):
+    """List all interventions for all students of this teacher."""
+    teacher = _verify_teacher(request.id_token, db)
+
+    interventions = db.query(models.Intervention).filter(
+        models.Intervention.teacher_id == teacher.id,
+    ).order_by(models.Intervention.created_at.desc()).all()
+
+    # Get student names
+    student_ids = list(set(i.student_id for i in interventions))
+    students = db.query(models.Student).filter(models.Student.id.in_(student_ids)).all() if student_ids else []
+    student_map = {s.id: s for s in students}
+
+    return [
+        {
+            "id": i.id,
+            "student_id": i.student_id,
+            "student_name": student_map.get(i.student_id, None) and student_map[i.student_id].name,
+            "priority": i.priority,
+            "status": i.status,
+            "area": i.area,
+            "concern": i.concern,
+            "recommended_actions": i.recommended_actions,
+            "inclinations": i.inclinations,
+            "ai_reasoning": i.ai_reasoning,
+            "created_at": i.created_at.isoformat() if i.created_at else None,
+        }
+        for i in interventions
+    ]

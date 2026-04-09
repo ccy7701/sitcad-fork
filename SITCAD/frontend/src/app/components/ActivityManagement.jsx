@@ -396,6 +396,13 @@ export function ActivityManagement() {
     <div className="space-y-4">
       {content.questions?.map((q, i) => (
         <div key={i} className="p-4 border rounded-lg bg-white space-y-2">
+          {q.image_url && (
+            <img
+              src={q.image_url}
+              alt={`Illustration for question ${i + 1}`}
+              className="w-full max-h-48 object-contain rounded-lg border border-gray-100 bg-gray-50"
+            />
+          )}
           <p className="font-semibold text-gray-800">Q{i + 1}: {q.question}</p>
           <div className="grid grid-cols-2 gap-2">
             {q.options?.map((opt, j) => (

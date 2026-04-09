@@ -314,6 +314,17 @@ function QuizDelivery({ activity, onComplete }) {
         }`}>{qTimer}</div>
       </div>
 
+      {/* Quiz question image */}
+      {currentQ.image_url && (
+        <div className="flex justify-center">
+          <img
+            src={currentQ.image_url}
+            alt="Question illustration"
+            className="max-h-48 rounded-xl object-contain border-2 border-blue-100 shadow-sm"
+          />
+        </div>
+      )}
+
       <h3 className="text-xl font-bold text-gray-800 text-center">{currentQ.question}</h3>
 
       <div className="grid grid-cols-2 gap-3">

@@ -20,6 +20,7 @@ export function TeacherDashboard() {
 
   const [students, setStudents] = useState([]);
   const [isLoadingStudents, setIsLoadingStudents] = useState(true);
+  const [interventionCount, setInterventionCount] = useState(0);
   const [assignDialogOpen, setAssignDialogOpen] = useState(false);
   const [unassignedStudents, setUnassignedStudents] = useState([]);
   const [selectedStudentId, setSelectedStudentId] = useState(null);
@@ -27,18 +28,20 @@ export function TeacherDashboard() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isLoadingUnassigned, setIsLoadingUnassigned] = useState(false);
 
-  // Fetch teacher's students on mount
+  // Fetch teacher's students and intervention count on mount
   useEffect(() => {
     const fetchStudents = async () => {
       try {
         const idToken = await auth.currentUser.getIdToken();
-        const res = await fetch('http://localhost:8000/teachers/my-students', {
+        const studentsRes = await fetch('http://localhost:8000/teachers/my-students', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ id_token: idToken }),
         });
-        const data = await res.json();
-        setStudents(data);
+        if (studentsRes.ok) {
+          const data = await studentsRes.json();
+          setStudents(data);
+        }
       } catch (error) {
         console.error('Error fetching students:', error);
       } finally {
@@ -46,7 +49,26 @@ export function TeacherDashboard() {
       }
     };
 
+    const fetchInterventionCount = async () => {
+      try {
+        const idToken = await auth.currentUser.getIdToken();
+        const res = await fetch('http://localhost:8000/ai-integrations/all-interventions', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ id_token: idToken }),
+        });
+        if (res.ok) {
+          const interventions = await res.json();
+          setInterventionCount(interventions.filter(i => i.status !== 'resolved').length);
+        }
+      } catch (error) {
+        // Non-critical — intervention count stays 0 if endpoint unavailable
+        console.warn('Could not fetch intervention count:', error);
+      }
+    };
+
     fetchStudents();
+    fetchInterventionCount();
   }, []);
 
   const needsAttention = students.filter(s => s.needs_intervention);
@@ -96,7 +118,7 @@ export function TeacherDashboard() {
   const classroomStats = {
     totalStudents: students.length,
     averageProgress: 0,
-    needingSupport: needsAttention.length,
+    needingSupport: interventionCount || needsAttention.length,
     onTrack: 0,
   };
 
