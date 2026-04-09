@@ -34,7 +34,7 @@ const teacherNavItems = [
   { path: '/teacher/classroom-mode', icon: Monitor, label: 'Classroom Mode' },
   { path: '/teacher/reports', icon: FileText, label: 'Reports' },
   // { path: '/teacher/ai-analysis', icon: Brain, label: 'AI Analysis (WIP)' },
-  { path: '/teacher/interventions', icon: AlertCircle, label: 'Interventions (WIP)' },
+  { path: '/teacher/interventions', icon: AlertCircle, label: 'Interventions' },
   { path: '/teacher/communication', icon: MessageSquare, label: 'Messages (WIP)' },
 ];
 

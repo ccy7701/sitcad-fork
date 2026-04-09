@@ -984,7 +984,7 @@ export function ActivityManagement() {
                           <div className="flex items-center gap-3 p-4 bg-blue-50 rounded-lg border border-blue-200">
                             <Loader2 className="h-5 w-5 text-blue-600 animate-spin shrink-0" />
                             <div>
-                              <p className="text-sm font-semibold text-blue-800">AI is analysing results…</p>
+                              <p className="text-sm font-semibold text-blue-800">Analysing results…</p>
                               <p className="text-xs text-blue-600 mt-0.5">Insights will appear here once ready.</p>
                             </div>
                           </div>

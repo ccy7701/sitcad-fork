@@ -22,6 +22,12 @@ import {
   RefreshCw,
   Lightbulb,
   Users,
+  TrendingUp,
+  TrendingDown,
+  Minus,
+  GraduationCap,
+  Star,
+  Brain,
 } from "lucide-react";
 import { toast } from "sonner";
 import Duckpit from './Duckpit';
@@ -39,20 +45,20 @@ export function Interventions() {
   const navigate = useNavigate();
 
   const [interventions, setInterventions] = useState([]);
+  const [analyses, setAnalyses] = useState([]);
   const [students, setStudents] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [generatingFor, setGeneratingFor] = useState(null); // student id currently generating
+  const [generatingFor, setGeneratingFor] = useState(null);
 
   if (!user || user.role !== "teacher") {
     navigate("/");
     return null;
   }
 
-  // Fetch all interventions + students on mount
   const fetchData = useCallback(async () => {
     try {
       const idToken = await getIdToken();
-      const [interventionsRes, studentsRes] = await Promise.all([
+      const [interventionsRes, studentsRes, analysesRes] = await Promise.all([
         fetch(`${API_BASE}/ai-integrations/all-interventions`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -63,13 +69,15 @@ export function Interventions() {
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ id_token: idToken }),
         }),
+        fetch(`${API_BASE}/ai-integrations/all-analyses`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ id_token: idToken }),
+        }),
       ]);
-      if (interventionsRes.ok) {
-        setInterventions(await interventionsRes.json());
-      }
-      if (studentsRes.ok) {
-        setStudents(await studentsRes.json());
-      }
+      if (interventionsRes.ok) setInterventions(await interventionsRes.json());
+      if (studentsRes.ok) setStudents(await studentsRes.json());
+      if (analysesRes.ok) setAnalyses(await analysesRes.json());
     } catch (error) {
       console.error("Error fetching interventions:", error);
     } finally {
@@ -114,9 +122,23 @@ export function Interventions() {
         body: JSON.stringify({ id_token: idToken, intervention_id: interventionId, status: newStatus }),
       });
       if (res.ok) {
+        const data = await res.json();
         setInterventions((prev) =>
           prev.map((i) => (i.id === interventionId ? { ...i, status: newStatus } : i))
         );
+        // Update student's needs_intervention flag in local state
+        if (data.needs_intervention !== undefined) {
+          const intervention = interventions.find((i) => i.id === interventionId);
+          if (intervention) {
+            setStudents((prev) =>
+              prev.map((s) =>
+                s.id === intervention.student_id
+                  ? { ...s, needs_intervention: data.needs_intervention }
+                  : s
+              )
+            );
+          }
+        }
         toast.success(`Intervention status updated to ${newStatus.replace("_", " ")}`);
       }
     } catch (error) {
@@ -262,19 +284,35 @@ export function Interventions() {
 
   const renderSkeleton = () => (
     <div className="space-y-6">
+      <Card className="dashboard-card-shade border-white/70 shadow-md animate-pulse">
+        <CardHeader>
+          <div className="h-5 bg-gray-200 rounded w-1/3 mb-1" />
+          <div className="h-3 bg-gray-100 rounded w-1/2" />
+        </CardHeader>
+        <CardContent>
+          <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-3">
+            {[...Array(6)].map((_, i) => (
+              <div key={i} className="border-2 border-gray-100 rounded-lg p-4 space-y-2">
+                <div className="w-10 h-10 rounded-full bg-gray-200 mx-auto" />
+                <div className="h-3 bg-gray-200 rounded w-3/4 mx-auto" />
+              </div>
+            ))}
+          </div>
+        </CardContent>
+      </Card>
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         {[...Array(3)].map((_, i) => (
-          <Card key={i} className="pb-2 animate-pulse">
-            <CardHeader className="pb-2">
+          <Card key={i} className="stats-card-shade border-white/70 shadow-md animate-pulse">
+            <CardHeader className="pb-1">
               <div className="h-4 bg-gray-200 rounded w-1/2 mb-2" />
-              <div className="h-10 bg-gray-200 rounded w-1/3" />
+              <div className="h-14 bg-gray-200 rounded w-1/3" />
             </CardHeader>
             <CardContent><div className="h-4 bg-gray-100 rounded w-2/3" /></CardContent>
           </Card>
         ))}
       </div>
       {[...Array(2)].map((_, i) => (
-        <Card key={i} className="border-2 animate-pulse">
+        <Card key={i} className="dashboard-card-shade border-white/70 shadow-md animate-pulse">
           <CardHeader><div className="h-6 bg-gray-200 rounded w-1/3" /></CardHeader>
           <CardContent className="space-y-3">
             <div className="h-16 bg-gray-100 rounded" />
@@ -319,197 +357,299 @@ export function Interventions() {
         {loading ? renderSkeleton() : (
           <>
             {/* Student quick-run section */}
-            <div>
-              <h2 className="text-2xl font-bold mb-2">Run Intervention Analysis</h2>
-              <p className="text-lg text-muted-foreground mb-4 font-medium">
-                Select a student to generate or refresh their AI intervention analysis. The AI examines all their activity reports and DSKP scores.
-              </p>
-            </div>
-
-            <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-3">
-              {students.map((student) => (
-                <Card
-                  key={student.id}
-                  className={`cursor-pointer border-2 hover:shadow-lg transition-shadow ${generatingFor === student.id ? "border-blue-300 animate-pulse" : student.needs_intervention ? "border-yellow-300" : "border-white/70"}`}
-                  onClick={() => generatingFor ? null : handleGenerateForStudent(student.id)}
-                >
-                  <CardContent className="pt-5 text-center">
-                    <div className="w-10 h-10 rounded-full bg-green-200 flex items-center justify-center text-base font-bold text-green-700 mx-auto mb-2">
-                      {student.name.charAt(0)}
-                    </div>
-                    <p className="text-sm font-medium truncate">{student.name}</p>
-                    {generatingFor === student.id ? (
-                      <p className="text-xs text-blue-600 mt-1 flex items-center justify-center gap-1">
-                        <RefreshCw className="h-3 w-3 animate-spin" /> Analysing...
-                      </p>
-                    ) : student.needs_intervention ? (
-                      <p className="text-xs text-yellow-600 mt-1 flex items-center justify-center gap-1">
-                        <AlertTriangle className="h-3 w-3" /> Needs support
-                      </p>
-                    ) : (
-                      <p className="text-xs text-muted-foreground mt-1">
-                        <Sparkles className="h-3 w-3 inline mr-1" /> Run analysis
-                      </p>
-                    )}
-                  </CardContent>
-                </Card>
-              ))}
-              {students.length === 0 && (
-                <div className="col-span-full text-center py-8 text-muted-foreground">
-                  <Users className="h-8 w-8 mx-auto mb-2" />
-                  <p>No students assigned yet.</p>
+            <Card className="dashboard-card-shade border-white/70 shadow-md hover:shadow-lg transition-shadow transform-gpu">
+              <CardHeader className="flex flex-row items-center justify-between">
+                <div>
+                  <CardTitle className="flex items-center gap-2">
+                    <Brain className="h-5 w-5 text-[#3090A0]" />
+                    Run Intervention Analysis
+                  </CardTitle>
+                  <CardDescription>
+                    Select a student to generate or refresh their intervention analysis.
+                  </CardDescription>
                 </div>
-              )}
-            </div>
-
-            {/* Section divider */}
-            <div className="border-t my-2" />
-
-            <div>
-              <h2 className="text-2xl font-bold mb-2">Intervention Overview</h2>
-              <p className="text-lg text-muted-foreground mb-4 font-medium">
-                A quick summary of students who need attention, ongoing support, and
-                successfully completed interventions.
-              </p>
-            </div>
+              </CardHeader>
+              <CardContent>
+                <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-3">
+                  {students.map((student) => (
+                    <Card
+                      key={student.id}
+                      className={`cursor-pointer border-2 hover:shadow-lg transition-shadow ${generatingFor === student.id ? "border-blue-300 animate-pulse" : student.needs_intervention ? "border-yellow-300" : "border-white/70"}`}
+                      onClick={() => generatingFor ? null : handleGenerateForStudent(student.id)}
+                    >
+                      <CardContent className="pt-5 text-center">
+                        <div className="w-10 h-10 rounded-full bg-green-200 flex items-center justify-center text-base font-bold text-green-700 mx-auto mb-2">
+                          {student.name.charAt(0)}
+                        </div>
+                        <p className="text-sm font-medium truncate">{student.name}</p>
+                        {generatingFor === student.id ? (
+                          <p className="text-xs text-blue-600 mt-1 flex items-center justify-center gap-1">
+                            <RefreshCw className="h-3 w-3 animate-spin" /> Analysing...
+                          </p>
+                        ) : student.needs_intervention ? (
+                          <p className="text-xs text-yellow-600 mt-1 flex items-center justify-center gap-1">
+                            <AlertTriangle className="h-3 w-3" /> Needs support
+                          </p>
+                        ) : (
+                          <p className="text-xs text-muted-foreground mt-1">
+                            <Sparkles className="h-3 w-3 inline mr-1" /> Run analysis
+                          </p>
+                        )}
+                      </CardContent>
+                    </Card>
+                  ))}
+                  {students.length === 0 && (
+                    <div className="col-span-full text-center py-8 text-muted-foreground">
+                      <Users className="h-8 w-8 mx-auto mb-2" />
+                      <p>No students assigned yet.</p>
+                    </div>
+                  )}
+                </div>
+              </CardContent>
+            </Card>
 
             {/* Statistics */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <Card className="pb-2">
-                <CardHeader className="pb-2">
-                  <CardDescription className="text-lg font-medium">
-                    Pending Review
-                  </CardDescription>
-                  <CardTitle className="text-5xl font-medium">
-                    {pendingInterventions.length}
-                  </CardTitle>
+              <Card className="stats-card-shade border-white/70 shadow-md hover:shadow-lg transition-shadow transform-gpu">
+                <CardHeader className="pb-1">
+                  <CardDescription className="stats-label">Pending Review</CardDescription>
+                  <CardTitle className="text-6xl">{pendingInterventions.length}</CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <div className="flex items-center text-lg text-red-600">
-                    <Clock className="mr-2 h-5 w-5" />
+                  <div className="flex items-center text-sm text-red-600">
+                    <Clock className="mr-5 h-10 w-10" />
                     Needs teacher review
                   </div>
                 </CardContent>
               </Card>
 
-              <Card className="pb-2">
-                <CardHeader className="pb-2">
-                  <CardDescription className="text-lg font-medium">
-                    Active Interventions
-                  </CardDescription>
-                  <CardTitle className="text-5xl font-medium">
-                    {inProgressInterventions.length}
-                  </CardTitle>
+              <Card className="stats-card-shade border-white/70 shadow-md hover:shadow-lg transition-shadow transform-gpu">
+                <CardHeader className="pb-1">
+                  <CardDescription className="stats-label">Active Interventions</CardDescription>
+                  <CardTitle className="text-6xl">{inProgressInterventions.length}</CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <div className="flex items-center text-lg text-orange-600">
-                    <Target className="mr-2 h-5 w-5" />
+                  <div className="flex items-center text-sm text-orange-600">
+                    <Target className="mr-5 h-10 w-10" />
                     Support currently ongoing
                   </div>
                 </CardContent>
               </Card>
 
-              <Card className="pb-2">
-                <CardHeader className="pb-2">
-                  <CardDescription className="text-lg font-medium">
-                    Successful Interventions
-                  </CardDescription>
-                  <CardTitle className="text-5xl font-medium">
-                    {resolvedInterventions.length}
-                  </CardTitle>
+              <Card className="stats-card-shade border-white/70 shadow-md hover:shadow-lg transition-shadow transform-gpu">
+                <CardHeader className="pb-1">
+                  <CardDescription className="stats-label">Successful Interventions</CardDescription>
+                  <CardTitle className="text-6xl">{resolvedInterventions.length}</CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <div className="flex items-center text-lg text-green-600">
-                    <CheckCircle className="mr-2 h-5 w-5" />
+                  <div className="flex items-center text-sm text-green-600">
+                    <CheckCircle className="mr-5 h-10 w-10" />
                     Student progress improved
                   </div>
                 </CardContent>
               </Card>
             </div>
 
-            {/* AI Insights Banner */}
-            <Card className="border-2 border-yellow-300 bg-linear-to-r from-yellow-100 to-yellow-100">
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2 text-lg font-bold">
-                  <Target className="h-5 w-5 text-amber-600" />
-                  AI Intervention Insights
-                </CardTitle>
-                <CardDescription className="mb-4 font-medium text-base">
-                  The system analyzes student performance and behavior to detect
-                  learning gaps early and generate targeted intervention plans. Each
-                  intervention is prioritized to help you focus on students who need
-                  the most support. Click on any student above to run or refresh their analysis.
-                </CardDescription>
-                <div className="pb-3"></div>
-              </CardHeader>
-            </Card>
+            {/* Student Analysis Cards */}
+            {analyses.length > 0 && (
+              <Card className="dashboard-card-shade border-white/70 shadow-md hover:shadow-lg transition-shadow transform-gpu">
+                <CardHeader className="flex flex-row items-center justify-between">
+                  <div>
+                    <CardTitle className="flex items-center gap-2">
+                      <Brain className="h-5 w-5 text-[#3090A0]" />
+                      Student Analyses
+                    </CardTitle>
+                    <CardDescription>
+                      Latest analysis per student — improvement tracking, inclinations, and school readiness.
+                    </CardDescription>
+                  </div>
+                  <Button variant="outline" size="sm" className="cursor-pointer" onClick={fetchData}>
+                    <RefreshCw className="h-4 w-4 mr-1" /> Refresh
+                  </Button>
+                </CardHeader>
+                <CardContent>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {analyses.map((analysis) => (
+                    <Card key={analysis.id} className="border-2 shadow-sm">
+                      <CardHeader className="pb-3">
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center gap-2">
+                            <div className="w-8 h-8 rounded-full bg-green-200 flex items-center justify-center text-sm font-bold text-green-700">
+                              {(analysis.student_name || "?").charAt(0)}
+                            </div>
+                            <CardTitle className="text-lg">
+                              {analysis.student_name || "Student"}
+                            </CardTitle>
+                            {analysis.student_age && (
+                              <Badge variant="outline" className="text-xs">Age {analysis.student_age}</Badge>
+                            )}
+                          </div>
+                          {analysis.improvement_data?.trend && (
+                            <Badge className={`gap-1 ${
+                              analysis.improvement_data.trend === 'improving' ? 'bg-green-100 text-green-700 border-green-200' :
+                              analysis.improvement_data.trend === 'declining' ? 'bg-red-100 text-red-700 border-red-200' :
+                              analysis.improvement_data.trend === 'stable' ? 'bg-blue-100 text-blue-700 border-blue-200' :
+                              'bg-gray-100 text-gray-700 border-gray-200'
+                            }`}>
+                              {analysis.improvement_data.trend === 'improving' && <TrendingUp className="h-3 w-3" />}
+                              {analysis.improvement_data.trend === 'declining' && <TrendingDown className="h-3 w-3" />}
+                              {analysis.improvement_data.trend === 'stable' && <Minus className="h-3 w-3" />}
+                              {analysis.improvement_data.trend === 'insufficient_data' && <Brain className="h-3 w-3" />}
+                              {analysis.improvement_data.trend.replace('_', ' ')}
+                            </Badge>
+                          )}
+                        </div>
+                      </CardHeader>
+                      <CardContent className="space-y-3">
+                        {/* Overall Summary */}
+                        {analysis.overall_summary && (
+                          <p className="text-sm text-muted-foreground">{analysis.overall_summary}</p>
+                        )}
 
-            {/* Interventions Tabs */}
-            {interventions.length > 0 ? (
-              <Tabs defaultValue="pending" className="space-y-6">
-                <TabsList className="grid w-full grid-cols-3 h-12">
-                  <TabsTrigger value="pending" className="text-base gap-2">
-                    <Clock className="h-4 w-4" />
-                    Needs Review ({pendingInterventions.length})
-                  </TabsTrigger>
-                  <TabsTrigger value="in_progress" className="text-base gap-2">
-                    <Target className="h-4 w-4" />
-                    Active Support ({inProgressInterventions.length})
-                  </TabsTrigger>
-                  <TabsTrigger value="resolved" className="text-base gap-2">
-                    <CheckCircle className="h-4 w-4" />
-                    Completed ({resolvedInterventions.length})
-                  </TabsTrigger>
-                </TabsList>
+                        {/* Improvement Details */}
+                        {analysis.improvement_data?.details && (
+                          <div className="p-3 bg-blue-50 rounded-lg border border-blue-200">
+                            <p className="text-xs font-medium text-blue-900 mb-1 flex items-center gap-1">
+                              <TrendingUp className="h-3 w-3" /> Improvement Tracking
+                            </p>
+                            <p className="text-xs text-blue-800">{analysis.improvement_data.details}</p>
+                          </div>
+                        )}
 
-                <TabsContent value="pending" className="space-y-4">
-                  {pendingInterventions.length === 0 ? (
-                    <Card>
-                      <CardContent className="py-12 text-center text-muted-foreground">
-                        No pending interventions — all caught up!
+                        {/* Inclinations */}
+                        {analysis.inclinations?.length > 0 && (
+                          <div className="p-3 bg-purple-50 rounded-lg border border-purple-200">
+                            <p className="text-xs font-medium text-purple-900 mb-1 flex items-center gap-1">
+                              <Star className="h-3 w-3" /> Strengths & Inclinations
+                            </p>
+                            <ul className="space-y-1">
+                              {analysis.inclinations.map((inc, i) => (
+                                <li key={i} className="text-xs text-purple-800">
+                                  <span className="font-medium">{inc.area}:</span> {inc.observation}
+                                </li>
+                              ))}
+                            </ul>
+                          </div>
+                        )}
+
+                        {/* School Readiness */}
+                        {analysis.school_readiness && (
+                          <div className={`p-3 rounded-lg border ${
+                            analysis.school_readiness.level === 'ready' ? 'bg-green-50 border-green-200' :
+                            analysis.school_readiness.level === 'almost_ready' ? 'bg-yellow-50 border-yellow-200' :
+                            'bg-red-50 border-red-200'
+                          }`}>
+                            <p className="text-xs font-medium mb-1 flex items-center gap-1">
+                              <GraduationCap className="h-3 w-3" /> Primary School Readiness
+                              <Badge className={`ml-1 text-xs px-2 py-0 ${
+                                analysis.school_readiness.level === 'ready' ? 'bg-green-200 text-green-800' :
+                                analysis.school_readiness.level === 'almost_ready' ? 'bg-yellow-200 text-yellow-800' :
+                                'bg-red-200 text-red-800'
+                              }`}>
+                                {analysis.school_readiness.level?.replace('_', ' ')}
+                              </Badge>
+                            </p>
+                            <p className="text-xs">{analysis.school_readiness.assessment}</p>
+                          </div>
+                        )}
+
+                        {/* Footer */}
+                        <div className="flex items-center justify-between pt-2 border-t text-xs text-muted-foreground">
+                          <span>Analysed: {analysis.created_at ? new Date(analysis.created_at).toLocaleDateString() : "N/A"}</span>
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            className="h-7 text-xs cursor-pointer"
+                            onClick={() => navigate(`/teacher/student/${analysis.student_id}`)}
+                          >
+                            View Profile
+                          </Button>
+                        </div>
                       </CardContent>
                     </Card>
-                  ) : (
-                    pendingInterventions.map(renderInterventionCard)
-                  )}
-                </TabsContent>
-
-                <TabsContent value="in_progress" className="space-y-4">
-                  {inProgressInterventions.length === 0 ? (
-                    <Card>
-                      <CardContent className="py-12 text-center text-muted-foreground">
-                        No interventions currently in progress
-                      </CardContent>
-                    </Card>
-                  ) : (
-                    inProgressInterventions.map(renderInterventionCard)
-                  )}
-                </TabsContent>
-
-                <TabsContent value="resolved" className="space-y-4">
-                  {resolvedInterventions.length === 0 ? (
-                    <Card>
-                      <CardContent className="py-12 text-center text-muted-foreground">
-                        No resolved interventions yet
-                      </CardContent>
-                    </Card>
-                  ) : (
-                    resolvedInterventions.map(renderInterventionCard)
-                  )}
-                </TabsContent>
-              </Tabs>
-            ) : (
-              <Card className="border-2 border-dashed">
-                <CardContent className="py-16 text-center text-muted-foreground space-y-3">
-                  <Lightbulb className="h-10 w-10 mx-auto text-yellow-400" />
-                  <p className="text-lg font-medium">No interventions yet</p>
-                  <p className="text-base">
-                    Click on a student above to run their first AI intervention analysis.
-                    The AI will examine their activity reports and DSKP scores to identify areas needing support.
-                  </p>
+                  ))}
+                </div>
                 </CardContent>
               </Card>
             )}
+
+            {/* Interventions Tabs */}
+            <Card className="dashboard-card-shade border-white/70 shadow-md hover:shadow-lg transition-shadow transform-gpu">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Target className="h-5 w-5 text-[#3090A0]" />
+                  Intervention List
+                </CardTitle>
+                <CardDescription>
+                  Review pending interventions, track ongoing support, and view resolved cases.
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+              {interventions.length > 0 ? (
+                <Tabs defaultValue="pending" className="space-y-6">
+                  <TabsList className="grid w-full grid-cols-3 h-12">
+                    <TabsTrigger value="pending" className="text-base gap-2">
+                      <Clock className="h-4 w-4" />
+                      Needs Review ({pendingInterventions.length})
+                    </TabsTrigger>
+                    <TabsTrigger value="in_progress" className="text-base gap-2">
+                      <Target className="h-4 w-4" />
+                      Active Support ({inProgressInterventions.length})
+                    </TabsTrigger>
+                    <TabsTrigger value="resolved" className="text-base gap-2">
+                      <CheckCircle className="h-4 w-4" />
+                      Completed ({resolvedInterventions.length})
+                    </TabsTrigger>
+                  </TabsList>
+
+                  <TabsContent value="pending" className="space-y-4">
+                    {pendingInterventions.length === 0 ? (
+                      <Card>
+                        <CardContent className="py-12 text-center text-muted-foreground">
+                          No pending interventions — all caught up!
+                        </CardContent>
+                      </Card>
+                    ) : (
+                      pendingInterventions.map(renderInterventionCard)
+                    )}
+                  </TabsContent>
+
+                  <TabsContent value="in_progress" className="space-y-4">
+                    {inProgressInterventions.length === 0 ? (
+                      <Card>
+                        <CardContent className="py-12 text-center text-muted-foreground">
+                          No interventions currently in progress
+                        </CardContent>
+                      </Card>
+                    ) : (
+                      inProgressInterventions.map(renderInterventionCard)
+                    )}
+                  </TabsContent>
+
+                  <TabsContent value="resolved" className="space-y-4">
+                    {resolvedInterventions.length === 0 ? (
+                      <Card>
+                        <CardContent className="py-12 text-center text-muted-foreground">
+                          No resolved interventions yet
+                        </CardContent>
+                      </Card>
+                    ) : (
+                      resolvedInterventions.map(renderInterventionCard)
+                    )}
+                  </TabsContent>
+                </Tabs>
+              ) : (
+                <div className="py-16 text-center text-muted-foreground space-y-3">
+                  <Lightbulb className="h-10 w-10 mx-auto text-yellow-400" />
+                  <p className="text-lg font-medium">No interventions yet</p>
+                  <p className="text-base">
+                    Click on a student above to run their first intervention analysis.
+                    The AI will examine their activity reports and DSKP scores to identify areas needing support.
+                  </p>
+                </div>
+              )}
+              </CardContent>
+            </Card>
           </>
         )}
       </main>
