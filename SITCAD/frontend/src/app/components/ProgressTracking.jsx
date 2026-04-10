@@ -1,4 +1,4 @@
-import { useParams, useNavigate } from 'react-router';
+import { useParams, useNavigate, useLocation } from 'react-router';
 import { useAuth } from '../contexts/AuthContext';
 import { auth } from '../lib/firebase';
 import { Button } from './ui/button';
@@ -27,6 +27,7 @@ export function ProgressTracking() {
   const { studentId } = useParams();
   const { user } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
 
   const [student, setStudent] = useState(null);
   const [domains, setDomains] = useState([]);
@@ -191,7 +192,12 @@ export function ProgressTracking() {
   }
 
   const handleBack = () => {
-    navigate(`/${user.role}/student/${studentId}`);
+    // If coming from interventions page, navigate back to interventions
+    if (location.state?.from === 'interventions') {
+      navigate('/teacher/interventions');
+    } else {
+      navigate(`/${user.role}/student/${studentId}`);
+    }
   };
 
   const childLabel = user.role === 'parent' ? 'Your child' : student.name;
@@ -215,7 +221,7 @@ export function ProgressTracking() {
             </div>
             <Button variant="ghost" onClick={handleBack} className="cursor-pointer">
               <ArrowLeft className="mr-2 h-4 w-4" />
-              Back to Profile
+              Back to {location.state?.from === 'interventions' ? 'Interventions' : 'Profile'}
             </Button>
           </div>
         </div>

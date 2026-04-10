@@ -197,7 +197,7 @@ export function StudentProfile() {
           <TabsList className="grid w-full grid-cols-3">
             <TabsTrigger value="overview" className="cursor-pointer">Overview</TabsTrigger>
             <TabsTrigger value="insights" className="cursor-pointer">AI Insights</TabsTrigger>
-            <TabsTrigger value="progress" className="cursor-pointer" onClick={() => navigate(`/${user.role}/student/${studentId}/progress`)}>Progress Report</TabsTrigger>
+            <TabsTrigger value="progress" className="cursor-pointer" onClick={() => navigate(`/${user.role}/student/${studentId}/progress`, { state: location.state })}>Progress Report</TabsTrigger>
           </TabsList>
 
           {/* Overview Tab */}
