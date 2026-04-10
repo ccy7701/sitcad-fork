@@ -181,9 +181,9 @@ export function ProgressTracking() {
             <p className="font-medium">{error || 'Student not found'}</p>
             <Button
               className="mt-4 w-full"
-              onClick={() => navigate(user.role === 'teacher' ? '/teacher' : '/parent')}
+              onClick={() => navigate(`/${user.role}/student/${studentId}`, { state: location.state })}
             >
-              Back to Dashboard
+              Back to Profile
             </Button>
           </CardContent>
         </Card>
@@ -192,12 +192,7 @@ export function ProgressTracking() {
   }
 
   const handleBack = () => {
-    // If coming from interventions page, navigate back to interventions
-    if (location.state?.from === 'interventions') {
-      navigate('/teacher/interventions');
-    } else {
-      navigate(`/${user.role}/student/${studentId}`);
-    }
+    navigate(`/${user.role}/student/${studentId}`, { state: location.state });
   };
 
   const childLabel = user.role === 'parent' ? 'Your child' : student.name;
@@ -221,7 +216,7 @@ export function ProgressTracking() {
             </div>
             <Button variant="ghost" onClick={handleBack} className="cursor-pointer">
               <ArrowLeft className="mr-2 h-4 w-4" />
-              Back to {location.state?.from === 'interventions' ? 'Interventions' : 'Profile'}
+              Back to Profile
             </Button>
           </div>
         </div>
