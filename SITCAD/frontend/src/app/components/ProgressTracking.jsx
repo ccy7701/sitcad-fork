@@ -1,4 +1,4 @@
-import { useParams, useNavigate } from 'react-router';
+import { useParams, useNavigate, useLocation } from 'react-router';
 import { useAuth } from '../contexts/AuthContext';
 import { auth } from '../lib/firebase';
 import { Button } from './ui/button';
@@ -27,6 +27,7 @@ export function ProgressTracking() {
   const { studentId } = useParams();
   const { user } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
 
   const [student, setStudent] = useState(null);
   const [domains, setDomains] = useState([]);
@@ -180,9 +181,9 @@ export function ProgressTracking() {
             <p className="font-medium">{error || 'Student not found'}</p>
             <Button
               className="mt-4 w-full"
-              onClick={() => navigate(user.role === 'teacher' ? '/teacher' : '/parent')}
+              onClick={() => navigate(`/${user.role}/student/${studentId}`, { state: location.state })}
             >
-              Back to Dashboard
+              Back to Profile
             </Button>
           </CardContent>
         </Card>
@@ -191,7 +192,7 @@ export function ProgressTracking() {
   }
 
   const handleBack = () => {
-    navigate(`/${user.role}/student/${studentId}`);
+    navigate(`/${user.role}/student/${studentId}`, { state: location.state });
   };
 
   const childLabel = user.role === 'parent' ? 'Your child' : student.name;
