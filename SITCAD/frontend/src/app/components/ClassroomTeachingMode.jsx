@@ -17,8 +17,10 @@ import {
   ArrowLeft, Play, CheckCircle2, Users, Clock, Book, Calculator, Palette, Brain,
   Activity as ActivityIcon, Trophy, RotateCcw, ChevronRight, ChevronLeft, Star,
   Image, BookOpen, HelpCircle, Loader2, Sparkles, AlertCircle, RefreshCw,
+  Download, FileDown,
 } from 'lucide-react';
 import { toast } from 'sonner';
+import { downloadActivityPDF, downloadFlashcardZIP } from '../lib/downloads';
 
 const API_BASE = 'http://localhost:8000';
 
@@ -57,6 +59,8 @@ const optionColors = [
   'bg-lime-600 hover:bg-lime-700',
 ];
 const optionShapes = ['▲', '◆', '●', '■'];
+
+const CONTENT_FONT = { fontFamily: "'Comic Sans MS', 'Comic Sans', 'Chalkboard SE', cursive" };
 
 // ─── Quiz Delivery ───────────────────────────────────────────────────
 
@@ -325,7 +329,7 @@ function QuizDelivery({ activity, onComplete }) {
         </div>
       )}
 
-      <h3 className="text-xl font-bold text-gray-800 text-center">{currentQ.question}</h3>
+      <h3 className="text-xl font-bold text-gray-800 text-center" style={CONTENT_FONT}>{currentQ.question}</h3>
 
       <div className="grid grid-cols-2 gap-3">
         {currentQ.options.map((option, idx) => {
@@ -337,7 +341,8 @@ function QuizDelivery({ activity, onComplete }) {
           }
           return (
             <button key={idx} onClick={() => handleAnswer(idx)} disabled={showResult}
-              className={`relative flex items-center justify-center gap-3 rounded-xl py-5 px-4 text-lg font-bold transition-all duration-200 cursor-pointer ${showResult ? '' : 'active:scale-95'} ${btnClass}`}>
+              className={`relative flex items-center justify-center gap-3 rounded-xl py-5 px-4 text-lg font-bold transition-all duration-200 cursor-pointer ${showResult ? '' : 'active:scale-95'} ${btnClass}`}
+              style={CONTENT_FONT}>
               <span className="text-white/60 text-sm">{optionShapes[idx]}</span>
               <span>{option}</span>
             </button>
@@ -356,7 +361,7 @@ function QuizDelivery({ activity, onComplete }) {
              : isCorrectAnswer ? '🎉 Correct! Great job!'
              : `❌ Not quite! The answer is "${currentQ.options[currentQ.correct_answer]}". You'll see this again.`}
           </div>
-          {currentQ.explanation && <p className="text-sm text-muted-foreground text-center italic">{currentQ.explanation}</p>}
+          {currentQ.explanation && <p className="text-sm text-muted-foreground text-center italic" style={CONTENT_FONT}>{currentQ.explanation}</p>}
           <Button onClick={nextQuestion} className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold cursor-pointer" size="lg">
             {isLastAndCorrect
               ? <><Trophy className="mr-2 h-5 w-5" /> See Results</>
@@ -502,7 +507,7 @@ function ImageDelivery({ activity, onComplete }) {
           </div>
         )}
 
-        <h3 className="text-2xl font-bold text-gray-800 mt-4">{card.label}</h3>
+        <h3 className="text-2xl font-bold text-gray-800 mt-4" style={CONTENT_FONT}>{card.label}</h3>
 
         {!showPoint && card.learning_point && (
           <Button variant="outline" onClick={() => setShowPoint(true)}
@@ -511,7 +516,7 @@ function ImageDelivery({ activity, onComplete }) {
           </Button>
         )}
         {showPoint && card.learning_point && (
-          <p className="mt-3 text-base text-gray-600 bg-orange-50 px-4 py-3 rounded-lg border border-orange-200 max-w-sm text-center animate-in fade-in duration-300">
+          <p className="mt-3 text-base text-gray-600 bg-orange-50 px-4 py-3 rounded-lg border border-orange-200 max-w-sm text-center animate-in fade-in duration-300" style={CONTENT_FONT}>
             {card.learning_point}
           </p>
         )}
@@ -641,8 +646,8 @@ function StoryDelivery({ activity, onComplete }) {
             <div className="space-y-2">
               {content.vocabulary.map((v, i) => (
                 <div key={i} className="flex gap-2 items-baseline">
-                  <Badge variant="outline" className="bg-white shrink-0">{v.word}</Badge>
-                  <span className="text-sm text-gray-600">{v.definition}</span>
+                  <Badge variant="outline" className="bg-white shrink-0" style={CONTENT_FONT}>{v.word}</Badge>
+                  <span className="text-sm text-gray-600" style={CONTENT_FONT}>{v.definition}</span>
                 </div>
               ))}
             </div>
@@ -652,7 +657,7 @@ function StoryDelivery({ activity, onComplete }) {
         {content.moral && (
           <div className="p-4 bg-purple-50 rounded-lg border border-purple-200 text-center">
             <p className="text-sm font-semibold text-purple-800 mb-1">Moral of the Story</p>
-            <p className="text-gray-700 italic">{content.moral}</p>
+            <p className="text-gray-700 italic" style={CONTENT_FONT}>{content.moral}</p>
           </div>
         )}
 
@@ -687,7 +692,7 @@ function StoryDelivery({ activity, onComplete }) {
         )}
 
         <div className="mt-4 px-2 max-w-md">
-          <p className="text-lg text-gray-800 leading-relaxed text-center">{page.text}</p>
+          <p className="text-lg text-gray-800 leading-relaxed text-center" style={CONTENT_FONT}>{page.text}</p>
         </div>
       </div>
 
@@ -999,7 +1004,7 @@ export function ClassroomTeachingMode() {
                         )}
                       </div>
                     )}
-                    <div>
+                    <div className="flex gap-2">
                       {!isCompleted && !isActive && (
                         <Button onClick={() => startActivity(activity.id)} className="w-full cursor-pointer" size="sm">
                           <Play className="mr-2 h-4 w-4" /> Start Activity
@@ -1009,6 +1014,43 @@ export function ClassroomTeachingMode() {
                         <Button variant="outline" onClick={() => setActivityPopupOpen(true)} className="w-full cursor-pointer" size="sm">
                           Open Activity
                         </Button>
+                      )}
+                      {isCompleted && activity.generated_content && (
+                        <>
+                          {activity.activity_type !== 'image' && (
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              className="cursor-pointer"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                downloadActivityPDF(activity);
+                              }}
+                            >
+                              <Download className="mr-1 h-3.5 w-3.5" /> PDF
+                            </Button>
+                          )}
+                          {activity.activity_type === 'image' && (
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              className="cursor-pointer"
+                              onClick={async (e) => {
+                                e.stopPropagation();
+                                toast.info('Preparing flashcard ZIP…');
+                                try {
+                                  const idToken = await getIdToken();
+                                  await downloadFlashcardZIP(activity, idToken);
+                                  toast.success('ZIP downloaded!');
+                                } catch (err) {
+                                  toast.error(err.message || 'Failed to download ZIP');
+                                }
+                              }}
+                            >
+                              <FileDown className="mr-1 h-3.5 w-3.5" /> ZIP
+                            </Button>
+                          )}
+                        </>
                       )}
                     </div>
                   </CardContent>

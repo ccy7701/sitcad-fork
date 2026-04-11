@@ -1,12 +1,20 @@
 import uuid
+import io
+import re
+import zipfile
+import asyncio
+import logging
 import models
-from firebase_admin import auth as firebase_auth
-from fastapi import APIRouter, Depends, HTTPException
+from firebase_admin import auth as firebase_auth, storage as fb_storage
+from fastapi import APIRouter, Depends, HTTPException, Response
 from sqlalchemy.orm import Session
 from pydantic import BaseModel
 from typing import Optional
 from datetime import datetime, timezone
+from urllib.parse import unquote as _url_unquote
 from dependencies import get_db
+
+logger = logging.getLogger(__name__)
 
 router = APIRouter(prefix="/activities", tags=["activities"])
 
@@ -282,3 +290,79 @@ async def list_activities_for_student(student_id: str, request: AuthenticatedReq
         .all()
     )
     return [_activity_to_dict(a, db) for a in activities]
+
+
+# ── Flashcard ZIP download ─────────────────────────────────────────
+
+def _blob_name_from_storage_url(url: str) -> str | None:
+    """Extract the GCS object path from a Firebase Storage URL.
+    e.g. .../o/activity-images%2Fuuid.png?alt=media → activity-images/uuid.png
+    """
+    m = re.search(r"/o/([^?#]+)", url)
+    return _url_unquote(m.group(1)) if m else None
+
+
+@router.post("/{activity_id}/download-flashcard-zip")
+async def download_flashcard_zip(
+    activity_id: str,
+    request: AuthenticatedRequest,
+    db: Session = Depends(get_db),
+):
+    """Build a ZIP of flashcard images server-side using the Firebase Admin SDK
+    (bypasses Storage security rules and browser CORS entirely) and return it."""
+    teacher = _verify_teacher(request.id_token, db)
+
+    activity = db.query(models.Activity).filter(
+        models.Activity.id == activity_id,
+        models.Activity.teacher_id == teacher.id,
+    ).first()
+    if not activity:
+        raise HTTPException(status_code=404, detail="Activity not found")
+    if activity.activity_type != "image":
+        raise HTTPException(status_code=400, detail="Not a flashcard activity")
+
+    content = activity.generated_content or {}
+    cards = content.get("images", [])
+    if not cards:
+        raise HTTPException(status_code=404, detail="No flashcard content found")
+
+    bucket = fb_storage.bucket()
+    loop = asyncio.get_event_loop()
+
+    zip_buffer = io.BytesIO()
+    with zipfile.ZipFile(zip_buffer, "w", zipfile.ZIP_DEFLATED) as zf:
+        for i, card in enumerate(cards):
+            prefix = str(i + 1).zfill(2)
+            label = card.get("label") or f"Card {i + 1}"
+            safe = re.sub(r"[^a-zA-Z0-9]+", "_", label)[:40]
+
+            # Download image via Admin SDK (ignores storage security rules)
+            image_url = card.get("image_url")
+            if image_url:
+                blob_name = _blob_name_from_storage_url(image_url)
+                if blob_name:
+                    try:
+                        blob = bucket.blob(blob_name)
+                        image_bytes = await loop.run_in_executor(
+                            None, blob.download_as_bytes
+                        )
+                        zf.writestr(f"{prefix}_{safe}.png", image_bytes)
+                    except Exception as exc:
+                        logger.warning(f"Could not download image '{blob_name}': {exc}")
+
+            # Always include a text file with label and learning point
+            note_lines = [label]
+            lp = card.get("learning_point", "")
+            if lp:
+                note_lines.append(lp)
+            zf.writestr(f"{prefix}_{safe}_info.txt", "\n".join(note_lines))
+
+    zip_data = zip_buffer.getvalue()
+    safe_title = re.sub(r"[^a-zA-Z0-9]+", "_", activity.title or "flashcards")[:50]
+    return Response(
+        content=zip_data,
+        media_type="application/zip",
+        headers={
+            "Content-Disposition": f'attachment; filename="{safe_title}_flashcards.zip"'
+        },
+    )
