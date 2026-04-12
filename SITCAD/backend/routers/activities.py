@@ -302,14 +302,70 @@ def _blob_name_from_storage_url(url: str) -> str | None:
     return _url_unquote(m.group(1)) if m else None
 
 
+def _build_flashcard_image(image_bytes: bytes, label: str) -> bytes:
+    """
+    Composite a flashcard: original image on top, white label bar below.
+    Returns the final PNG as bytes.
+    """
+    from PIL import Image, ImageDraw, ImageFont
+
+    img = Image.open(io.BytesIO(image_bytes)).convert("RGB")
+    W, H = img.size
+
+    # Label bar: 12% of image height, minimum 80 px
+    bar_h = max(80, int(H * 0.12))
+    font_size = max(24, int(bar_h * 0.52))
+
+    # Try Comic Sans MS first, then fall back to other bold sans-serif fonts
+    font = None
+    for candidate in [
+        "/usr/share/fonts/truetype/msttcorefonts/Comic_Sans_MS_Bold.ttf",
+        "/usr/share/fonts/truetype/msttcorefonts/comicbd.ttf",
+        "/usr/share/fonts/msttcore/comicbd.ttf",
+        "C:/Windows/Fonts/comicbd.ttf",
+        "/Library/Fonts/Comic Sans MS Bold.ttf",
+        "/System/Library/Fonts/Supplemental/Comic Sans MS Bold.ttf",
+        "/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf",
+        "/usr/share/fonts/truetype/liberation/LiberationSans-Bold.ttf",
+        "/usr/share/fonts/truetype/freefont/FreeSansBold.ttf",
+        "/System/Library/Fonts/Helvetica.ttc",
+        "C:/Windows/Fonts/arialbd.ttf",
+    ]:
+        try:
+            font = ImageFont.truetype(candidate, font_size)
+            break
+        except (IOError, OSError):
+            continue
+    if font is None:
+        font = ImageFont.load_default()
+
+    # Create composite canvas
+    canvas = Image.new("RGB", (W, H + bar_h), (255, 255, 255))
+    canvas.paste(img, (0, 0))
+
+    draw = ImageDraw.Draw(canvas)
+
+    # Measure text and centre it
+    bbox = draw.textbbox((0, 0), label, font=font)
+    text_w = bbox[2] - bbox[0]
+    text_h = bbox[3] - bbox[1]
+    text_x = (W - text_w) // 2
+    text_y = H + (bar_h - text_h) // 2 - bbox[1]
+
+    draw.text((text_x, text_y), label, fill=(31, 41, 55), font=font)
+
+    out = io.BytesIO()
+    canvas.save(out, format="PNG")
+    return out.getvalue()
+
+
 @router.post("/{activity_id}/download-flashcard-zip")
 async def download_flashcard_zip(
     activity_id: str,
     request: AuthenticatedRequest,
     db: Session = Depends(get_db),
 ):
-    """Build a ZIP of flashcard images server-side using the Firebase Admin SDK
-    (bypasses Storage security rules and browser CORS entirely) and return it."""
+    """Build a ZIP of composite flashcard images (photo + label) server-side."""
     teacher = _verify_teacher(request.id_token, db)
 
     activity = db.query(models.Activity).filter(
@@ -336,26 +392,25 @@ async def download_flashcard_zip(
             label = card.get("label") or f"Card {i + 1}"
             safe = re.sub(r"[^a-zA-Z0-9]+", "_", label)[:40]
 
-            # Download image via Admin SDK (ignores storage security rules)
             image_url = card.get("image_url")
-            if image_url:
-                blob_name = _blob_name_from_storage_url(image_url)
-                if blob_name:
-                    try:
-                        blob = bucket.blob(blob_name)
-                        image_bytes = await loop.run_in_executor(
-                            None, blob.download_as_bytes
-                        )
-                        zf.writestr(f"{prefix}_{safe}.png", image_bytes)
-                    except Exception as exc:
-                        logger.warning(f"Could not download image '{blob_name}': {exc}")
+            if not image_url:
+                logger.warning(f"Card {i+1} '{label}' has no image_url — skipping")
+                continue
 
-            # Always include a text file with label and learning point
-            note_lines = [label]
-            lp = card.get("learning_point", "")
-            if lp:
-                note_lines.append(lp)
-            zf.writestr(f"{prefix}_{safe}_info.txt", "\n".join(note_lines))
+            blob_name = _blob_name_from_storage_url(image_url)
+            if not blob_name:
+                logger.warning(f"Could not extract blob path from URL: {image_url}")
+                continue
+
+            try:
+                blob = bucket.blob(blob_name)
+                image_bytes = await loop.run_in_executor(None, blob.download_as_bytes)
+                composite = await loop.run_in_executor(
+                    None, _build_flashcard_image, image_bytes, label
+                )
+                zf.writestr(f"{prefix}_{safe}.png", composite)
+            except Exception as exc:
+                logger.warning(f"Could not build flashcard image for '{label}': {exc}")
 
     zip_data = zip_buffer.getvalue()
     safe_title = re.sub(r"[^a-zA-Z0-9]+", "_", activity.title or "flashcards")[:50]

@@ -1896,7 +1896,7 @@ export function AILessonPlanning() {
                                   }`}
                                 >
                                   {plan.plan_type === "unit"
-                                    ? `${plan.duration_weeks || "?"}W Unit Plan`
+                                    ? `${plan.duration_weeks || "?"}-week Unit Plan`
                                     : "Lesson Plan"}
                                 </Badge>
                                 <Badge
