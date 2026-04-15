@@ -10,6 +10,7 @@ import { Badge } from './ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from './ui/tabs';
 import { ArrowLeft, Calendar, MapPin, TrendingUp, TrendingDown, Award, AlertCircle, Loader2, Star, GraduationCap, Target, Sparkles, Minus, Brain } from 'lucide-react';
 import { useState, useEffect } from 'react';
+import Duckpit from './Duckpit';
 
 export function StudentProfile() {
   const { studentId } = useParams(); // Removed type annotation
@@ -131,18 +132,23 @@ export function StudentProfile() {
   };
 
   return (
-    <div className="min-h-screen bg-linear-to-br from-blue-50 via-purple-50 to-pink-50">
+    <div className="min-h-screen relative overflow-hidden bg-slate-50">
+      <div className="absolute inset-0 z-0 pointer-events-none">
+        <Duckpit count={30} interactive={false} className="h-full w-full opacity-100" />
+      </div>
+      <div className="absolute inset-0 z-0 bg-linear-to-b from-white/72 via-white/58 to-emerald-50/72" />
+
       {/* Header */}
-      <header className="bg-white/80 border-b shadow-sm sticky top-0 z-20 backdrop-blur-sm">
+      <header className="bg-white/80 border-b shadow-sm sticky top-0 z-20 backdrop-blur-sm print:hidden">
         <div className="max-w-7xl mx-auto px-6 py-4">
           <div className="flex items-center justify-between gap-4">
             <div className="flex items-center gap-4">
-              <div className="w-8 h-8 bg-[#bafde0] rounded-lg flex items-center justify-center">
-                <TrendingUp className="w-4 h-4 text-black" />
+              <div className="w-12 h-12 bg-[#bafde0] rounded-lg flex items-center justify-center">
+                <TrendingUp className="w-8 h-8 text-black" />
               </div>
               <div>
                 <h1 className="text-2xl font-semibold">{student.name}</h1>
-                <p className="text-sm text-muted-foreground mt-1">Student profile and learning activities</p>
+                <p className="text-sm text-muted-foreground mt-1">Student profile and learning insights</p>
               </div>
             </div>
             <Button variant="ghost" onClick={handleBack} className="cursor-pointer">
@@ -153,13 +159,13 @@ export function StudentProfile() {
         </div>
       </header>
 
-      <main className="max-w-7xl mx-auto px-4 py-8 space-y-6">
+      <main className="max-w-7xl mx-auto px-6 py-8 min-h-[80vh] space-y-6">
         {/* Student Header */}
         <Card>
           <CardContent className="pt-6">
             <div className="flex flex-col md:flex-row items-start md:items-center gap-6">
               <div
-                className="w-32 h-32 rounded-full bg-gradient-to-br from-purple-400 to-pink-400 flex items-center justify-center text-3xl font-bold text-white shadow-lg border-4 border-purple-200"
+                className="w-28 h-28 rounded-full bg-linear-to-br from-emerald-200 to-emerald-100 flex items-center justify-center text-3xl font-bold text-black shadow-lg border-4 border-emerald-150"
               >
                 {student.name.charAt(0).toUpperCase()}
               </div>
@@ -168,17 +174,17 @@ export function StudentProfile() {
                   <div>
                     <h1 className="text-3xl font-semibold mb-2">{student.name}</h1>
                     <div className="flex flex-wrap gap-4 text-sm text-muted-foreground">
-                      <span className="flex items-center gap-1">
-                        <Calendar className="h-4 w-4" />
+                      <span className="text-base flex items-center gap-1">
+                        <Calendar className="h-5 w-5" />
                         Age {student.age}
                       </span>
                       {student.classroom && (
-                        <span className="flex items-center gap-1">
-                          <MapPin className="h-4 w-4" />
+                        <span className="text-base flex items-center gap-1">
+                          <MapPin className="h-5 w-5" />
                           {student.classroom}
                         </span>
                       )}
-                      <span>Enrolled: {formatDateTime(student.enrollment_date)}</span>
+                      <span className="text-base flex items-center gap-1">Enrolled: {formatDateTime(student.enrollment_date)}</span>
                     </div>
                   </div>
                   {student.needs_intervention && (
@@ -194,15 +200,16 @@ export function StudentProfile() {
         </Card>
 
         {/* Tabs */}
-        <Tabs defaultValue="overview" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-3">
-            <TabsTrigger value="overview" className="cursor-pointer">Overview</TabsTrigger>
+        <Tabs defaultValue="insights" className="space-y-6">
+          <TabsList className="grid w-full grid-cols-2">
+            {/*<TabsTrigger value="overview" className="cursor-pointer">Overview</TabsTrigger>*/}
             <TabsTrigger value="insights" className="cursor-pointer">AI Insights</TabsTrigger>
             <TabsTrigger value="progress" className="cursor-pointer" onClick={() => navigate(`/${user.role}/student/${studentId}/progress`, { state: location.state })}>Progress Report</TabsTrigger>
           </TabsList>
 
           {/* Overview Tab */}
-          <TabsContent value="overview" className="space-y-6">
+          
+          {/* <TabsContent value="overview" className="space-y-6">
             <Card>
               <CardHeader>
                 <CardTitle>Student Information</CardTitle>
@@ -230,7 +237,7 @@ export function StudentProfile() {
                   </div>
                 </div>
               </CardContent>
-            </Card>
+            </Card>*/}
 
             {/* <Card>
               <CardHeader>
@@ -266,14 +273,14 @@ export function StudentProfile() {
                 </div>
               </CardContent>
             </Card> */}
-          </TabsContent>
+          {/*</TabsContent> */}
 
           {/* AI Insights Tab */}
           <TabsContent value="insights" className="space-y-6">
             {!analysis ? (
               <Card>
                 <CardContent className="py-12 text-center text-muted-foreground">
-                  <Brain className="h-8 w-8 mx-auto mb-2 text-gray-400" />
+                  <Brain className="h-8 w-8 mx-auto mb-2 text-emerald-400" />
                   <p className="font-medium">No analysis available yet</p>
                   <p className="text-sm mt-1">AI insights will appear here after the student completes activities.</p>
                 </CardContent>
@@ -283,13 +290,13 @@ export function StudentProfile() {
                 {/* Overall Summary */}
                 <Card>
                   <CardHeader>
-                    <CardTitle className="flex items-center gap-2">
+                    <CardTitle className="text-lg font-semibold flex items-center gap-2">
                       <Sparkles className="h-5 w-5 text-amber-500" />
                       Overall Assessment
                     </CardTitle>
                   </CardHeader>
                   <CardContent>
-                    <p className="text-muted-foreground">{analysis.overall_summary}</p>
+                    <p className="text-base text-muted-foreground">{analysis.overall_summary}</p>
                     <div className="flex items-center gap-2 mt-3">
                       {analysis.improvement_data?.trend && (
                         <Badge className={`gap-1 ${
@@ -316,31 +323,31 @@ export function StudentProfile() {
                 {analysis.improvement_data && (
                   <Card>
                     <CardHeader>
-                      <CardTitle className="flex items-center gap-2">
+                      <CardTitle className="text-lg font-semibold flex items-center gap-2">
                         <TrendingUp className="h-5 w-5 text-blue-500" />
                         Improvement Tracking
                       </CardTitle>
                     </CardHeader>
                     <CardContent className="space-y-3">
-                      <p className="text-sm text-muted-foreground">{analysis.improvement_data.details}</p>
+                      <p className="text-base text-muted-foreground">{analysis.improvement_data.details}</p>
                       {analysis.improvement_data.comparison_points?.length > 0 && (
                         <div className="grid gap-2">
                           {analysis.improvement_data.comparison_points.map((cp, i) => (
                             <div key={i} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg border">
                               <div className="flex-1">
-                                <p className="text-sm font-medium">{cp.area}</p>
-                                <p className="text-xs text-muted-foreground">
+                                <p className="text-base font-medium">{cp.area}</p>
+                                <p className="text-sm text-muted-foreground">
                                   {cp.previous} → {cp.current}
                                 </p>
                               </div>
                               <Badge variant="outline" className={`gap-1 ${
-                                cp.direction === 'up' ? 'text-green-600 border-green-200' :
-                                cp.direction === 'down' ? 'text-red-600 border-red-200' :
-                                'text-gray-600 border-gray-200'
+                                cp.direction === 'up' ? 'text-xs text-green-600 border-green-200' :
+                                cp.direction === 'down' ? 'text-xs text-red-600 border-red-200' :
+                                'text-xs text-gray-600 border-gray-200'
                               }`}>
-                                {cp.direction === 'up' && <TrendingUp className="h-3 w-3" />}
-                                {cp.direction === 'down' && <TrendingDown className="h-3 w-3" />}
-                                {cp.direction === 'stable' && <Minus className="h-3 w-3" />}
+                                {cp.direction === 'up' && <TrendingUp className="h-5 w-5" />}
+                                {cp.direction === 'down' && <TrendingDown className="h-5 w-5" />}
+                                {cp.direction === 'stable' && <Minus className="h-5 w-5" />}
                                 {cp.direction}
                               </Badge>
                             </div>
@@ -355,7 +362,7 @@ export function StudentProfile() {
                 {analysis.inclinations?.length > 0 && (
                   <Card>
                     <CardHeader>
-                      <CardTitle className="flex items-center gap-2">
+                      <CardTitle className="text-lg font-semibold flex items-center gap-2">
                         <Star className="h-5 w-5 text-purple-500" />
                         Strengths & Inclinations
                       </CardTitle>
@@ -364,10 +371,10 @@ export function StudentProfile() {
                       <div className="grid gap-3">
                         {analysis.inclinations.map((inc, i) => (
                           <div key={i} className="p-3 bg-purple-50 rounded-lg border border-purple-200">
-                            <p className="text-sm font-medium text-purple-900">{inc.area}</p>
+                            <p className="text-base font-medium text-purple-900">{inc.area}</p>
                             <p className="text-sm text-purple-800 mt-1">{inc.observation}</p>
                             {inc.suggestion && (
-                              <p className="text-xs text-purple-600 mt-1 italic">Suggestion: {inc.suggestion}</p>
+                              <p className="text-sm text-purple-600 mt-2 italic">Suggestion: {inc.suggestion}</p>
                             )}
                           </div>
                         ))}
@@ -380,7 +387,7 @@ export function StudentProfile() {
                 {analysis.school_readiness && (
                   <Card>
                     <CardHeader>
-                      <CardTitle className="flex items-center gap-2">
+                      <CardTitle className="text-lg font-semibold flex items-center gap-2">
                         <GraduationCap className="h-5 w-5 text-indigo-500" />
                         School Readiness Assessment
                         <Badge className={`ml-2 ${
@@ -393,37 +400,37 @@ export function StudentProfile() {
                       </CardTitle>
                     </CardHeader>
                     <CardContent className="space-y-3">
-                      <p className="text-sm text-muted-foreground">{analysis.school_readiness.assessment}</p>
+                      <p className="text-base text-muted-foreground">{analysis.school_readiness.assessment}</p>
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                         {analysis.school_readiness.cognitive_readiness && (
                           <div className="p-3 bg-blue-50 rounded-lg border border-blue-200">
-                            <p className="text-xs font-medium text-blue-900">Cognitive</p>
-                            <p className="text-xs text-blue-800 mt-1">{analysis.school_readiness.cognitive_readiness}</p>
+                            <p className="text-base font-medium text-blue-900">Cognitive</p>
+                            <p className="text-base text-blue-800 mt-1">{analysis.school_readiness.cognitive_readiness}</p>
                           </div>
                         )}
                         {analysis.school_readiness.language_readiness && (
                           <div className="p-3 bg-green-50 rounded-lg border border-green-200">
-                            <p className="text-xs font-medium text-green-900">Language</p>
-                            <p className="text-xs text-green-800 mt-1">{analysis.school_readiness.language_readiness}</p>
+                            <p className="text-base font-medium text-green-900">Language</p>
+                            <p className="text-base text-green-800 mt-1">{analysis.school_readiness.language_readiness}</p>
                           </div>
                         )}
                         {analysis.school_readiness.socioemotional_readiness && (
                           <div className="p-3 bg-pink-50 rounded-lg border border-pink-200">
-                            <p className="text-xs font-medium text-pink-900">Socioemotional</p>
-                            <p className="text-xs text-pink-800 mt-1">{analysis.school_readiness.socioemotional_readiness}</p>
+                            <p className="text-base font-medium text-pink-900">Socioemotional</p>
+                            <p className="text-base text-pink-800 mt-1">{analysis.school_readiness.socioemotional_readiness}</p>
                           </div>
                         )}
                         {analysis.school_readiness.motor_readiness && (
                           <div className="p-3 bg-orange-50 rounded-lg border border-orange-200">
-                            <p className="text-xs font-medium text-orange-900">Motor Skills</p>
-                            <p className="text-xs text-orange-800 mt-1">{analysis.school_readiness.motor_readiness}</p>
+                            <p className="text-base font-medium text-orange-900">Motor Skills</p>
+                            <p className="text-base text-orange-800 mt-1">{analysis.school_readiness.motor_readiness}</p>
                           </div>
                         )}
                       </div>
                       {analysis.school_readiness.recommendations?.length > 0 && (
                         <div>
-                          <p className="text-sm font-medium mt-2">Recommendations:</p>
-                          <ul className="list-disc list-inside text-sm text-muted-foreground mt-1 space-y-1">
+                          <p className="text-base font-medium mt-2">Recommendations:</p>
+                          <ul className="list-disc list-inside text-base text-muted-foreground mt-1 space-y-1">
                             {analysis.school_readiness.recommendations.map((rec, i) => (
                               <li key={i}>{rec}</li>
                             ))}
@@ -438,7 +445,7 @@ export function StudentProfile() {
                 {analysis.interventions?.length > 0 && (
                   <Card>
                     <CardHeader>
-                      <CardTitle className="flex items-center gap-2">
+                      <CardTitle className="text-lg font-semibold flex items-center gap-2">
                         <Target className="h-5 w-5 text-orange-500" />
                         Active Interventions
                       </CardTitle>
@@ -460,9 +467,9 @@ export function StudentProfile() {
                             </div>
                             <p className="text-sm text-muted-foreground">{intv.concern}</p>
                             {intv.recommended_actions?.length > 0 && (
-                              <div className="mt-2">
-                                <p className="text-xs font-medium mb-1">Recommended Actions:</p>
-                                <ul className="list-disc list-inside text-xs text-muted-foreground space-y-0.5">
+                              <div className="mt-3">
+                                <p className="text-base font-medium mb-2">Recommended Actions:</p>
+                                <ul className="list-disc list-inside text-sm text-muted-foreground space-y-0.5">
                                   {intv.recommended_actions.map((action, j) => (
                                     <li key={j}>{action}</li>
                                   ))}
